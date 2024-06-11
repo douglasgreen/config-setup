@@ -5,10 +5,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\ConfigSetup;
 
-use DouglasGreen\OptParser\OptParser;
-use DouglasGreen\Utility\FileSystem\Dir;
-use DouglasGreen\Utility\FileSystem\Path;
-use DouglasGreen\Utility\Program\Command;
+use Exception;
 
 class FileCopier
 {
@@ -60,20 +57,12 @@ class FileCopier
      */
     protected array $gitFiles;
 
-    protected string $repoDir;
-
-    protected bool $usePrePush;
-
     public function __construct(
+        protected string $repoDir,
+        protected bool $usePrePush
     ) {
-        $this->setArgs();
-
-        $command = new Command('git');
-        $gitFiles = $command->addArg('ls-files')
-            ->exec();
-        $this->gitFiles = array_flip($gitFiles);
-
-        $this->repoDir = Dir::getCurrent();
+        exec('git ls-files', $output);
+        $this->gitFiles = array_flip($output);
 
         $this->filesToCopy = array_merge(
             self::FILES_TO_COPY,
@@ -83,12 +72,17 @@ class FileCopier
         $this->excludeFile = $this->repoDir . '/' . self::GIT_EXCLUDE_FILE;
     }
 
+    /**
+     * @throws Exception
+     */
     public function copyFiles(): void
     {
         $excludeLines = [];
-        $excludePath = new Path($this->excludeFile);
-        if ($excludePath->exists()) {
-            $excludeLines = $excludePath->loadLines();
+        if (file_exists($this->excludeFile)) {
+            $excludeLines = file($this->excludeFile);
+            if ($excludeLines === false) {
+                throw new Exception('Unable to load Git exclude file');
+            }
         }
 
         $oldExcludeLines = $excludeLines;
@@ -108,8 +102,7 @@ class FileCopier
 
             $destinationDir = dirname($destination);
             if (! is_dir($destinationDir)) {
-                $dir = new Dir($destinationDir);
-                $dir->make(0o777, Dir::RECURSIVE);
+                mkdir($destinationDir, 0o777, true);
             }
 
             if (! in_array($file, $excludeLines, true)) {
@@ -117,27 +110,30 @@ class FileCopier
             }
 
             // Skip copying of identical files.
-            $sourcePath = new Path($source);
-            $destPath = new Path($destination);
-            if (
-                $destPath->exists() &&
-                $sourcePath->md5() === $destPath->md5()
-            ) {
+            if (file_exists($destination) && md5_file($source) === md5_file(
+                $destination
+            )) {
                 continue;
             }
 
-            $destPath = $sourcePath->copy($destination);
+            if (! copy($source, $destination)) {
+                throw new Exception(sprintf(
+                    'Failed to copy %s to %s.',
+                    $source,
+                    $destination
+                ));
+            }
+
             echo sprintf(
                 'Copied %s to %s.',
                 $source,
                 $destination
             ) . PHP_EOL;
-            $mode = in_array(
-                $file,
-                self::SCRIPTS_TO_COPY,
-                true
-            ) ? 0o755 : 0o644;
-            $destPath->changeMode($mode);
+            if (in_array($file, self::SCRIPTS_TO_COPY, true)) {
+                chmod($destination, 0o755);
+            } else {
+                chmod($destination, 0o644);
+            }
         }
 
         // Find top-level directories containing PHP files
@@ -153,37 +149,19 @@ class FileCopier
         $phpDirectories = array_keys($phpDirectories);
         sort($phpDirectories);
 
-        $pathFilename = $this->repoDir . '/php_paths';
-        $pathFile = new Path($pathFilename);
-        $oldPaths = $pathFile->exists() ? $pathFile->loadString() : '';
+        $pathFile = $this->repoDir . '/php_paths';
+        $oldPaths = file_exists($pathFile) ? file_get_contents($pathFile) : '';
         $newPaths = implode(PHP_EOL, $phpDirectories) . PHP_EOL;
 
         // Write the list of directories to php_paths file
         if ($oldPaths !== $newPaths) {
-            $pathFile->saveString($newPaths);
+            file_put_contents($pathFile, $newPaths);
             echo 'php_paths file has been created.' . PHP_EOL;
         }
 
         if ($excludeLines !== $oldExcludeLines) {
-            $excludePath->saveString(implode('', $excludeLines));
+            file_put_contents($this->excludeFile, implode('', $excludeLines));
             echo $this->excludeFile . ' has been updated.' . PHP_EOL;
         }
-    }
-
-    protected function setArgs(): void
-    {
-        $optParser = new OptParser(
-            'Config File Copier',
-            'A program to copy standard config files to your repository'
-        );
-
-        $optParser->addFlag(
-            ['pre-push', 'p'],
-            'Use the husky pre-push event rather than pre-commit'
-        )->addUsageAll();
-
-        $input = $optParser->parse();
-
-        $this->usePrePush = (bool) $input->get('pre-push');
     }
 }

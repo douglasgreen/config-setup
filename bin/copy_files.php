@@ -17,5 +17,8 @@ if ($dir === false) {
 // Run in current dir which is repository root dir.
 require_once $dir . '/vendor/autoload.php';
 
-$fileCopier = new FileCopier();
+$options = getopt('p', ['pre-push']);
+$usePrePush = isset($options['pre-push']) && isset($options['p']);
+
+$fileCopier = new FileCopier($dir, $usePrePush);
 $fileCopier->copyFiles();
