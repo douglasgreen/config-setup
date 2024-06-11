@@ -79,7 +79,7 @@ class FileCopier
     {
         $excludeLines = [];
         if (file_exists($this->excludeFile)) {
-            $excludeLines = file($this->excludeFile);
+            $excludeLines = file($this->excludeFile, FILE_IGNORE_NEW_LINES);
             if ($excludeLines === false) {
                 throw new Exception('Unable to load Git exclude file');
             }
@@ -106,13 +106,13 @@ class FileCopier
             }
 
             if (! in_array($file, $excludeLines, true)) {
-                $excludeLines[] = $file . PHP_EOL;
+                $excludeLines[] = $file;
             }
 
             // Skip copying of identical files.
-            if (file_exists($destination) && md5_file($source) === md5_file(
-                $destination
-            )) {
+            if (file_exists($destination) &&
+                md5_file($source) === md5_file($destination)
+            ) {
                 continue;
             }
 
@@ -137,30 +137,35 @@ class FileCopier
         }
 
         // Find top-level directories containing PHP files
-        $phpDirectories = [];
+        $phpPaths = [];
 
         foreach (array_keys($this->gitFiles) as $file) {
             if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                 $topLevelDir = explode('/', $file)[0];
-                $phpDirectories[$topLevelDir] = true;
+                $phpPaths[$topLevelDir] = true;
             }
         }
 
-        $phpDirectories = array_keys($phpDirectories);
-        sort($phpDirectories);
+        $phpPaths = array_keys($phpPaths);
+        sort($phpPaths);
 
         $pathFile = $this->repoDir . '/php_paths';
-        $oldPaths = file_exists($pathFile) ? file_get_contents($pathFile) : '';
-        $newPaths = implode(PHP_EOL, $phpDirectories) . PHP_EOL;
+        $oldPaths = file_exists($pathFile) ? file(
+            $pathFile,
+            FILE_IGNORE_NEW_LINES
+        ) : [];
 
         // Write the list of directories to php_paths file
-        if ($oldPaths !== $newPaths) {
-            file_put_contents($pathFile, $newPaths);
+        if ($oldPaths !== $phpPaths) {
+            file_put_contents($pathFile, implode(PHP_EOL, $phpPaths) . PHP_EOL);
             echo 'php_paths file has been created.' . PHP_EOL;
         }
 
         if ($excludeLines !== $oldExcludeLines) {
-            file_put_contents($this->excludeFile, implode('', $excludeLines));
+            file_put_contents(
+                $this->excludeFile,
+                implode(PHP_EOL, $excludeLines) . PHP_EOL
+            );
             echo $this->excludeFile . ' has been updated.' . PHP_EOL;
         }
     }
