@@ -84,10 +84,12 @@ foreach (array_keys($gitFiles) as $file) {
 $phpDirectories = array_keys($phpDirectories);
 sort($phpDirectories);
 
-// Write the list of directories to php_paths file
-file_put_contents(
-    $dir . '/php_paths',
-    implode(PHP_EOL, $phpDirectories) . PHP_EOL
-);
+$pathFile = $dir . '/php_paths';
+$oldPaths = file_exists($pathFile) ? file_get_contents($pathFile) : '';
+$newPaths = implode(PHP_EOL, $phpDirectories) . PHP_EOL;
 
-echo "php_paths file has been created.\n";
+// Write the list of directories to php_paths file
+if ($oldPaths !== $newPaths) {
+    file_put_contents($pathFile, $newPaths);
+    echo "php_paths file has been created.\n";
+}
