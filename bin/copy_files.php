@@ -42,20 +42,31 @@ $filesToCopy = [
 
 $gitFiles = array_flip($gitFiles);
 
+$dir = getcwd();
 foreach ($filesToCopy as $file) {
     if (! isset($gitFiles[$file])) {
-        $source = __DIR__ . '/vendor/douglasgreen/config-setup/' . $file;
-        $destination = __DIR__ . '/' . $file;
+        $source = $dir . '/vendor/douglasgreen/config-setup/' . $file;
+        $destination = $dir . '/' . $file;
 
         $destinationDir = dirname($destination);
         if (! is_dir($destinationDir)) {
             mkdir($destinationDir, 0o777, true);
         }
 
-        if (! copy($source, $destination)) {
-            echo "Failed to copy {$source} to {$destination}.\n";
-        } else {
-            echo "Copied {$source} to {$destination}.\n";
+        $copyFile = true;
+        // Skip copying of identical files.
+        if (file_exists($destination) && md5_file($source) === md5_file(
+            $destination
+        )) {
+            $copyFile = false;
+        }
+
+        if ($copyFile) {
+            if (! copy($source, $destination)) {
+                echo "Failed to copy {$source} to {$destination}.\n";
+            } else {
+                echo "Copied {$source} to {$destination}.\n";
+            }
         }
     }
 }
@@ -66,7 +77,6 @@ $phpDirectories = [];
 foreach (array_keys($gitFiles) as $file) {
     if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
         $topLevelDir = explode('/', $file)[0];
-        var_dump('tld', $topLevelDir);
         $phpDirectories[$topLevelDir] = true;
     }
 }
@@ -76,7 +86,7 @@ sort($phpDirectories);
 
 // Write the list of directories to php_paths file
 file_put_contents(
-    __DIR__ . '/php_paths',
+    $dir . '/php_paths',
     implode(PHP_EOL, $phpDirectories) . PHP_EOL
 );
 

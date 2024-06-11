@@ -26,7 +26,6 @@
     },
     "scripts": {
         "commitlint": "commitlint --edit",
-        "lint": "eslint . && stylelint '**/*.css'",
         "lint:fix": "eslint --fix . && prettier --write .",
         "prepare": "husky"
     }
