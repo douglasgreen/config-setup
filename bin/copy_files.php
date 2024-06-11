@@ -10,17 +10,13 @@ declare(strict_types=1);
 exec('git ls-files', $gitFiles, $rc);
 
 if ($rc !== 0) {
-    echo "Failed to get the list of git files.\n";
+    echo 'Failed to get the list of git files.' . PHP_EOL;
     exit(1);
 }
 
 $filesToCopy = [
     '.eslintignore',
     '.eslintrc.json',
-    '.husky/commit-msg',
-    '.husky/post-checkout',
-    '.husky/post-merge',
-    '.husky/pre-commit',
     '.prettierignore',
     '.prettierrc.json',
     '.stylelintignore',
@@ -32,6 +28,13 @@ $filesToCopy = [
     'phpstan.neon',
     'phpunit.xml',
     'rector.php',
+];
+
+$scriptsToCopy = [
+    '.husky/commit-msg',
+    '.husky/post-checkout',
+    '.husky/post-merge',
+    '.husky/pre-commit',
     'run_phpmd.sh',
     'run_phpstan.sh',
     'script/bootstrap',
@@ -40,9 +43,24 @@ $filesToCopy = [
     'script/test',
 ];
 
+$filesToCopy = array_merge($filesToCopy, $scriptsToCopy);
+
 $gitFiles = array_flip($gitFiles);
 
 $dir = getcwd();
+
+// Add to .git/info/exclude to ignore without modifying .gitignore.
+$excludeFile = $dir . '/.git/info/exclude';
+$excludeLines = [];
+if (file_exists($excludeFile)) {
+    $result = file($excludeFile);
+    if ($result !== false) {
+        $excludeLines = $result;
+    }
+}
+
+$oldExcludeLines = $excludeLines;
+
 foreach ($filesToCopy as $file) {
     if (! isset($gitFiles[$file])) {
         $source = $dir . '/vendor/douglasgreen/config-setup/' . $file;
@@ -63,9 +81,24 @@ foreach ($filesToCopy as $file) {
 
         if ($copyFile) {
             if (! copy($source, $destination)) {
-                echo "Failed to copy {$source} to {$destination}.\n";
+                echo sprintf(
+                    'Failed to copy %s to %s.',
+                    $source,
+                    $destination
+                ) . PHP_EOL;
             } else {
-                echo "Copied {$source} to {$destination}.\n";
+                echo sprintf(
+                    'Copied %s to %s.',
+                    $source,
+                    $destination
+                ) . PHP_EOL;
+                if (in_array($destination, $scriptsToCopy, true)) {
+                    chmod($destination, 0o755);
+                }
+
+                if (! in_array($destination, $excludeLines, true)) {
+                    $excludeLines[] = $destination . PHP_EOL;
+                }
             }
         }
     }
@@ -91,5 +124,10 @@ $newPaths = implode(PHP_EOL, $phpDirectories) . PHP_EOL;
 // Write the list of directories to php_paths file
 if ($oldPaths !== $newPaths) {
     file_put_contents($pathFile, $newPaths);
-    echo "php_paths file has been created.\n";
+    echo 'php_paths file has been created.' . PHP_EOL;
+}
+
+if ($excludeLines !== $oldExcludeLines) {
+    file_put_contents($excludeFile, implode('', $excludeLines));
+    echo $excludeFile . ' has been updated.' . PHP_EOL;
 }
