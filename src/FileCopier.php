@@ -114,13 +114,20 @@ class FileCopier
 
                 $this->makeAirbnb($standardFile, $source);
                 echo 'Using Airbnb config for eslint' . PHP_EOL;
+            } elseif ($fileToCopy === 'phpstan.neon') {
+                // Put PHPStan temporary copy with PHP version in var dir.
+                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+
+                $this->makePhpStan($plainFile, $source);
+                echo 'Added PHP version to PHPStan config.' . PHP_EOL;
             } else {
                 $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
             }
 
             // Overwrite target but not source file to copy to different name.
             if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
-                echo 'Using .husky/pre-push hook instead of .husky/pre-commit' . PHP_EOL;
+                echo 'Using .husky/pre-push hook instead of .husky/pre-commit.' . PHP_EOL;
                 $fileToCopy = '.husky/pre-push';
             }
 
@@ -188,6 +195,60 @@ class FileCopier
         $result = file_put_contents($destination, $airbnbConfig);
         if ($result === false) {
             throw new Exception('Unable to save Eslint config to var dir');
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function makePhpStan(string $source, string $destination): void
+    {
+        // Load composer.json
+        $composerJson = file_get_contents('composer.json');
+        if ($composerJson === false) {
+            throw new Exception('Unable to read composer.json file.');
+        }
+
+        $composerJson = json_decode(
+            $composerJson,
+            true,
+            16,
+            JSON_THROW_ON_ERROR
+        );
+
+        // Find the PHP version in the require section
+        if (! isset($composerJson['require']['php'])) {
+            throw new Exception('PHP version not specified in composer.json.');
+        }
+
+        $phpVersionConstraint = $composerJson['require']['php'];
+
+        // Extract the PHP version number
+        if (preg_match(
+            '/(\d+)\.(\d+)/',
+            (string) $phpVersionConstraint,
+            $matches
+        ) === 0) {
+            throw new Exception(
+                'Unable to extract PHP version from composer.json.'
+            );
+        }
+
+        $major = $matches[1];
+        $minor = $matches[2];
+        $phpStanVersion = sprintf('%d0%d00', $major, $minor);
+
+        // Load phpstan.neon
+        if (! file_exists($source)) {
+            throw new Exception('phpstan.neon file not found.');
+        }
+
+        $phpStanConfig = file_get_contents($source);
+
+        // Add phpVersion entry
+        $phpStanConfig .= PHP_EOL . ('    phpVersion: ' . $phpStanVersion) . PHP_EOL;
+        if (file_put_contents($destination, $phpStanConfig) === false) {
+            throw new Exception('Unable to write PHPStan config file to var');
         }
     }
 
