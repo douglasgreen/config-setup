@@ -130,7 +130,7 @@ class FileCopier
                 continue;
             }
 
-            $result = $this->useAirbnb ? $this->copyAirbnb(
+            $result = $this->useAirbnb && $fileToCopy === '.eslintrc.json' ? $this->copyAirbnb(
                 $source,
                 $destination
             ) : copy($source, $destination);
