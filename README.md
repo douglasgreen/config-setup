@@ -5,7 +5,7 @@ projects
 
 ## Process
 
-First, add the repsitory to `composer.json`:
+First, add the repository to `composer.json`:
 
 ```
 {
@@ -15,7 +15,7 @@ First, add the repsitory to `composer.json`:
             "url": "https://github.com/douglasgreen/config-setup"
         }
     ],
-    "require": {
+    "require-dev": {
         "douglasgreen/config-setup": "dev-main"
     }
 }
