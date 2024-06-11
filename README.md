@@ -28,7 +28,7 @@ root:
 {
     "scripts": {
         "post-install-cmd": [
-            "bin/copy_files.php"
+            "vendor/douglasgreen/config-setup/bin/copy_files.php"
         ]
     }
 }
