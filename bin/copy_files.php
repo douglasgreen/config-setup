@@ -62,44 +62,40 @@ if (file_exists($excludeFile)) {
 $oldExcludeLines = $excludeLines;
 
 foreach ($filesToCopy as $file) {
-    if (! isset($gitFiles[$file])) {
-        $source = $dir . '/vendor/douglasgreen/config-setup/' . $file;
-        $destination = $dir . '/' . $file;
+    // Don't overwrite Git files in the repo.
+    if (isset($gitFiles[$file])) {
+        continue;
+    }
 
-        $destinationDir = dirname($destination);
-        if (! is_dir($destinationDir)) {
-            mkdir($destinationDir, 0o777, true);
-        }
+    $source = $dir . '/vendor/douglasgreen/config-setup/' . $file;
+    $destination = $dir . '/' . $file;
 
-        $copyFile = true;
-        // Skip copying of identical files.
-        if (file_exists($destination) && md5_file($source) === md5_file(
+    $destinationDir = dirname($destination);
+    if (! is_dir($destinationDir)) {
+        mkdir($destinationDir, 0o777, true);
+    }
+
+    if (! in_array($destination, $excludeLines, true)) {
+        $excludeLines[] = $destination . PHP_EOL;
+    }
+
+    // Skip copying of identical files.
+    if (file_exists($destination) && md5_file($source) === md5_file(
+        $destination
+    )) {
+        continue;
+    }
+
+    if (! copy($source, $destination)) {
+        echo sprintf(
+            'Failed to copy %s to %s.',
+            $source,
             $destination
-        )) {
-            $copyFile = false;
-        }
-
-        if ($copyFile) {
-            if (! copy($source, $destination)) {
-                echo sprintf(
-                    'Failed to copy %s to %s.',
-                    $source,
-                    $destination
-                ) . PHP_EOL;
-            } else {
-                echo sprintf(
-                    'Copied %s to %s.',
-                    $source,
-                    $destination
-                ) . PHP_EOL;
-                if (in_array($destination, $scriptsToCopy, true)) {
-                    chmod($destination, 0o755);
-                }
-
-                if (! in_array($destination, $excludeLines, true)) {
-                    $excludeLines[] = $destination . PHP_EOL;
-                }
-            }
+        ) . PHP_EOL;
+    } else {
+        echo sprintf('Copied %s to %s.', $source, $destination) . PHP_EOL;
+        if (in_array($destination, $scriptsToCopy, true)) {
+            chmod($destination, 0o755);
         }
     }
 }
