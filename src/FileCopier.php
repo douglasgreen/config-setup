@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\ConfigSetup;
 
+use DouglasGreen\OptParser\OptParser;
 use DouglasGreen\Utility\FileSystem\Dir;
 use DouglasGreen\Utility\FileSystem\Path;
 use DouglasGreen\Utility\Program\Command;
@@ -61,8 +62,9 @@ class FileCopier
 
     protected string $repoDir;
 
+    protected bool $usePrePush;
+
     public function __construct(
-        protected bool $usePrePush
     ) {
         $command = new Command('git');
         $gitFiles = $command->addArg('ls-files')
@@ -164,5 +166,22 @@ class FileCopier
             $excludePath->saveString(implode('', $excludeLines));
             echo $this->excludeFile . ' has been updated.' . PHP_EOL;
         }
+    }
+
+    protected function setArgs(): void
+    {
+        $optParser = new OptParser(
+            'Config File Copier',
+            'A program to copy standard config files to your repository'
+        );
+
+        $optParser->addFlag(
+            ['pre-push', 'p'],
+            'Use the husky pre-push event rather than pre-commit'
+        )->addUsageAll();
+
+        $input = $optParser->parse();
+
+        $this->usePrePush = (bool) $input->get('pre-push');
     }
 }

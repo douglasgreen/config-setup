@@ -8,24 +8,14 @@ declare(strict_types=1);
  */
 
 use DouglasGreen\ConfigSetup\FileCopier;
-use DouglasGreen\OptParser\OptParser;
-use DouglasGreen\Utility\FileSystem\Dir;
 
-require_once Dir::getCurrent() . '/vendor/autoload.php';
+$dir = getcwd();
+if ($dir === false) {
+    throw new Exception('Unable to get working dir');
+}
 
-$optParser = new OptParser(
-    'Config File Copier',
-    'A program to copy standard config files to your repository'
-);
+// Run in current dir which is repository root dir.
+require_once $dir . '/vendor/autoload.php';
 
-$optParser->addFlag(
-    ['pre-push', 'p'],
-    'Use the husky pre-push event rather than pre-commit'
-)->addUsageAll();
-
-$input = $optParser->parse();
-
-$usePrePush = (bool) $input->get('pre-push');
-
-$fileCopier = new FileCopier($usePrePush);
+$fileCopier = new FileCopier();
 $fileCopier->copyFiles();
