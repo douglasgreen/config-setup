@@ -99,17 +99,19 @@ class FileCopier
         $oldExcludeLines = $excludeLines;
 
         foreach ($this->filesToCopy as $fileToCopy) {
-            if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
-                echo 'Using .husky/pre-push hook instead of .husky/pre-commit' . PHP_EOL;
-                $fileToCopy = '.husky/pre-push';
-            }
-
             // Don't overwrite Git files in the repo.
             if (isset($this->gitFiles[$fileToCopy])) {
                 continue;
             }
 
             $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+
+            // Overwrite target but not source file to copy to different name.
+            if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
+                echo 'Using .husky/pre-push hook instead of .husky/pre-commit' . PHP_EOL;
+                $fileToCopy = '.husky/pre-push';
+            }
+
             $destination = $this->repoDir . '/' . $fileToCopy;
 
             $destinationDir = dirname($destination);
