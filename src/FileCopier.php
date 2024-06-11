@@ -65,6 +65,9 @@ class FileCopier
 
     protected bool $usePrePush;
 
+    /**
+     * @throws Exception
+     */
     public function __construct(
         protected string $repoDir,
         protected int $flags = 0
@@ -104,7 +107,16 @@ class FileCopier
                 continue;
             }
 
-            $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+            if ($this->useAirbnb && $fileToCopy === '.eslintrc.json') {
+                // Put Airbnb temporary copy in var dir.
+                $standardFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+
+                $this->makeAirbnb($standardFile, $source);
+                echo 'Using Airbnb config for eslint' . PHP_EOL;
+            } else {
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+            }
 
             // Overwrite target but not source file to copy to different name.
             if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
@@ -130,12 +142,7 @@ class FileCopier
                 continue;
             }
 
-            $result = $this->useAirbnb && $fileToCopy === '.eslintrc.json' ? $this->copyAirbnb(
-                $source,
-                $destination
-            ) : copy($source, $destination);
-
-            if (! $result) {
+            if (! copy($source, $destination)) {
                 throw new Exception(sprintf(
                     'Failed to copy %s to %s.',
                     $source,
@@ -166,22 +173,22 @@ class FileCopier
         }
     }
 
-    protected function copyAirbnb(string $source, string $destination): bool
+    /**
+     * @throws Exception
+     */
+    protected function makeAirbnb(string $source, string $destination): void
     {
-        $config = file_get_contents($source);
-        if ($config === false) {
-            return false;
+        $standardConfig = file_get_contents($source);
+        if ($standardConfig === false) {
+            throw new Exception('Unable to load Eslint config');
         }
 
-        $config = $this->updateJsonExtendsField($config);
+        $airbnbConfig = $this->updateJsonExtendsField($standardConfig);
 
-        $result = file_put_contents($destination, $config);
-        if ($result !== false) {
-            echo 'Using Airbnb config for eslint' . PHP_EOL;
-            return true;
+        $result = file_put_contents($destination, $airbnbConfig);
+        if ($result === false) {
+            throw new Exception('Unable to save Eslint config to var dir');
         }
-
-        return false;
     }
 
     protected function updateJsonExtendsField(string $jsonString): string
