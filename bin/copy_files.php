@@ -96,6 +96,8 @@ foreach ($filesToCopy as $file) {
         echo sprintf('Copied %s to %s.', $source, $destination) . PHP_EOL;
         if (in_array($file, $scriptsToCopy, true)) {
             chmod($destination, 0o755);
+        } else {
+            chmod($destination, 0o644);
         }
     }
 }
