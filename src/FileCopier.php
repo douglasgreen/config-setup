@@ -100,6 +100,7 @@ class FileCopier
 
         foreach ($this->filesToCopy as $fileToCopy) {
             if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
+                echo 'Using .husky/pre-push hook instead of .husky/pre-commit' . PHP_EOL;
                 $fileToCopy = '.husky/pre-push';
             }
 
@@ -173,7 +174,12 @@ class FileCopier
         $config = $this->updateJsonExtendsField($config);
 
         $result = file_put_contents($destination, $config);
-        return $result !== false;
+        if ($result !== false) {
+            echo 'Using Airbnb config for eslint' . PHP_EOL;
+            return true;
+        }
+
+        return false;
     }
 
     protected function updateJsonExtendsField(string $jsonString): string
