@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 use DouglasGreen\ConfigSetup\FileCopier;
 use DouglasGreen\OptParser\OptParser;
+use DouglasGreen\Utility\FileSystem\Dir;
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once Dir::getCurrent() . '/vendor/autoload.php';
 
 $optParser = new OptParser(
     'Config File Copier',
