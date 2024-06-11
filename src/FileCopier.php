@@ -9,16 +9,16 @@ use Exception;
 
 class FileCopier
 {
-    public const int AIRBNB = 1;
+    public const AIRBNB = 1;
 
-    public const int PRE_PUSH = 2;
+    public const PRE_PUSH = 2;
 
     /**
      * @var string
      */
     public $excludeFile;
 
-    protected const array FILES_TO_COPY = [
+    protected const FILES_TO_COPY = [
         '.eslintignore',
         '.eslintrc.json',
         '.prettierignore',
@@ -33,7 +33,7 @@ class FileCopier
         'rector.php',
     ];
 
-    protected const array SCRIPTS_TO_COPY = [
+    protected const SCRIPTS_TO_COPY = [
         '.husky/commit-msg',
         '.husky/post-checkout',
         '.husky/post-merge',
@@ -49,7 +49,7 @@ class FileCopier
     /**
      * @var string Add to .git/info/exclude to ignore without modifying .gitignore.
      */
-    public const string GIT_EXCLUDE_FILE = '.git/info/exclude';
+    public const GIT_EXCLUDE_FILE = '.git/info/exclude';
 
     /**
      * @var list<string>
@@ -244,9 +244,16 @@ class FileCopier
         }
 
         $phpStanConfig = file_get_contents($source);
+        if ($phpStanConfig === false) {
+            throw new Exception('Unable to load PHPStan config');
+        }
 
-        // Add phpVersion entry
-        $phpStanConfig .= PHP_EOL . ('    phpVersion: ' . $phpStanVersion) . PHP_EOL;
+        // Update phpVersion entry with project version.
+        $phpStanConfig = preg_replace(
+            '/phpVersion: \d+/',
+            'phpVersion: ' . $phpStanVersion,
+            $phpStanConfig
+        );
         if (file_put_contents($destination, $phpStanConfig) === false) {
             throw new Exception('Unable to write PHPStan config file to var');
         }
