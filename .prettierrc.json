@@ -1,0 +1,17 @@
+{
+    "printWidth": 80,
+    "proseWrap": "always",
+    "tabWidth": 4,
+    "useTabs": false,
+
+    "htmlWhitespaceSensitivity": "ignore",
+
+    "phpVersion": "8.1",
+    "singleQuote": true,
+
+    "plugins": [
+        "prettier-plugin-sh",
+        "@prettier/plugin-php",
+        "@prettier/plugin-xml"
+    ]
+}

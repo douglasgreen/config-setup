@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+
+# script/lint: Run lint scripts.
+# @see https://github.blog/2015-06-30-scripts-to-rule-them-all/
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+# Install Composer dependencies if vendor directory doesn't exist
+if [ -f "composer.json" ]; then
+    if [ ! -d "vendor" ]; then
+        echo "==> Installing Composer dependencies..."
+        composer install --no-interaction --prefer-dist
+    fi
+
+    # Check if the composer script "lint" exists and run it
+    if composer run-script --list | grep -q -P "^\s+lint\s+"; then
+        echo "==> Running Composer lint..."
+        composer lint
+    else
+        echo "===> Composer lint script not defined"
+    fi
+fi
+
+# Install NPM dependencies if node_modules directory doesn't exist
+if [ -f "package.json" ]; then
+    if [ ! -d "node_modules" ]; then
+        echo "==> Installing NPM dependencies..."
+        npm install --silent
+    fi
+
+    # Check if the npm script "lint" exists and run it
+    if npm run | grep -q -P "^\s+lint$"; then
+        echo "==> Running NPM lint..."
+        npm run lint
+    else
+        echo "===> NPM lint script not defined"
+    fi
+fi

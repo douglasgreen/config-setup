@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+# script/setup: Set up application to initial state.
+# @see https://github.blog/2015-06-30-scripts-to-rule-them-all/
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+script/bootstrap
+
+# Set up DB here
+#echo "==> Setting up DB..."
+
+# Set up env here here
+#echo "==> Setting up env..."
+
+echo "==> Repo is now ready to go!"

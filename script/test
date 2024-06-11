@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+
+# script/test: Run test scripts.
+# @see https://github.blog/2015-06-30-scripts-to-rule-them-all/
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+# Install Composer dependencies if vendor directory doesn't exist
+if [ -f "composer.json" ]; then
+    if [ ! -d "vendor" ]; then
+        echo "==> Installing Composer dependencies..."
+        composer install --no-interaction --prefer-dist
+    fi
+
+    # Check if the composer script "test" exists and run it
+    if composer run-script --list | grep -q -P "^\s+test\s+"; then
+        echo "==> Running Composer test..."
+        composer test
+    else
+        echo "==> Composer test script not defined"
+    fi
+fi
+
+# Install NPM dependencies if node_modules directory doesn't exist
+if [ -f "package.json" ]; then
+    if [ ! -d "node_modules" ]; then
+        echo "==> Installing NPM dependencies..."
+        npm install --silent
+    fi
+
+    # Check if the npm script "test" exists and run it
+    if npm run | grep -q -P "^\s*test$"; then
+        echo "==> Running NPM test..."
+        npm run test
+    else
+        echo "==> NPM test script not defined"
+    fi
+fi
