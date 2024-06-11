@@ -24,12 +24,12 @@ $options = getopt('ap', ['airbnb', 'pre-push']);
 $flags = 0;
 
 // Use airbnb instead of eslint-config-standard for eslint rules.
-if (isset($options['airbnb']) && isset($options['a'])) {
+if (isset($options['airbnb']) || isset($options['a'])) {
     $flags |= FileCopier::AIRBNB;
 }
 
 // Use pre-push event instead of pre-commit for fewer interruptions.
-if (isset($options['pre-push']) && isset($options['p'])) {
+if (isset($options['pre-push']) || isset($options['p'])) {
     $flags |= FileCopier::PRE_PUSH;
 }
 
