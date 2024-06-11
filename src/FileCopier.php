@@ -66,6 +66,8 @@ class FileCopier
 
     public function __construct(
     ) {
+        $this->setArgs();
+
         $command = new Command('git');
         $gitFiles = $command->addArg('ls-files')
             ->exec();
