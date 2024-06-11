@@ -41,6 +41,16 @@ The file copier will check your list of Git project files and overwrite any file
 not listed there. Then it will add the list of files copied to
 `/.git/info/exclude` to exclude them from being committed to Git.
 
+### File Copy Arguments
+
+When running `copy_files.php`, there are two possible flags:
+
+-   `--airbnb` or `-a`: Use airbnb instead of eslint-config-standard for eslint
+    rules.
+
+-   `--pre-push` or `-p`: Use the pre-push event instead of pre-commit for fewer
+    interruptions.
+
 ## Setup Scripts
 
 This project uses the
@@ -137,12 +147,15 @@ For JavaScript/NPM, that is done with `package.json` like this:
 ```
 
 That installs:
+
 -   [Commitlint](https://commitlint.js.org/) for linting commit messages and
-    [@commitlint/config-conventional](https://www.npmjs.com/package/@commitlint/config-conventional) for a typical set of rules
+    [@commitlint/config-conventional](https://www.npmjs.com/package/@commitlint/config-conventional)
+    for a typical set of rules
 -   [ESLint](https://eslint.org/) for linting and fixing and
-    [eslint-config-standard](https://github.com/standard/eslint-config-standard) and its required dependencies for a
-    typical set of rules
--   [Husky](https://www.npmjs.com/package/husky) to run the GitHub actions defined as scripts in the `.husky` directory
+    [eslint-config-standard](https://github.com/standard/eslint-config-standard)
+    and its required dependencies for a typical set of rules
+-   [Husky](https://www.npmjs.com/package/husky) to run the GitHub actions
+    defined as scripts in the `.husky` directory
 -   [Mocha](https://mochajs.org/) for unit tests
 -   [Prettier](https://prettier.io/) for linting and fixing
 -   [Stylelint](https://stylelint.io/) for CSS linting
@@ -181,8 +194,8 @@ with some syntax errors.
 
 ## Husky Hooks
 
-Linting and testing are automatically run by `.husky/pre-commit`. Fix any errors
-or use `--no-verify` to bypass the check.
+Linting and testing are automatically run by `.husky/pre-commit` (or
+`.husky/pre-push`). Fix any errors or use `--no-verify` to bypass the check.
 
 Project setup is automatically run by `.husky/post-checkout` and
 `.husky/post-merge`. That updates your Composer and NPM dependencies in case

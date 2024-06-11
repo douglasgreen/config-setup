@@ -17,8 +17,19 @@ if ($dir === false) {
 // Run in current dir which is repository root dir.
 require_once $dir . '/vendor/autoload.php';
 
-$options = getopt('p', ['pre-push']);
-$usePrePush = isset($options['pre-push']) && isset($options['p']);
+$options = getopt('ap', ['airbnb', 'pre-push']);
 
-$fileCopier = new FileCopier($dir, $usePrePush);
+$flags = 0;
+
+// Use airbnb instead of eslint-config-standard for eslint rules.
+if (isset($options['airbnb']) && isset($options['a'])) {
+    $flags |= FileCopier::AIRBNB;
+}
+
+// Use pre-push event instead of pre-commit for fewer interruptions.
+if (isset($options['pre-push']) && isset($options['p'])) {
+    $flags |= FileCopier::PRE_PUSH;
+}
+
+$fileCopier = new FileCopier($dir, $flags);
 $fileCopier->copyFiles();

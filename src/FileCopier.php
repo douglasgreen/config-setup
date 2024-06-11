@@ -9,6 +9,10 @@ use Exception;
 
 class FileCopier
 {
+    public const int AIRBNB = 1;
+
+    public const int PRE_PUSH = 2;
+
     /**
      * @var string
      */
@@ -57,10 +61,17 @@ class FileCopier
      */
     protected array $gitFiles;
 
+    protected bool $useAirbnb;
+
+    protected bool $usePrePush;
+
     public function __construct(
         protected string $repoDir,
-        protected bool $usePrePush
+        protected int $flags = 0
     ) {
+        $this->useAirbnb = (bool) ($this->flags & self::AIRBNB);
+        $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
+
         exec('git ls-files', $output);
         $this->gitFiles = array_flip($output);
 
@@ -87,26 +98,26 @@ class FileCopier
 
         $oldExcludeLines = $excludeLines;
 
-        foreach ($this->filesToCopy as $file) {
-            if ($this->usePrePush && $file === '.husky/pre-commit') {
-                $file = '.husky/pre-push';
+        foreach ($this->filesToCopy as $fileToCopy) {
+            if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
+                $fileToCopy = '.husky/pre-push';
             }
 
             // Don't overwrite Git files in the repo.
-            if (isset($this->gitFiles[$file])) {
+            if (isset($this->gitFiles[$fileToCopy])) {
                 continue;
             }
 
-            $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $file;
-            $destination = $this->repoDir . '/' . $file;
+            $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+            $destination = $this->repoDir . '/' . $fileToCopy;
 
             $destinationDir = dirname($destination);
             if (! is_dir($destinationDir)) {
                 mkdir($destinationDir, 0o777, true);
             }
 
-            if (! in_array($file, $excludeLines, true)) {
-                $excludeLines[] = $file;
+            if (! in_array($fileToCopy, $excludeLines, true)) {
+                $excludeLines[] = $fileToCopy;
             }
 
             // Skip copying of identical files.
@@ -116,7 +127,12 @@ class FileCopier
                 continue;
             }
 
-            if (! copy($source, $destination)) {
+            $result = $this->useAirbnb ? $this->copyAirbnb(
+                $source,
+                $destination
+            ) : copy($source, $destination);
+
+            if (! $result) {
                 throw new Exception(sprintf(
                     'Failed to copy %s to %s.',
                     $source,
@@ -129,13 +145,56 @@ class FileCopier
                 $source,
                 $destination
             ) . PHP_EOL;
-            if (in_array($file, self::SCRIPTS_TO_COPY, true)) {
+            if (in_array($fileToCopy, self::SCRIPTS_TO_COPY, true)) {
                 chmod($destination, 0o755);
             } else {
                 chmod($destination, 0o644);
             }
         }
 
+        $this->updatePhpPaths();
+
+        if ($excludeLines !== $oldExcludeLines) {
+            file_put_contents(
+                $this->excludeFile,
+                implode(PHP_EOL, $excludeLines) . PHP_EOL
+            );
+            echo $this->excludeFile . ' has been updated.' . PHP_EOL;
+        }
+    }
+
+    protected function copyAirbnb(string $source, string $destination): bool
+    {
+        $config = file_get_contents($source);
+        if ($config === false) {
+            return false;
+        }
+
+        $config = $this->updateJsonExtendsField($config);
+
+        $result = file_put_contents($destination, $config);
+        return $result !== false;
+    }
+
+    protected function updateJsonExtendsField(string $jsonString): string
+    {
+        // Decode the JSON string into a PHP array
+        $data = json_decode($jsonString, true, 16, JSON_THROW_ON_ERROR);
+
+        // Update the "extends" field
+        $data['extends'] = 'airbnb';
+
+        // Encode the array back to a JSON string
+        $updatedJsonString = json_encode(
+            $data,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+        );
+
+        return $updatedJsonString;
+    }
+
+    protected function updatePhpPaths(): void
+    {
         // Find top-level directories containing PHP files
         $phpPaths = [];
 
@@ -159,14 +218,6 @@ class FileCopier
         if ($oldPaths !== $phpPaths) {
             file_put_contents($pathFile, implode(PHP_EOL, $phpPaths) . PHP_EOL);
             echo 'php_paths file has been created.' . PHP_EOL;
-        }
-
-        if ($excludeLines !== $oldExcludeLines) {
-            file_put_contents(
-                $this->excludeFile,
-                implode(PHP_EOL, $excludeLines) . PHP_EOL
-            );
-            echo $this->excludeFile . ' has been updated.' . PHP_EOL;
         }
     }
 }
