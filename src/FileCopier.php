@@ -5,19 +5,20 @@ declare(strict_types=1);
 
 namespace DouglasGreen\ConfigSetup;
 
-use DouglasGreen\OptParser\OptParser;
-use DouglasGreen\Utility\FileSystem\Dir;
-use DouglasGreen\Utility\FileSystem\Path;
-use DouglasGreen\Utility\Program\Command;
+use Exception;
 
 class FileCopier
 {
+    public const AIRBNB = 1;
+
+    public const PRE_PUSH = 2;
+
     /**
      * @var string
      */
     public $excludeFile;
 
-    protected const array FILES_TO_COPY = [
+    protected const FILES_TO_COPY = [
         '.eslintignore',
         '.eslintrc.json',
         '.prettierignore',
@@ -32,7 +33,7 @@ class FileCopier
         'rector.php',
     ];
 
-    protected const array SCRIPTS_TO_COPY = [
+    protected const SCRIPTS_TO_COPY = [
         '.husky/commit-msg',
         '.husky/post-checkout',
         '.husky/post-merge',
@@ -48,7 +49,7 @@ class FileCopier
     /**
      * @var string Add to .git/info/exclude to ignore without modifying .gitignore.
      */
-    public const string GIT_EXCLUDE_FILE = '.git/info/exclude';
+    public const GIT_EXCLUDE_FILE = '.git/info/exclude';
 
     /**
      * @var list<string>
@@ -60,20 +61,22 @@ class FileCopier
      */
     protected array $gitFiles;
 
-    protected string $repoDir;
+    protected bool $useAirbnb;
 
     protected bool $usePrePush;
 
+    /**
+     * @throws Exception
+     */
     public function __construct(
+        protected string $repoDir,
+        protected int $flags = 0
     ) {
-        $this->setArgs();
+        $this->useAirbnb = (bool) ($this->flags & self::AIRBNB);
+        $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
 
-        $command = new Command('git');
-        $gitFiles = $command->addArg('ls-files')
-            ->exec();
-        $this->gitFiles = array_flip($gitFiles);
-
-        $this->repoDir = Dir::getCurrent();
+        exec('git ls-files', $output);
+        $this->gitFiles = array_flip($output);
 
         $this->filesToCopy = array_merge(
             self::FILES_TO_COPY,
@@ -83,107 +86,221 @@ class FileCopier
         $this->excludeFile = $this->repoDir . '/' . self::GIT_EXCLUDE_FILE;
     }
 
+    /**
+     * @throws Exception
+     */
     public function copyFiles(): void
     {
         $excludeLines = [];
-        $excludePath = new Path($this->excludeFile);
-        if ($excludePath->exists()) {
-            $excludeLines = $excludePath->loadLines();
+        if (file_exists($this->excludeFile)) {
+            $excludeLines = file($this->excludeFile, FILE_IGNORE_NEW_LINES);
+            if ($excludeLines === false) {
+                throw new Exception('Unable to load Git exclude file');
+            }
         }
 
         $oldExcludeLines = $excludeLines;
 
-        foreach ($this->filesToCopy as $file) {
-            if ($this->usePrePush && $file === '.husky/pre-commit') {
-                $file = '.husky/pre-push';
-            }
-
+        foreach ($this->filesToCopy as $fileToCopy) {
             // Don't overwrite Git files in the repo.
-            if (isset($this->gitFiles[$file])) {
+            if (isset($this->gitFiles[$fileToCopy])) {
                 continue;
             }
 
-            $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $file;
-            $destination = $this->repoDir . '/' . $file;
+            if ($this->useAirbnb && $fileToCopy === '.eslintrc.json') {
+                // Put Airbnb temporary copy in var dir.
+                $standardFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+
+                $this->makeAirbnb($standardFile, $source);
+                echo 'Using Airbnb config for eslint' . PHP_EOL;
+            } elseif ($fileToCopy === 'phpstan.neon') {
+                // Put PHPStan temporary copy with PHP version in var dir.
+                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+
+                $this->makePhpStan($plainFile, $source);
+                echo 'Added PHP version to PHPStan config.' . PHP_EOL;
+            } else {
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+            }
+
+            // Overwrite target but not source file to copy to different name.
+            if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
+                echo 'Using .husky/pre-push hook instead of .husky/pre-commit.' . PHP_EOL;
+                $fileToCopy = '.husky/pre-push';
+            }
+
+            $destination = $this->repoDir . '/' . $fileToCopy;
 
             $destinationDir = dirname($destination);
             if (! is_dir($destinationDir)) {
-                $dir = new Dir($destinationDir);
-                $dir->make(0o777, Dir::RECURSIVE);
+                mkdir($destinationDir, 0o777, true);
             }
 
-            if (! in_array($file, $excludeLines, true)) {
-                $excludeLines[] = $file . PHP_EOL;
+            if (! in_array($fileToCopy, $excludeLines, true)) {
+                $excludeLines[] = $fileToCopy;
             }
 
             // Skip copying of identical files.
-            $sourcePath = new Path($source);
-            $destPath = new Path($destination);
-            if (
-                $destPath->exists() &&
-                $sourcePath->md5() === $destPath->md5()
+            if (file_exists($destination) &&
+                md5_file($source) === md5_file($destination)
             ) {
                 continue;
             }
 
-            $destPath = $sourcePath->copy($destination);
+            if (! copy($source, $destination)) {
+                throw new Exception(sprintf(
+                    'Failed to copy %s to %s.',
+                    $source,
+                    $destination
+                ));
+            }
+
             echo sprintf(
                 'Copied %s to %s.',
                 $source,
                 $destination
             ) . PHP_EOL;
-            $mode = in_array(
-                $file,
-                self::SCRIPTS_TO_COPY,
-                true
-            ) ? 0o755 : 0o644;
-            $destPath->changeMode($mode);
-        }
-
-        // Find top-level directories containing PHP files
-        $phpDirectories = [];
-
-        foreach (array_keys($this->gitFiles) as $file) {
-            if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
-                $topLevelDir = explode('/', $file)[0];
-                $phpDirectories[$topLevelDir] = true;
+            if (in_array($fileToCopy, self::SCRIPTS_TO_COPY, true)) {
+                chmod($destination, 0o755);
+            } else {
+                chmod($destination, 0o644);
             }
         }
 
-        $phpDirectories = array_keys($phpDirectories);
-        sort($phpDirectories);
-
-        $pathFilename = $this->repoDir . '/php_paths';
-        $pathFile = new Path($pathFilename);
-        $oldPaths = $pathFile->exists() ? $pathFile->loadString() : '';
-        $newPaths = implode(PHP_EOL, $phpDirectories) . PHP_EOL;
-
-        // Write the list of directories to php_paths file
-        if ($oldPaths !== $newPaths) {
-            $pathFile->saveString($newPaths);
-            echo 'php_paths file has been created.' . PHP_EOL;
-        }
+        $this->updatePhpPaths();
 
         if ($excludeLines !== $oldExcludeLines) {
-            $excludePath->saveString(implode('', $excludeLines));
+            file_put_contents(
+                $this->excludeFile,
+                implode(PHP_EOL, $excludeLines) . PHP_EOL
+            );
             echo $this->excludeFile . ' has been updated.' . PHP_EOL;
         }
     }
 
-    protected function setArgs(): void
+    /**
+     * @throws Exception
+     */
+    protected function makeAirbnb(string $source, string $destination): void
     {
-        $optParser = new OptParser(
-            'Config File Copier',
-            'A program to copy standard config files to your repository'
+        $standardConfig = file_get_contents($source);
+        if ($standardConfig === false) {
+            throw new Exception('Unable to load Eslint config');
+        }
+
+        $airbnbConfig = $this->updateJsonExtendsField($standardConfig);
+
+        $result = file_put_contents($destination, $airbnbConfig);
+        if ($result === false) {
+            throw new Exception('Unable to save Eslint config to var dir');
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function makePhpStan(string $source, string $destination): void
+    {
+        // Load composer.json
+        $composerJson = file_get_contents('composer.json');
+        if ($composerJson === false) {
+            throw new Exception('Unable to read composer.json file.');
+        }
+
+        $composerJson = json_decode(
+            $composerJson,
+            true,
+            16,
+            JSON_THROW_ON_ERROR
         );
 
-        $optParser->addFlag(
-            ['pre-push', 'p'],
-            'Use the husky pre-push event rather than pre-commit'
-        )->addUsageAll();
+        // Find the PHP version in the require section
+        if (! isset($composerJson['require']['php'])) {
+            throw new Exception('PHP version not specified in composer.json.');
+        }
 
-        $input = $optParser->parse();
+        $phpVersionConstraint = $composerJson['require']['php'];
 
-        $this->usePrePush = (bool) $input->get('pre-push');
+        // Extract the PHP version number
+        if (preg_match(
+            '/(\d+)\.(\d+)/',
+            (string) $phpVersionConstraint,
+            $matches
+        ) === 0) {
+            throw new Exception(
+                'Unable to extract PHP version from composer.json.'
+            );
+        }
+
+        $major = $matches[1];
+        $minor = $matches[2];
+        $phpStanVersion = sprintf('%d0%d00', $major, $minor);
+
+        // Load phpstan.neon
+        if (! file_exists($source)) {
+            throw new Exception('phpstan.neon file not found.');
+        }
+
+        $phpStanConfig = file_get_contents($source);
+        if ($phpStanConfig === false) {
+            throw new Exception('Unable to load PHPStan config');
+        }
+
+        // Update phpVersion entry with project version.
+        $phpStanConfig = preg_replace(
+            '/phpVersion: \d+/',
+            'phpVersion: ' . $phpStanVersion,
+            $phpStanConfig
+        );
+        if (file_put_contents($destination, $phpStanConfig) === false) {
+            throw new Exception('Unable to write PHPStan config file to var');
+        }
+    }
+
+    protected function updateJsonExtendsField(string $jsonString): string
+    {
+        // Decode the JSON string into a PHP array
+        $data = json_decode($jsonString, true, 16, JSON_THROW_ON_ERROR);
+
+        // Update the "extends" field
+        $data['extends'] = 'airbnb-base';
+
+        // Encode the array back to a JSON string
+        $updatedJsonString = json_encode(
+            $data,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+        );
+
+        return $updatedJsonString;
+    }
+
+    protected function updatePhpPaths(): void
+    {
+        // Find top-level directories containing PHP files
+        $phpPaths = [];
+
+        foreach (array_keys($this->gitFiles) as $file) {
+            if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+                $topLevelDir = explode('/', $file)[0];
+                $phpPaths[$topLevelDir] = true;
+            }
+        }
+
+        $phpPaths = array_keys($phpPaths);
+        sort($phpPaths);
+
+        $pathFile = $this->repoDir . '/php_paths';
+        $oldPaths = file_exists($pathFile) ? file(
+            $pathFile,
+            FILE_IGNORE_NEW_LINES
+        ) : [];
+
+        // Write the list of directories to php_paths file
+        if ($oldPaths !== $phpPaths) {
+            file_put_contents($pathFile, implode(PHP_EOL, $phpPaths) . PHP_EOL);
+            echo 'php_paths file has been created.' . PHP_EOL;
+        }
     }
 }
