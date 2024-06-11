@@ -22,12 +22,15 @@ First, add the repsitory to `composer.json`:
 ```
 
 Then add this script to `composer.json` to copy the config files to your project
-root:
+root when you run `composer install` or `composer update`:
 
 ```
 {
     "scripts": {
         "post-install-cmd": [
+            "vendor/douglasgreen/config-setup/bin/copy_files.php"
+        ],
+        "post-update-cmd": [
             "vendor/douglasgreen/config-setup/bin/copy_files.php"
         ]
     }
@@ -35,4 +38,156 @@ root:
 ```
 
 The file copier will check your list of Git project files and overwrite any file
-not listed there.
+not listed there. Then it will add the list of files copied to
+`/.git/info/exclude` to exclude them from being committed to Git.
+
+## Setup Scripts
+
+This project uses the
+[GitLab script system](https://github.blog/2015-06-30-scripts-to-rule-them-all/).
+
+To install project dependencies, run `script/bootstrap`.
+
+To set up the project, run `script/setup`.
+
+To lint the project, run `script/lint`.
+
+To test the project, run `script/test`.
+
+## Installing Dependencies
+
+Once the config files are copied, you need to install the right project
+dependencies for each project and define a script for it if you want to use
+those tools with those config files.
+
+### PHP Dependencies
+
+For PHP, that is done with `composer.json` like this:
+
+```
+    "require-dev": {
+        "phpmd/phpmd": "^2.15",
+        "phpstan/phpstan": "^1.10",
+        "phpunit/phpunit": "^10.5",
+        "rector/rector": "^1.0",
+        "symplify/easy-coding-standard": "^12.2"
+    },
+    "scripts": {
+        "lint": [
+            "ecs",
+            "rector --dry-run",
+            "./run_phpmd.sh",
+            "./run_phpstan.sh"
+        ],
+        "lint:fix": [
+            "ecs --fix",
+            "rector"
+        ],
+        "test": "phpunit"
+    }
+```
+
+That installs:
+
+-   [PHP Mess Detector](https://phpmd.org/) for linting
+-   [PHPStan](https://phpstan.org/) for linting
+-   [PHPUnit](https://phpunit.de/index.html) for unit tests
+-   [Rector](https://github.com/rectorphp/rector) for linting and fixing
+    (reformatting and refactoring)
+-   [Easy Coding Standard](https://github.com/easy-coding-standard/easy-coding-standard)
+    (ECS) for linting and fixing
+
+Each of the commands is configured to use the list of files in `php_paths`. This
+file is generated automatically by this project's file copier, which makes a
+list of the directories and PHP files in the top level of your project. That
+enables all of the tools to automatically lint and fix the right set of files.
+
+For JavaScript/NPM, that is done with `package.json` like this:
+
+```
+    "devDependencies": {
+        "@commitlint/cli": "^19.3",
+        "@commitlint/config-conventional": "^19.2",
+
+        "eslint": "^8.57",
+        "eslint-config-standard": "^17.1",
+        "eslint-plugin-import": "^2.29",
+        "eslint-plugin-n": "^16.6",
+        "eslint-plugin-promise": "^6.2",
+
+        "husky": "^9.0",
+
+        "mocha": "^10.2",
+
+        "prettier": "^3.3",
+        "prettier-plugin-sh": "^0.14",
+        "@prettier/plugin-php": "^0.22",
+        "@prettier/plugin-xml": "^3.4",
+
+        "stylelint": "^16.6",
+        "stylelint-config-standard": "^36.0"
+    },
+    "scripts": {
+        "commitlint": "commitlint --edit",
+        "lint": "eslint . && stylelint '**/*.css'",
+        "lint:fix": "eslint --fix . && prettier --write .",
+        "prepare": "husky",
+        "test": "mocha"
+    }
+```
+
+That installs:
+-   [Commitlint](https://commitlint.js.org/) for linting commit messages and
+    [@commitlint/config-conventional](https://www.npmjs.com/package/@commitlint/config-conventional) for a typical set of rules
+-   [ESLint](https://eslint.org/) for linting and fixing and
+    [eslint-config-standard](https://github.com/standard/eslint-config-standard) and its required dependencies for a
+    typical set of rules
+-   [Husky](https://www.npmjs.com/package/husky) to run the GitHub actions defined as scripts in the `.husky` directory
+-   [Mocha](https://mochajs.org/) for unit tests
+-   [Prettier](https://prettier.io/) for linting and fixing
+-   [Stylelint](https://stylelint.io/) for CSS linting
+
+## Linting, Fixing, and Testing
+
+### PHP
+
+Scripts to run as needed include:
+
+-   Lint: `composer lint`
+-   Fix: `composer lint:fix`
+-   Test: `composer test`
+
+### JavaScript
+
+Scripts to run as needed include:
+
+-   Lint: `npm run lint`
+-   Fix: `npm run lint:fix`
+-   Test: `npm run test`
+
+Automatic scripts include:
+
+-   Commitlint: this script is run by a Husky hook
+-   Prepare: this script is run automatically to prepare Husky
+
+### Fixing PHP
+
+When using prettier with `@prettier/plugin-php`, PHP is being reformatted with
+`npm run lint:fix` and with `composer lint:fix`. You should run
+`npm run lint:fix` first and let `composer lint:fix` clean up afterward.
+
+Currently `@prettier/plugin-php` only supports up to PHP 8.2 so it may give up
+with some syntax errors.
+
+## Husky Hooks
+
+Linting and testing are automatically run by `.husky/pre-commit`. Fix any errors
+or use `--no-verify` to bypass the check.
+
+Project setup is automatically run by `.husky/post-checkout` and
+`.husky/post-merge`. That updates your Composer and NPM dependencies in case
+your dependencies were changed by incoming code.
+
+[Conventional Commits](https://www.npmjs.com/package/@commitlint/config-conventional)
+are enforced by `.husky/commit-msg`. Fix any commit message errors before
+committing.

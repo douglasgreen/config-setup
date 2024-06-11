@@ -7,125 +7,24 @@ declare(strict_types=1);
  * This script exists to copy the config file to your repo as a composer post-install-cmd.
  */
 
-exec('git ls-files', $gitFiles, $rc);
+use DouglasGreen\ConfigSetup\FileCopier;
+use DouglasGreen\OptParser\OptParser;
 
-if ($rc !== 0) {
-    echo 'Failed to get the list of git files.' . PHP_EOL;
-    exit(1);
-}
+require_once __DIR__ . '/vendor/autoload.php';
 
-$filesToCopy = [
-    '.eslintignore',
-    '.eslintrc.json',
-    '.prettierignore',
-    '.prettierrc.json',
-    '.stylelintignore',
-    '.stylelintrc.json',
-    'commitlint.config.js',
-    'docs/setup_guide.md',
-    'ecs.php',
-    'phpmd.xml',
-    'phpstan.neon',
-    'phpunit.xml',
-    'rector.php',
-];
+$optParser = new OptParser(
+    'Config File Copier',
+    'A program to copy standard config files to your repository'
+);
 
-$scriptsToCopy = [
-    '.husky/commit-msg',
-    '.husky/post-checkout',
-    '.husky/post-merge',
-    '.husky/pre-commit',
-    'run_phpmd.sh',
-    'run_phpstan.sh',
-    'script/bootstrap',
-    'script/lint',
-    'script/setup',
-    'script/test',
-];
+$optParser->addFlag(
+    ['pre-push', 'p'],
+    'Use the husky pre-push event rather than pre-commit'
+)->addUsageAll();
 
-$filesToCopy = array_merge($filesToCopy, $scriptsToCopy);
+$input = $optParser->parse();
 
-$gitFiles = array_flip($gitFiles);
+$usePrePush = (bool) $input->get('pre-push');
 
-$dir = getcwd();
-
-// Add to .git/info/exclude to ignore without modifying .gitignore.
-$excludeFile = $dir . '/.git/info/exclude';
-$excludeLines = [];
-if (file_exists($excludeFile)) {
-    $result = file($excludeFile);
-    if ($result !== false) {
-        $excludeLines = $result;
-    }
-}
-
-$oldExcludeLines = $excludeLines;
-
-foreach ($filesToCopy as $file) {
-    // Don't overwrite Git files in the repo.
-    if (isset($gitFiles[$file])) {
-        continue;
-    }
-
-    $source = $dir . '/vendor/douglasgreen/config-setup/' . $file;
-    $destination = $dir . '/' . $file;
-
-    $destinationDir = dirname($destination);
-    if (! is_dir($destinationDir)) {
-        mkdir($destinationDir, 0o777, true);
-    }
-
-    if (! in_array($file, $excludeLines, true)) {
-        $excludeLines[] = $file . PHP_EOL;
-    }
-
-    // Skip copying of identical files.
-    if (file_exists($destination) && md5_file($source) === md5_file(
-        $destination
-    )) {
-        continue;
-    }
-
-    if (! copy($source, $destination)) {
-        echo sprintf(
-            'Failed to copy %s to %s.',
-            $source,
-            $destination
-        ) . PHP_EOL;
-    } else {
-        echo sprintf('Copied %s to %s.', $source, $destination) . PHP_EOL;
-        if (in_array($file, $scriptsToCopy, true)) {
-            chmod($destination, 0o755);
-        } else {
-            chmod($destination, 0o644);
-        }
-    }
-}
-
-// Find top-level directories containing PHP files
-$phpDirectories = [];
-
-foreach (array_keys($gitFiles) as $file) {
-    if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
-        $topLevelDir = explode('/', $file)[0];
-        $phpDirectories[$topLevelDir] = true;
-    }
-}
-
-$phpDirectories = array_keys($phpDirectories);
-sort($phpDirectories);
-
-$pathFile = $dir . '/php_paths';
-$oldPaths = file_exists($pathFile) ? file_get_contents($pathFile) : '';
-$newPaths = implode(PHP_EOL, $phpDirectories) . PHP_EOL;
-
-// Write the list of directories to php_paths file
-if ($oldPaths !== $newPaths) {
-    file_put_contents($pathFile, $newPaths);
-    echo 'php_paths file has been created.' . PHP_EOL;
-}
-
-if ($excludeLines !== $oldExcludeLines) {
-    file_put_contents($excludeFile, implode('', $excludeLines));
-    echo $excludeFile . ' has been updated.' . PHP_EOL;
-}
+$fileCopier = new FileCopier($usePrePush);
+$fileCopier->copyFiles();
