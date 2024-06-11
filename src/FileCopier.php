@@ -197,7 +197,7 @@ class FileCopier
         $data = json_decode($jsonString, true, 16, JSON_THROW_ON_ERROR);
 
         // Update the "extends" field
-        $data['extends'] = 'airbnb';
+        $data['extends'] = 'airbnb-base';
 
         // Encode the array back to a JSON string
         $updatedJsonString = json_encode(
