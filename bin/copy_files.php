@@ -75,8 +75,8 @@ foreach ($filesToCopy as $file) {
         mkdir($destinationDir, 0o777, true);
     }
 
-    if (! in_array($destination, $excludeLines, true)) {
-        $excludeLines[] = $destination . PHP_EOL;
+    if (! in_array($file, $excludeLines, true)) {
+        $excludeLines[] = $file . PHP_EOL;
     }
 
     // Skip copying of identical files.
