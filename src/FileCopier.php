@@ -94,10 +94,7 @@ class FileCopier
         $this->loadComposerJson();
         $this->loadPackageJson();
 
-        $this->filesToCopy = array_merge(
-            self::FILES_TO_COPY,
-            self::SCRIPTS_TO_COPY
-        );
+        $this->filesToCopy = array_merge(self::FILES_TO_COPY, self::SCRIPTS_TO_COPY);
 
         $this->excludeFile = $this->repoDir . '/' . self::GIT_EXCLUDE_FILE;
 
@@ -209,9 +206,7 @@ class FileCopier
             }
 
             if (! copy($source, $destination)) {
-                throw new Exception(
-                    sprintf('Failed to copy %s to %s.', $source, $destination)
-                );
+                throw new Exception(sprintf('Failed to copy %s to %s.', $source, $destination));
             }
 
             echo sprintf('Copied %s to %s.', $source, $destination) . PHP_EOL;
@@ -225,10 +220,7 @@ class FileCopier
         $this->updatePhpPaths();
 
         if ($excludeLines !== $oldExcludeLines) {
-            file_put_contents(
-                $this->excludeFile,
-                implode(PHP_EOL, $excludeLines) . PHP_EOL
-            );
+            file_put_contents($this->excludeFile, implode(PHP_EOL, $excludeLines) . PHP_EOL);
             echo $this->excludeFile . ' has been updated.' . PHP_EOL;
         }
     }
@@ -243,12 +235,7 @@ class FileCopier
             throw new Exception('Unable to read composer.json file.');
         }
 
-        $this->composerJson = json_decode(
-            $composerJsonString,
-            true,
-            16,
-            JSON_THROW_ON_ERROR
-        );
+        $this->composerJson = json_decode($composerJsonString, true, 16, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -270,12 +257,7 @@ class FileCopier
             return;
         }
 
-        $this->packageJson = json_decode(
-            $packageJsonString,
-            true,
-            16,
-            JSON_THROW_ON_ERROR
-        );
+        $this->packageJson = json_decode($packageJsonString, true, 16, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -284,14 +266,19 @@ class FileCopier
     protected function makeEcs(string $source, string $destination): void
     {
         $lines = file($source);
+        if ($lines === false) {
+            throw new Exception('Unable to load ECS config');
+        }
+
         $newLines = [];
         foreach ($lines as $line) {
             if (str_contains($line, 'line_length')) {
-                $line = preg_replace('/\b100\b/', $this->wrap, $line);
-                if ($line === false) {
+                $line = preg_replace('/\b100\b/', (string) $this->wrap, $line);
+                if ($line === null) {
                     throw new Exception('Unable to replace line wrap');
                 }
             }
+
             $newLines[] = $line;
         }
 
@@ -313,22 +300,13 @@ class FileCopier
         }
 
         // Decode the JSON string into a PHP array
-        $eslintJson = json_decode(
-            $eslintJsonString,
-            true,
-            16,
-            JSON_THROW_ON_ERROR
-        );
+        $eslintJson = json_decode($eslintJsonString, true, 16, JSON_THROW_ON_ERROR);
 
         $extension = null;
 
         if (in_array('eslint-config-airbnb-base', $this->npmPackages, true)) {
             $extension = 'airbnb-base';
-        } elseif (in_array(
-            'eslint-config-standard',
-            $this->npmPackages,
-            true
-        )) {
+        } elseif (in_array('eslint-config-standard', $this->npmPackages, true)) {
             $extension = 'standard';
         }
 
@@ -389,12 +367,7 @@ class FileCopier
             throw new Exception('Unable to read .prettierrc.json file.');
         }
 
-        $prettierJson = json_decode(
-            $prettierJsonString,
-            true,
-            16,
-            JSON_THROW_ON_ERROR
-        );
+        $prettierJson = json_decode($prettierJsonString, true, 16, JSON_THROW_ON_ERROR);
 
         // Update the print width.
         $prettierJson['printWidth'] = $this->wrap;
@@ -468,9 +441,7 @@ class FileCopier
             preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) ===
             0
         ) {
-            throw new Exception(
-                'Unable to extract PHP version from composer.json.'
-            );
+            throw new Exception('Unable to extract PHP version from composer.json.');
         }
 
         $this->phpVersion = $match[0];
