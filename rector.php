@@ -44,12 +44,7 @@ $phpVersion = null;
 if (file_exists('composer.json')) {
     $composerContent = file_get_contents('composer.json');
     if ($composerContent !== false) {
-        $composerData = json_decode(
-            $composerContent,
-            true,
-            16,
-            JSON_THROW_ON_ERROR
-        );
+        $composerData = json_decode($composerContent, true, 16, JSON_THROW_ON_ERROR);
 
         // Check for PHPUnit, Symfony, and Doctrine
         $requires = $composerData['require'] ?? [];

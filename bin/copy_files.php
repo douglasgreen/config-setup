@@ -28,7 +28,7 @@ if (isset($options['pre-push']) || isset($options['p'])) {
     $flags |= FileCopier::PRE_PUSH;
 }
 
-$wrapArg = $options['wrap'] ?? $options['w'] ?? FileCopier::DEFAULT_WRAP;
+$wrapArg = $options['wrap'] ?? ($options['w'] ?? FileCopier::DEFAULT_WRAP);
 $wrap = (int) $wrapArg;
 if ($wrap === 0) {
     throw new Exception('Invalid wrap argument');

@@ -126,63 +126,35 @@ class FileCopier
 
             if ($fileToCopy === 'ecs.php') {
                 // Put temporary copy with correct "line_length" value in var dir.
-                $plainFile =
-                    $this->repoDir .
-                    '/vendor/douglasgreen/config-setup/' .
-                    $fileToCopy;
-                $source =
-                    $this->repoDir .
-                    '/vendor/douglasgreen/config-setup/var/' .
-                    $fileToCopy;
+                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
 
                 $this->makeEcs($plainFile, $source);
             } elseif ($fileToCopy === '.eslintrc.json') {
                 // Put temporary copy with correct "extends" value in var dir.
-                $plainFile =
-                    $this->repoDir .
-                    '/vendor/douglasgreen/config-setup/' .
-                    $fileToCopy;
-                $source =
-                    $this->repoDir .
-                    '/vendor/douglasgreen/config-setup/var/' .
-                    $fileToCopy;
+                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
 
                 $this->makeEslintrc($plainFile, $source);
             } elseif ($fileToCopy === 'phpstan.neon') {
                 // Put PHPStan temporary copy with PHP version in var dir.
-                $plainFile =
-                    $this->repoDir .
-                    '/vendor/douglasgreen/config-setup/' .
-                    $fileToCopy;
-                $source =
-                    $this->repoDir .
-                    '/vendor/douglasgreen/config-setup/var/' .
-                    $fileToCopy;
+                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
 
                 $this->makePhpStan($plainFile, $source);
             } elseif ($fileToCopy === '.prettierrc.json') {
                 // Put Prettier temporary copy with new plugin list in var dir.
-                $plainFile =
-                    $this->repoDir .
-                    '/vendor/douglasgreen/config-setup/' .
-                    $fileToCopy;
-                $source =
-                    $this->repoDir .
-                    '/vendor/douglasgreen/config-setup/var/' .
-                    $fileToCopy;
+                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
 
                 $this->makePrettierrc($plainFile, $source);
             } else {
-                $source =
-                    $this->repoDir .
-                    '/vendor/douglasgreen/config-setup/' .
-                    $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
             }
 
             // Overwrite target but not source file to copy to different name.
             if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
-                echo 'Using .husky/pre-push hook instead of .husky/pre-commit.' .
-                    PHP_EOL;
+                echo 'Using .husky/pre-push hook instead of .husky/pre-commit.' . PHP_EOL;
                 $fileToCopy = '.husky/pre-push';
             }
 
@@ -198,10 +170,7 @@ class FileCopier
             }
 
             // Skip copying of identical files.
-            if (
-                file_exists($destination) &&
-                md5_file($source) === md5_file($destination)
-            ) {
+            if (file_exists($destination) && md5_file($source) === md5_file($destination)) {
                 continue;
             }
 
@@ -415,10 +384,7 @@ class FileCopier
         }
 
         $packageList = [];
-        foreach (
-            array_keys($this->packageJson['devDependencies'])
-            as $package
-        ) {
+        foreach (array_keys($this->packageJson['devDependencies']) as $package) {
             if (is_string($package)) {
                 $packageList[] = $package;
             }
@@ -437,10 +403,7 @@ class FileCopier
         $phpVersionConstraint = $this->composerJson['require']['php'];
 
         // Extract the PHP version number
-        if (
-            preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) ===
-            0
-        ) {
+        if (preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) === 0) {
             throw new Exception('Unable to extract PHP version from composer.json.');
         }
 
@@ -463,9 +426,7 @@ class FileCopier
         sort($phpPaths);
 
         $pathFile = $this->repoDir . '/php_paths';
-        $oldPaths = file_exists($pathFile)
-            ? file($pathFile, FILE_IGNORE_NEW_LINES)
-            : [];
+        $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];
 
         // Write the list of directories to php_paths file
         if ($oldPaths !== $phpPaths) {

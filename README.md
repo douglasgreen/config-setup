@@ -1,7 +1,6 @@
 # config-setup
 
-Preconfigured setup files for linting, fixing, and testing PHP and JavaScript
-projects
+Preconfigured setup files for linting, fixing, and testing PHP and JavaScript projects
 
 ## Process
 
@@ -21,8 +20,8 @@ First, add the repository to `composer.json`:
 }
 ```
 
-Then add this script to `composer.json` to copy the config files to your project
-root when you run `composer install` or `composer update`:
+Then add this script to `composer.json` to copy the config files to your project root when you run
+`composer install` or `composer update`:
 
 ```
 {
@@ -37,29 +36,25 @@ root when you run `composer install` or `composer update`:
 }
 ```
 
-The file copier will check your list of Git project files and overwrite any file
-not listed there. Then it will add the list of files copied to
-`/.git/info/exclude` to exclude them from being committed to Git.
+The file copier will check your list of Git project files and overwrite any file not listed there.
+Then it will add the list of files copied to `/.git/info/exclude` to exclude them from being
+committed to Git.
 
 ### File Copy Arguments
 
 When running `copy_files.php`, there are two possible arguments:
 
 -   `--wrap INT` or `-w INT`: Set a different integer (INT) wrap than the default of 80.
--   `--pre-push` or `-p`: Use the pre-push event instead of pre-commit for fewer
-    interruptions.
+-   `--pre-push` or `-p`: Use the pre-push event instead of pre-commit for fewer interruptions.
 
 ### File Customization
 
 Several scripts are customized during the install process.
 
--   `.eslintrc.json` adds an "extends" field if the Standard
-    (eslint-config-standard) or Airbnb (eslint-config-airbnb-base) NPM packages
-    are installed.
--   `phpstan.neon` updates the phpVersion field to the "require" php version in
-    `composer.json`.
--   `.prettierrc.json` adds any Prettier plugins it finds in `package.json` to
-    the "plugins" list.
+-   `.eslintrc.json` adds an "extends" field if the Standard (eslint-config-standard) or Airbnb
+    (eslint-config-airbnb-base) NPM packages are installed.
+-   `phpstan.neon` updates the phpVersion field to the "require" php version in `composer.json`.
+-   `.prettierrc.json` adds any Prettier plugins it finds in `package.json` to the "plugins" list.
 
 ## Setup Scripts
 
@@ -76,9 +71,8 @@ To test the project, run `script/test`.
 
 ## Installing Dependencies
 
-Once the config files are copied, you need to install the right project
-dependencies for each project and define a script for it if you want to use
-those tools with those config files.
+Once the config files are copied, you need to install the right project dependencies for each
+project and define a script for it if you want to use those tools with those config files.
 
 ### PHP Dependencies
 
@@ -112,15 +106,15 @@ That installs:
 -   [PHP Mess Detector](https://phpmd.org/) for linting
 -   [PHPStan](https://phpstan.org/) for linting
 -   [PHPUnit](https://phpunit.de/index.html) for unit tests
--   [Rector](https://github.com/rectorphp/rector) for linting and fixing
-    (reformatting and refactoring)
--   [Easy Coding Standard](https://github.com/easy-coding-standard/easy-coding-standard)
-    (ECS) for linting and fixing
+-   [Rector](https://github.com/rectorphp/rector) for linting and fixing (reformatting and
+    refactoring)
+-   [Easy Coding Standard](https://github.com/easy-coding-standard/easy-coding-standard) (ECS) for
+    linting and fixing
 
-Each of the commands is configured to use the list of files in `php_paths`. This
-file is generated automatically by this project's file copier, which makes a
-list of the directories and PHP files in the top level of your project. That
-enables all of the tools to automatically lint and fix the right set of files.
+Each of the commands is configured to use the list of files in `php_paths`. This file is generated
+automatically by this project's file copier, which makes a list of the directories and PHP files in
+the top level of your project. That enables all of the tools to automatically lint and fix the right
+set of files.
 
 For JavaScript/NPM, that is done with `package.json` like this:
 
@@ -162,10 +156,10 @@ That installs:
     [@commitlint/config-conventional](https://www.npmjs.com/package/@commitlint/config-conventional)
     for a typical set of rules
 -   [ESLint](https://eslint.org/) for linting and fixing and
-    [eslint-config-standard](https://github.com/standard/eslint-config-standard)
-    and its required dependencies for a typical set of rules
--   [Husky](https://www.npmjs.com/package/husky) to run the GitHub actions
-    defined as scripts in the `.husky` directory
+    [eslint-config-standard](https://github.com/standard/eslint-config-standard) and its required
+    dependencies for a typical set of rules
+-   [Husky](https://www.npmjs.com/package/husky) to run the GitHub actions defined as scripts in the
+    `.husky` directory
 -   [Mocha](https://mochajs.org/) for unit tests
 -   [Prettier](https://prettier.io/) for linting and fixing
 -   [Stylelint](https://stylelint.io/) for CSS linting
@@ -195,22 +189,20 @@ Automatic scripts include:
 
 ### Fixing PHP
 
-When using prettier with `@prettier/plugin-php`, PHP is being reformatted with
-`npm run lint:fix` and with `composer lint:fix`. You should run
-`npm run lint:fix` first and let `composer lint:fix` clean up afterward.
+When using prettier with `@prettier/plugin-php`, PHP is being reformatted with `npm run lint:fix`
+and with `composer lint:fix`. You should run `npm run lint:fix` first and let `composer lint:fix`
+clean up afterward.
 
-Currently `@prettier/plugin-php` only supports up to PHP 8.2 so it may give up
-with some syntax errors.
+Currently `@prettier/plugin-php` only supports up to PHP 8.2 so it may give up with some syntax
+errors.
 
 ## Husky Hooks
 
-Linting and testing are automatically run by `.husky/pre-commit` (or
-`.husky/pre-push`). Fix any errors or use `--no-verify` to bypass the check.
+Linting and testing are automatically run by `.husky/pre-commit` (or `.husky/pre-push`). Fix any
+errors or use `--no-verify` to bypass the check.
 
-Project setup is automatically run by `.husky/post-checkout` and
-`.husky/post-merge`. That updates your Composer and NPM dependencies in case
-your dependencies were changed by incoming code.
+Project setup is automatically run by `.husky/post-checkout` and `.husky/post-merge`. That updates
+your Composer and NPM dependencies in case your dependencies were changed by incoming code.
 
-[Conventional Commits](https://www.npmjs.com/package/@commitlint/config-conventional)
-are enforced by `.husky/commit-msg`. Fix any commit message errors before
-committing.
+[Conventional Commits](https://www.npmjs.com/package/@commitlint/config-conventional) are enforced
+by `.husky/commit-msg`. Fix any commit message errors before committing.
