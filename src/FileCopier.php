@@ -61,6 +61,8 @@ class FileCopier
      */
     protected array $gitFiles;
 
+    protected string $phpVersion;
+
     protected bool $useAirbnb;
 
     protected bool $usePrePush;
@@ -84,6 +86,8 @@ class FileCopier
         );
 
         $this->excludeFile = $this->repoDir . '/' . self::GIT_EXCLUDE_FILE;
+
+        $this->setPhpVersion();
     }
 
     /**
@@ -242,39 +246,7 @@ class FileCopier
      */
     protected function makePhpStan(string $source, string $destination): void
     {
-        // Load composer.json
-        $composerJsonFile = file_get_contents('composer.json');
-        if ($composerJsonFile === false) {
-            throw new Exception('Unable to read composer.json file.');
-        }
-
-        $composerJson = json_decode(
-            $composerJsonFile,
-            true,
-            16,
-            JSON_THROW_ON_ERROR
-        );
-
-        // Find the PHP version in the require section
-        if (! isset($composerJson['require']['php'])) {
-            throw new Exception('PHP version not specified in composer.json.');
-        }
-
-        $phpVersionConstraint = $composerJson['require']['php'];
-
-        // Extract the PHP version number
-        if (preg_match(
-            '/(\d+)\.(\d+)/',
-            (string) $phpVersionConstraint,
-            $matches
-        ) === 0) {
-            throw new Exception(
-                'Unable to extract PHP version from composer.json.'
-            );
-        }
-
-        $major = $matches[1];
-        $minor = $matches[2];
+        [$major, $minor] = explode('.', $this->phpVersion);
         $phpStanVersion = sprintf('%d0%d00', $major, $minor);
 
         // Load phpstan.neon
@@ -329,6 +301,11 @@ class FileCopier
             foreach ($packages as $package) {
                 if (preg_match('#prettier[/-]plugin#', $package)) {
                     $plugins[] = $package;
+
+                    // Only set phpVersion if PHP plugin is included.
+                    if ($package === '@prettier/plugin-php') {
+                        $prettierJson['phpVersion'] = $this->phpVersion;
+                    }
                 }
             }
 
@@ -343,6 +320,42 @@ class FileCopier
         if (file_put_contents($destination, $prettierJsonString) === false) {
             throw new Exception('Unable to write Prettier config file to var');
         }
+    }
+
+    protected function setPhpVersion(): void
+    {
+        // Load composer.json
+        $composerJsonFile = file_get_contents('composer.json');
+        if ($composerJsonFile === false) {
+            throw new Exception('Unable to read composer.json file.');
+        }
+
+        $composerJson = json_decode(
+            $composerJsonFile,
+            true,
+            16,
+            JSON_THROW_ON_ERROR
+        );
+
+        // Find the PHP version in the require section
+        if (! isset($composerJson['require']['php'])) {
+            throw new Exception('PHP version not specified in composer.json.');
+        }
+
+        $phpVersionConstraint = $composerJson['require']['php'];
+
+        // Extract the PHP version number
+        if (preg_match(
+            '/\d+\.\d+/',
+            (string) $phpVersionConstraint,
+            $match
+        ) === 0) {
+            throw new Exception(
+                'Unable to extract PHP version from composer.json.'
+            );
+        }
+
+        $this->phpVersion = $match[0];
     }
 
     protected function updateJsonExtendsField(string $jsonString): string
