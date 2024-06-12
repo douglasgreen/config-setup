@@ -8,9 +8,5 @@
 
     "singleQuote": true,
 
-    "plugins": [
-        "@prettier/plugin-php",
-        "@prettier/plugin-xml",
-        "prettier-plugin-sh"
-    ]
+    "plugins": ["@prettier/plugin-php", "@prettier/plugin-xml", "prettier-plugin-sh"]
 }
