@@ -19,7 +19,7 @@ if ($dir === false) {
 // Run in current dir which is repository root dir.
 require_once $dir . '/vendor/autoload.php';
 
-$options = getopt('p', ['pre-push']);
+$options = getopt('pw:', ['pre-push', 'wrap:']);
 
 $flags = 0;
 
@@ -28,5 +28,7 @@ if (isset($options['pre-push']) || isset($options['p'])) {
     $flags |= FileCopier::PRE_PUSH;
 }
 
-$fileCopier = new FileCopier($dir, $flags);
+$wrap = $options['wrap'] ?? $options['w'] ?? FileCopier::DEFAULT_WRAP;
+
+$fileCopier = new FileCopier($dir, $flags, $wrap);
 $fileCopier->copyFiles();

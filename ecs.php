@@ -166,7 +166,7 @@ return ECSConfig::configure()
         symfonyRisky: $sets['symfonyRisky']
     )
     ->withConfiguredRule(LineLengthFixer::class, [
-        'line_length' => 80,
+        'line_length' => 100,
     ])
     ->withConfiguredRule(
         // Be careful about this part of the config. ECS removes the tag and its

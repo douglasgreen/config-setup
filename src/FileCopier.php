@@ -9,6 +9,8 @@ use Exception;
 
 class FileCopier
 {
+    public const DEFAULT_WRAP = 80;
+
     public const PRE_PUSH = 1;
 
     /**
@@ -83,7 +85,8 @@ class FileCopier
      */
     public function __construct(
         protected string $repoDir,
-        protected int $flags = 0
+        protected int $flags = 0,
+        protected int $wrap = self::DEFAULT_WRAP
     ) {
         $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
 
@@ -124,9 +127,9 @@ class FileCopier
                 continue;
             }
 
-            if ($fileToCopy === '.eslintrc.json') {
-                // Put temporary copy with correct "extends" value in var dir.
-                $standardFile =
+            if ($fileToCopy === 'ecs.php') {
+                // Put temporary copy with correct "line_length" value in var dir.
+                $plainFile =
                     $this->repoDir .
                     '/vendor/douglasgreen/config-setup/' .
                     $fileToCopy;
@@ -135,7 +138,19 @@ class FileCopier
                     '/vendor/douglasgreen/config-setup/var/' .
                     $fileToCopy;
 
-                $this->makeEslintrc($standardFile, $source);
+                $this->makeEcs($plainFile, $source);
+            } elseif ($fileToCopy === '.eslintrc.json') {
+                // Put temporary copy with correct "extends" value in var dir.
+                $plainFile =
+                    $this->repoDir .
+                    '/vendor/douglasgreen/config-setup/' .
+                    $fileToCopy;
+                $source =
+                    $this->repoDir .
+                    '/vendor/douglasgreen/config-setup/var/' .
+                    $fileToCopy;
+
+                $this->makeEslintrc($plainFile, $source);
             } elseif ($fileToCopy === 'phpstan.neon') {
                 // Put PHPStan temporary copy with PHP version in var dir.
                 $plainFile =
@@ -266,6 +281,30 @@ class FileCopier
     /**
      * @throws Exception
      */
+    protected function makeEcs(string $source, string $destination): void
+    {
+        $lines = file($source);
+        $newLines = [];
+        foreach ($lines as $line) {
+            if (str_contains($line, 'line_length')) {
+                $line = preg_replace('/\b100\b/', $this->wrap, $line);
+                if ($line === false) {
+                    throw new Exception('Unable to replace line wrap');
+                }
+            }
+            $newLines[] = $line;
+        }
+
+        $newString = implode('', $newLines);
+        $result = file_put_contents($destination, $newString);
+        if ($result === false) {
+            throw new Exception('Unable to save ECS config to var dir');
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     protected function makeEslintrc(string $source, string $destination): void
     {
         $eslintJsonString = file_get_contents($source);
@@ -356,6 +395,9 @@ class FileCopier
             16,
             JSON_THROW_ON_ERROR
         );
+
+        // Update the print width.
+        $prettierJson['printWidth'] = $this->wrap;
 
         // Find the plugins.
         if (! isset($prettierJson['plugins'])) {

@@ -43,8 +43,9 @@ not listed there. Then it will add the list of files copied to
 
 ### File Copy Arguments
 
-When running `copy_files.php`, there is one possible flag:
+When running `copy_files.php`, there are two possible arguments:
 
+-   `--wrap INT` or `-w INT`: Set a different integer (INT) wrap than the default of 80.
 -   `--pre-push` or `-p`: Use the pre-push event instead of pre-commit for fewer
     interruptions.
 
