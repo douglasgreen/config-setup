@@ -120,7 +120,14 @@ class FileCopier
                 $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
 
                 $this->makePhpStan($plainFile, $source);
-                echo 'Added PHP version to PHPStan config.' . PHP_EOL;
+                echo 'Updating PHP version in PHPStan config.' . PHP_EOL;
+            } elseif ($fileToCopy === '.prettierrc.json') {
+                // Put Prettier temporary copy with new plugin list in var dir.
+                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+
+                $this->makePrettierrc($plainFile, $source);
+                echo 'Updated plugin list in Prettier config.' . PHP_EOL;
             } else {
                 $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
             }
@@ -181,6 +188,40 @@ class FileCopier
     }
 
     /**
+     * @return list<string>
+     * @throws Exception
+     */
+    protected function getPackageList(): array
+    {
+        // Load package.json
+        $packageJson = file_get_contents('package.json');
+        if ($packageJson === false) {
+            return [];
+        }
+
+        $packageJson = json_decode(
+            $packageJson,
+            true,
+            16,
+            JSON_THROW_ON_ERROR
+        );
+
+        // Find the plugins.
+        if (! isset($packageJson['devDependencies'])) {
+            return [];
+        }
+
+        $packageList = [];
+        foreach (array_keys($packageJson['devDependencies']) as $package) {
+            if (is_string($package)) {
+                $packageList[] = $package;
+            }
+        }
+
+        return $packageList;
+    }
+
+    /**
      * @throws Exception
      */
     protected function makeAirbnb(string $source, string $destination): void
@@ -204,13 +245,13 @@ class FileCopier
     protected function makePhpStan(string $source, string $destination): void
     {
         // Load composer.json
-        $composerJson = file_get_contents('composer.json');
-        if ($composerJson === false) {
+        $composerJsonFile = file_get_contents('composer.json');
+        if ($composerJsonFile === false) {
             throw new Exception('Unable to read composer.json file.');
         }
 
         $composerJson = json_decode(
-            $composerJson,
+            $composerJsonFile,
             true,
             16,
             JSON_THROW_ON_ERROR
@@ -256,6 +297,53 @@ class FileCopier
         );
         if (file_put_contents($destination, $phpStanConfig) === false) {
             throw new Exception('Unable to write PHPStan config file to var');
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function makePrettierrc(string $source, string $destination): void
+    {
+        // Load .prettierrc.json
+        $prettierJsonString = file_get_contents($source);
+        if ($prettierJsonString === false) {
+            throw new Exception('Unable to read .prettierrc.json file.');
+        }
+
+        $prettierJson = json_decode(
+            $prettierJsonString,
+            true,
+            16,
+            JSON_THROW_ON_ERROR
+        );
+
+        // Find the plugins.
+        if (! isset($prettierJson['plugins'])) {
+            throw new Exception('Plugins not specified in .prettierrc.json.');
+        }
+
+        $plugins = [];
+
+        $packages = $this->getPackageList();
+
+        if ($packages !== []) {
+            foreach ($packages as $package) {
+                if (preg_match('#prettier[/-]plugin#', $package)) {
+                    $plugins[] = $package;
+                }
+            }
+
+            $prettierJson['plugins'] = $plugins;
+            // Encode the array back to a JSON string
+            $prettierJsonString = json_encode(
+                $prettierJson,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+            );
+        }
+
+        if (file_put_contents($destination, $prettierJson) === false) {
+            throw new Exception('Unable to write Prettier config file to var');
         }
     }
 
