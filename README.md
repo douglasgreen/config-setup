@@ -43,13 +43,22 @@ not listed there. Then it will add the list of files copied to
 
 ### File Copy Arguments
 
-When running `copy_files.php`, there are two possible flags:
-
--   `--airbnb` or `-a`: Use airbnb instead of eslint-config-standard for eslint
-    rules.
+When running `copy_files.php`, there is one possible flag:
 
 -   `--pre-push` or `-p`: Use the pre-push event instead of pre-commit for fewer
     interruptions.
+
+### File Customization
+
+Several scripts are customized during the install process.
+
+-   `.eslintrc.json` adds an "extends" field if the Standard
+    (eslint-config-standard) or Airbnb (eslint-config-airbnb-base) NPM packages
+    are installed.
+-   `phpstan.neon` updates the phpVersion field to the "require" php version in
+    `composer.json`.
+-   `.prettierrc.json` adds any Prettier plugins it finds in `package.json` to
+    the "plugins" list.
 
 ## Setup Scripts
 

@@ -8,6 +8,5 @@
 
     "singleQuote": true,
 
-    "plugins": [
-    ]
+    "plugins": ["@prettier/plugin-php"]
 }

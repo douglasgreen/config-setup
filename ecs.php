@@ -50,7 +50,7 @@ if (file_exists('composer.json')) {
             $composerContent,
             true,
             16,
-            JSON_THROW_ON_ERROR,
+            JSON_THROW_ON_ERROR
         );
 
         // Check for PHPUnit, Symfony, and Doctrine
@@ -151,7 +151,7 @@ return ECSConfig::configure()
         common: true,
         psr12: true,
         strict: true,
-        symplify: true,
+        symplify: true
     )
     ->withPhpCsFixerSets(
         doctrineAnnotation: $sets['doctrineAnnotation'],
@@ -163,7 +163,7 @@ return ECSConfig::configure()
         php83Migration: $sets['php83Migration'],
         phpunit100MigrationRisky: $sets['phpunit100MigrationRisky'],
         symfony: $sets['symfony'],
-        symfonyRisky: $sets['symfonyRisky'],
+        symfonyRisky: $sets['symfonyRisky']
     )
     ->withConfiguredRule(LineLengthFixer::class, [
         'line_length' => 80,
@@ -256,7 +256,7 @@ return ECSConfig::configure()
                 // Use @uses on the other code instead
                 'usedby',
             ],
-        ],
+        ]
     )
     ->withSkip([
         GlobalNamespaceImportFixer::class,

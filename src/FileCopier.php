@@ -9,9 +9,7 @@ use Exception;
 
 class FileCopier
 {
-    public const AIRBNB = 1;
-
-    public const PRE_PUSH = 2;
+    public const PRE_PUSH = 1;
 
     /**
      * @var string
@@ -52,18 +50,31 @@ class FileCopier
     public const GIT_EXCLUDE_FILE = '.git/info/exclude';
 
     /**
+     * @var array<string, mixed>
+     */
+    protected array $composerJson;
+
+    /**
      * @var list<string>
      */
     protected array $filesToCopy;
 
     /**
-     * @var array<string, int>
+     * @var list<string>
      */
     protected array $gitFiles;
 
-    protected string $phpVersion;
+    /**
+     * @var list<string>
+     */
+    protected array $npmPackages = [];
 
-    protected bool $useAirbnb;
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $packageJson;
+
+    protected string $phpVersion;
 
     protected bool $usePrePush;
 
@@ -74,11 +85,11 @@ class FileCopier
         protected string $repoDir,
         protected int $flags = 0
     ) {
-        $this->useAirbnb = (bool) ($this->flags & self::AIRBNB);
         $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
 
-        exec('git ls-files', $output);
-        $this->gitFiles = array_flip($output);
+        $this->loadGitFiles();
+        $this->loadComposerJson();
+        $this->loadPackageJson();
 
         $this->filesToCopy = array_merge(
             self::FILES_TO_COPY,
@@ -87,6 +98,7 @@ class FileCopier
 
         $this->excludeFile = $this->repoDir . '/' . self::GIT_EXCLUDE_FILE;
 
+        $this->setNpmPackages();
         $this->setPhpVersion();
     }
 
@@ -105,38 +117,60 @@ class FileCopier
 
         $oldExcludeLines = $excludeLines;
 
+        $gitFiles = array_flip($this->gitFiles);
         foreach ($this->filesToCopy as $fileToCopy) {
             // Don't overwrite Git files in the repo.
-            if (isset($this->gitFiles[$fileToCopy])) {
+            if (isset($gitFiles[$fileToCopy])) {
                 continue;
             }
 
-            if ($this->useAirbnb && $fileToCopy === '.eslintrc.json') {
-                // Put Airbnb temporary copy in var dir.
-                $standardFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+            if ($fileToCopy === '.eslintrc.json') {
+                // Put temporary copy with correct "extends" value in var dir.
+                $standardFile =
+                    $this->repoDir .
+                    '/vendor/douglasgreen/config-setup/' .
+                    $fileToCopy;
+                $source =
+                    $this->repoDir .
+                    '/vendor/douglasgreen/config-setup/var/' .
+                    $fileToCopy;
 
-                $this->makeAirbnb($standardFile, $source);
-                echo 'Using Airbnb config for eslint' . PHP_EOL;
+                $this->makeEslintrc($standardFile, $source);
             } elseif ($fileToCopy === 'phpstan.neon') {
                 // Put PHPStan temporary copy with PHP version in var dir.
-                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+                $plainFile =
+                    $this->repoDir .
+                    '/vendor/douglasgreen/config-setup/' .
+                    $fileToCopy;
+                $source =
+                    $this->repoDir .
+                    '/vendor/douglasgreen/config-setup/var/' .
+                    $fileToCopy;
 
                 $this->makePhpStan($plainFile, $source);
             } elseif ($fileToCopy === '.prettierrc.json') {
                 // Put Prettier temporary copy with new plugin list in var dir.
-                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+                $plainFile =
+                    $this->repoDir .
+                    '/vendor/douglasgreen/config-setup/' .
+                    $fileToCopy;
+                $source =
+                    $this->repoDir .
+                    '/vendor/douglasgreen/config-setup/var/' .
+                    $fileToCopy;
 
                 $this->makePrettierrc($plainFile, $source);
             } else {
-                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $source =
+                    $this->repoDir .
+                    '/vendor/douglasgreen/config-setup/' .
+                    $fileToCopy;
             }
 
             // Overwrite target but not source file to copy to different name.
             if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
-                echo 'Using .husky/pre-push hook instead of .husky/pre-commit.' . PHP_EOL;
+                echo 'Using .husky/pre-push hook instead of .husky/pre-commit.' .
+                    PHP_EOL;
                 $fileToCopy = '.husky/pre-push';
             }
 
@@ -152,25 +186,20 @@ class FileCopier
             }
 
             // Skip copying of identical files.
-            if (file_exists($destination) &&
+            if (
+                file_exists($destination) &&
                 md5_file($source) === md5_file($destination)
             ) {
                 continue;
             }
 
             if (! copy($source, $destination)) {
-                throw new Exception(sprintf(
-                    'Failed to copy %s to %s.',
-                    $source,
-                    $destination
-                ));
+                throw new Exception(
+                    sprintf('Failed to copy %s to %s.', $source, $destination)
+                );
             }
 
-            echo sprintf(
-                'Copied %s to %s.',
-                $source,
-                $destination
-            ) . PHP_EOL;
+            echo sprintf('Copied %s to %s.', $source, $destination) . PHP_EOL;
             if (in_array($fileToCopy, self::SCRIPTS_TO_COPY, true)) {
                 chmod($destination, 0o755);
             } else {
@@ -190,52 +219,92 @@ class FileCopier
     }
 
     /**
-     * @return list<string>
      * @throws Exception
      */
-    protected function getPackageList(): array
+    protected function loadComposerJson(): void
     {
-        // Load package.json
-        $packageJson = file_get_contents('package.json');
-        if ($packageJson === false) {
-            return [];
+        $composerJsonString = file_get_contents('composer.json');
+        if ($composerJsonString === false) {
+            throw new Exception('Unable to read composer.json file.');
         }
 
-        $packageJson = json_decode(
-            $packageJson,
+        $this->composerJson = json_decode(
+            $composerJsonString,
             true,
             16,
             JSON_THROW_ON_ERROR
         );
-
-        // Find the plugins.
-        if (! isset($packageJson['devDependencies'])) {
-            return [];
-        }
-
-        $packageList = [];
-        foreach (array_keys($packageJson['devDependencies']) as $package) {
-            if (is_string($package)) {
-                $packageList[] = $package;
-            }
-        }
-
-        return $packageList;
     }
 
     /**
      * @throws Exception
      */
-    protected function makeAirbnb(string $source, string $destination): void
+    protected function loadGitFiles(): void
     {
-        $standardConfig = file_get_contents($source);
-        if ($standardConfig === false) {
+        exec('git ls-files', $output);
+        $this->gitFiles = $output;
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function loadPackageJson(): void
+    {
+        $packageJsonString = file_get_contents('package.json');
+        if ($packageJsonString === false) {
+            return;
+        }
+
+        $this->packageJson = json_decode(
+            $packageJsonString,
+            true,
+            16,
+            JSON_THROW_ON_ERROR
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function makeEslintrc(string $source, string $destination): void
+    {
+        $eslintJsonString = file_get_contents($source);
+        if ($eslintJsonString === false) {
             throw new Exception('Unable to load Eslint config');
         }
 
-        $airbnbConfig = $this->updateJsonExtendsField($standardConfig);
+        // Decode the JSON string into a PHP array
+        $eslintJson = json_decode(
+            $eslintJsonString,
+            true,
+            16,
+            JSON_THROW_ON_ERROR
+        );
 
-        $result = file_put_contents($destination, $airbnbConfig);
+        $extension = null;
+
+        if (in_array('eslint-config-airbnb-base', $this->npmPackages, true)) {
+            $extension = 'airbnb-base';
+        } elseif (in_array(
+            'eslint-config-standard',
+            $this->npmPackages,
+            true
+        )) {
+            $extension = 'standard';
+        }
+
+        // Add the "extends" field
+        if ($extension !== null) {
+            $eslintJson['extends'] = $extension;
+        }
+
+        // Encode the array back to a JSON string
+        $eslintJsonString = json_encode(
+            $eslintJson,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+        );
+
+        $result = file_put_contents($destination, $eslintJsonString);
         if ($result === false) {
             throw new Exception('Unable to save Eslint config to var dir');
         }
@@ -295,15 +364,13 @@ class FileCopier
 
         $plugins = [];
 
-        $packages = $this->getPackageList();
-
-        if ($packages !== []) {
-            foreach ($packages as $package) {
-                if (preg_match('#prettier[/-]plugin#', $package)) {
-                    $plugins[] = $package;
+        if ($this->npmPackages !== []) {
+            foreach ($this->npmPackages as $npmPackage) {
+                if (preg_match('#prettier[/-]plugin#', $npmPackage)) {
+                    $plugins[] = $npmPackage;
 
                     // Only set phpVersion if PHP plugin is included.
-                    if ($package === '@prettier/plugin-php') {
+                    if ($npmPackage === '@prettier/plugin-php') {
                         $prettierJson['phpVersion'] = $this->phpVersion;
                     }
                 }
@@ -322,34 +389,43 @@ class FileCopier
         }
     }
 
-    protected function setPhpVersion(): void
+    /**
+     * @throws Exception
+     */
+    protected function setNpmPackages(): void
     {
-        // Load composer.json
-        $composerJsonFile = file_get_contents('composer.json');
-        if ($composerJsonFile === false) {
-            throw new Exception('Unable to read composer.json file.');
+        // Find the plugins.
+        if (! isset($this->packageJson['devDependencies'])) {
+            return;
         }
 
-        $composerJson = json_decode(
-            $composerJsonFile,
-            true,
-            16,
-            JSON_THROW_ON_ERROR
-        );
+        $packageList = [];
+        foreach (
+            array_keys($this->packageJson['devDependencies'])
+            as $package
+        ) {
+            if (is_string($package)) {
+                $packageList[] = $package;
+            }
+        }
 
+        $this->npmPackages = $packageList;
+    }
+
+    protected function setPhpVersion(): void
+    {
         // Find the PHP version in the require section
-        if (! isset($composerJson['require']['php'])) {
+        if (! isset($this->composerJson['require']['php'])) {
             throw new Exception('PHP version not specified in composer.json.');
         }
 
-        $phpVersionConstraint = $composerJson['require']['php'];
+        $phpVersionConstraint = $this->composerJson['require']['php'];
 
         // Extract the PHP version number
-        if (preg_match(
-            '/\d+\.\d+/',
-            (string) $phpVersionConstraint,
-            $match
-        ) === 0) {
+        if (
+            preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) ===
+            0
+        ) {
             throw new Exception(
                 'Unable to extract PHP version from composer.json.'
             );
@@ -358,31 +434,14 @@ class FileCopier
         $this->phpVersion = $match[0];
     }
 
-    protected function updateJsonExtendsField(string $jsonString): string
-    {
-        // Decode the JSON string into a PHP array
-        $data = json_decode($jsonString, true, 16, JSON_THROW_ON_ERROR);
-
-        // Update the "extends" field
-        $data['extends'] = 'airbnb-base';
-
-        // Encode the array back to a JSON string
-        $updatedJsonString = json_encode(
-            $data,
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
-        );
-
-        return $updatedJsonString;
-    }
-
     protected function updatePhpPaths(): void
     {
         // Find top-level directories containing PHP files
         $phpPaths = [];
 
-        foreach (array_keys($this->gitFiles) as $file) {
-            if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
-                $topLevelDir = explode('/', $file)[0];
+        foreach ($this->gitFiles as $gitFile) {
+            if (pathinfo($gitFile, PATHINFO_EXTENSION) === 'php') {
+                $topLevelDir = explode('/', $gitFile)[0];
                 $phpPaths[$topLevelDir] = true;
             }
         }
@@ -391,10 +450,9 @@ class FileCopier
         sort($phpPaths);
 
         $pathFile = $this->repoDir . '/php_paths';
-        $oldPaths = file_exists($pathFile) ? file(
-            $pathFile,
-            FILE_IGNORE_NEW_LINES
-        ) : [];
+        $oldPaths = file_exists($pathFile)
+            ? file($pathFile, FILE_IGNORE_NEW_LINES)
+            : [];
 
         // Write the list of directories to php_paths file
         if ($oldPaths !== $phpPaths) {
