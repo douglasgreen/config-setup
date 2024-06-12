@@ -13,11 +13,6 @@ class FileCopier
 
     public const PRE_PUSH = 1;
 
-    /**
-     * @var string
-     */
-    public $excludeFile;
-
     protected const FILES_TO_COPY = [
         '.eslintignore',
         '.eslintrc.json',
@@ -55,6 +50,8 @@ class FileCopier
      * @var array<string, mixed>
      */
     protected array $composerJson;
+
+    protected string $excludeFile;
 
     /**
      * @var list<string>
