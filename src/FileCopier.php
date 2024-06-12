@@ -120,14 +120,12 @@ class FileCopier
                 $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
 
                 $this->makePhpStan($plainFile, $source);
-                echo 'Updating PHP version in PHPStan config.' . PHP_EOL;
             } elseif ($fileToCopy === '.prettierrc.json') {
                 // Put Prettier temporary copy with new plugin list in var dir.
                 $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
                 $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
 
                 $this->makePrettierrc($plainFile, $source);
-                echo 'Updated plugin list in Prettier config.' . PHP_EOL;
             } else {
                 $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
             }
@@ -342,7 +340,7 @@ class FileCopier
             );
         }
 
-        if (file_put_contents($destination, $prettierJson) === false) {
+        if (file_put_contents($destination, $prettierJsonString) === false) {
             throw new Exception('Unable to write Prettier config file to var');
         }
     }
