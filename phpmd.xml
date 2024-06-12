@@ -28,6 +28,9 @@
         <exclude name="ExcessiveClassComplexity" />
         <exclude name="NPathComplexity" />
 
+        <!-- Uses McCabe's cyclomatic complexity which overcounts case statements. -->
+        <exclude name="CyclomaticComplexity" />
+
         <!-- Lumps together public properties and methods so it's redundant -->
         <exclude name="ExcessivePublicCount" />
 
@@ -38,7 +41,6 @@
         <exclude name="TooManyMethods" />
 
         <!-- Customized below -->
-        <exclude name="CyclomaticComplexity" />
         <exclude name="ExcessiveClassLength" />
         <exclude name="ExcessiveMethodLength" />
         <exclude name="ExcessiveParameterList" />
@@ -49,13 +51,6 @@
     <rule ref="rulesets/design.xml" />
     <rule ref="rulesets/naming.xml" />
     <rule ref="rulesets/unusedcode.xml" />
-
-    <!-- 99% of our PHP functions are less than this complexity. -->
-    <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
-        <properties>
-            <property name="reportLevel" value="20" />
-        </properties>
-    </rule>
 
     <!-- 99% of our PHP classes are less than this length. -->
     <rule ref="rulesets/codesize.xml/ExcessiveClassLength">
