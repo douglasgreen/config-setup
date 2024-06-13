@@ -26,12 +26,8 @@ Then add this script to `composer.json` to copy the config files to your project
 ```
 {
     "scripts": {
-        "post-install-cmd": [
-            "vendor/douglasgreen/config-setup/bin/copy_files.php"
-        ],
-        "post-update-cmd": [
-            "vendor/douglasgreen/config-setup/bin/copy_files.php"
-        ]
+        "post-install-cmd": "vendor/douglasgreen/config-setup/bin/copy_files.php",
+        "post-update-cmd": "vendor/douglasgreen/config-setup/bin/copy_files.php"
     }
 }
 ```
