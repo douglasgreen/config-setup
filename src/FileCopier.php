@@ -354,7 +354,7 @@ class FileCopier
                     if ($npmPackage === '@prettier/plugin-php') {
                         // @prettier/plugin-php 0.22 doesn't support PHP 8.3 yet.
                         // @todo Update this when the new PHP Prettier plugin version arrives.
-                        $prettierJson['phpVersion'] = max($this->phpVersion, 8.2);
+                        $prettierJson['phpVersion'] = min($this->phpVersion, 8.2);
                     }
                 }
             }
