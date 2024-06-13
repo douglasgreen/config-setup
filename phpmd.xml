@@ -11,6 +11,10 @@
     @see https://phpmd.org/documentation/creating-a-ruleset.html
     -->
 
+    <!-- Exclude stubs, which are empty classes and functions defined for PHPStan. -->
+    <exclude-pattern>tests/*</exclude-pattern>
+
+    <!-- Exclude unit test files. -->
     <exclude-pattern>tests/*</exclude-pattern>
 
     <rule ref="rulesets/cleancode.xml">
