@@ -12,7 +12,7 @@
     -->
 
     <!-- Exclude stubs, which are empty classes and functions defined for PHPStan. -->
-    <exclude-pattern>tests/*</exclude-pattern>
+    <exclude-pattern>stubs/*</exclude-pattern>
 
     <!-- Exclude unit test files. -->
     <exclude-pattern>tests/*</exclude-pattern>
