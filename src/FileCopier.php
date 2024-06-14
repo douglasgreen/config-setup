@@ -400,6 +400,11 @@ class FileCopier
 
             // Add each PHP directory to the include section.
             foreach ($this->phpDirectories as $phpDirectory) {
+                // Don't provide coverage of the unit tests directory.
+                if ($phpDirectory === 'tests') {
+                    continue;
+                }
+
                 $directory = $include->addChild('directory', $phpDirectory);
                 $directory->addAttribute('suffix', '.php');
             }
