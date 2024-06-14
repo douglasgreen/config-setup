@@ -209,8 +209,20 @@ class FileCopier
             }
         }
 
-        if ($excludeLines !== $oldExcludeLines) {
-            file_put_contents($this->excludeFile, implode(PHP_EOL, $excludeLines) . PHP_EOL);
+        if ($excludeLines === []) {
+            return;
+        }
+
+        if ($excludeLines === $oldExcludeLines) {
+            return;
+        }
+
+        if (
+            file_put_contents($this->excludeFile, implode(PHP_EOL, $excludeLines) . PHP_EOL) ===
+            false
+        ) {
+            echo 'Error updating ' . $this->excludeFile . PHP_EOL;
+        } else {
             echo $this->excludeFile . ' has been updated.' . PHP_EOL;
         }
     }
