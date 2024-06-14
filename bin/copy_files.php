@@ -11,13 +11,13 @@ declare(strict_types=1);
 
 use DouglasGreen\ConfigSetup\FileCopier;
 
-$dir = getcwd();
-if ($dir === false) {
+$currentDir = getcwd();
+if ($currentDir === false) {
     throw new Exception('Unable to get working dir');
 }
 
 // Run in current dir which is repository root dir.
-require_once $dir . '/vendor/autoload.php';
+require_once $currentDir . '/vendor/autoload.php';
 
 $options = getopt('cjpw:', ['cobertura', 'junit', 'pre-push', 'wrap:']);
 
@@ -44,5 +44,5 @@ if ($wrap === 0) {
     throw new Exception('Invalid wrap argument');
 }
 
-$fileCopier = new FileCopier($dir, $flags, $wrap);
+$fileCopier = new FileCopier($currentDir, $flags, $wrap);
 $fileCopier->copyFiles();
