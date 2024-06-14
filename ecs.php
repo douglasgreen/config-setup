@@ -137,7 +137,7 @@ if ($paths === false) {
 }
 
 $paths = array_map('trim', $paths);
-$currentDirectory  = getcwd();
+$currentDirectory = getcwd();
 if ($currentDirectory === false) {
     throw new Exception('Unable to determine current directory');
 }

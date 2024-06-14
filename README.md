@@ -208,3 +208,8 @@ by `.husky/commit-msg`. Fix any commit message errors before committing.
 Each of the PHP formatting tools and ESLint is configured to cache its results for speedier
 operation using use subdirectories of the `var/cache` directory. These directories are automatically
 created by the `bin/copy_files.php` script if they don't exist.
+
+## More Information
+
+For more information about the decisions behind configuration choices, see
+[Project Notes](docs/notes.md).
