@@ -137,8 +137,13 @@ if ($paths === false) {
 }
 
 $paths = array_map('trim', $paths);
+$currentDirectory  = getcwd();
+if ($currentDirectory === false) {
+    throw new Exception('Unable to determine current directory');
+}
 
 return ECSConfig::configure()
+    ->withCache(directory: 'var/cache/ecs', namespace: $currentDirectory)
     ->withPaths($paths)
     ->withRootFiles()
     ->withPreparedSets(cleanCode: true, common: true, psr12: true, strict: true, symplify: true)

@@ -139,8 +139,8 @@ For JavaScript/NPM, that is done with `package.json` like this:
     },
     "scripts": {
         "commitlint": "commitlint --edit",
-        "lint": "eslint . && stylelint '**/*.css'",
-        "lint:fix": "eslint --fix . && prettier --write .",
+        "lint": "eslint --cache --cache-location var/cache/eslint/cache . && stylelint '**/*.css'",
+        "lint:fix": "eslint --cache --cache-location var/cache/eslint/cache --fix . && prettier --write .",
         "prepare": "husky",
         "test": "mocha"
     }
@@ -202,3 +202,9 @@ your Composer and NPM dependencies in case your dependencies were changed by inc
 
 [Conventional Commits](https://www.npmjs.com/package/@commitlint/config-conventional) are enforced
 by `.husky/commit-msg`. Fix any commit message errors before committing.
+
+## Result Caching
+
+Each of the PHP formatting tools and ESLint is configured to cache its results for speedier
+operation using use subdirectories of the `var/cache` directory. These directories are automatically
+created by the `bin/copy_files.php` script if they don't exist.

@@ -10,4 +10,4 @@ file_list=$(
 )
 
 # Run PHPMD with the file list
-vendor/bin/phpmd "${file_list}" text phpmd.xml
+vendor/bin/phpmd --cache --cache-file var/cache/phpmd/cache "${file_list}" text phpmd.xml

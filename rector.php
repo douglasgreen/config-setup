@@ -133,11 +133,11 @@ if ($paths === false) {
 $paths = array_map('trim', $paths);
 
 return RectorConfig::configure()
+    ->withCache(cacheDirectory: 'var/cache/rector', cacheClass: FileCacheStorage::class)
     ->withPaths($paths)
     ->withImportNames(importShortClasses: false, removeUnusedImports: true)
     ->withPhpSets()
     ->withSets($baseSets)
-    ->withCache(cacheDirectory: 'var', cacheClass: FileCacheStorage::class)
     ->withAttributesSets(
         doctrine: $hasDoctrine,
         fosRest: $hasSymfony,

@@ -13,6 +13,17 @@ class FileCopier
 
     public const PRE_PUSH = 1;
 
+    protected const DIRS_TO_MAKE = [
+        '.husky',
+        'script',
+        'var/cache/ecs',
+        'var/cache/eslint',
+        'var/cache/phpmd',
+        'var/cache/phpstan',
+        'var/cache/phpunit',
+        'var/cache/rector',
+    ];
+
     protected const FILES_TO_COPY = [
         '.eslintignore',
         '.eslintrc.json',
@@ -97,6 +108,10 @@ class FileCopier
 
         $this->setNpmPackages();
         $this->setPhpVersion();
+
+        foreach (self::DIRS_TO_MAKE as $dir) {
+            $this->makeDir($dir);
+        }
     }
 
     /**
@@ -158,9 +173,7 @@ class FileCopier
             $destination = $this->repoDir . '/' . $fileToCopy;
 
             $destinationDir = dirname($destination);
-            if (! is_dir($destinationDir)) {
-                mkdir($destinationDir, 0o777, true);
-            }
+            $this->makeDir($destinationDir);
 
             if (! in_array($fileToCopy, $excludeLines, true)) {
                 $excludeLines[] = $fileToCopy;
@@ -224,6 +237,24 @@ class FileCopier
         }
 
         $this->packageJson = json_decode($packageJsonString, true, 16, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * Make a directory if it doesn't exist.
+     *
+     * @throws Exception
+     */
+    protected function makeDir(string $dir): void
+    {
+        if (is_dir($dir)) {
+            return;
+        }
+
+        if (mkdir($dir, 0o777, true)) {
+            return;
+        }
+
+        throw new Exception(sprintf('Unable to make directory: "%s"', $dir));
     }
 
     /**
