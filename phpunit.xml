@@ -5,7 +5,7 @@
     bootstrap="vendor/autoload.php"
     cacheResult="true"
     colors="true"
-    executionOrder="depends"
+    executionOrder="random"
     stopOnFailure="false"
     testdox="true"
 >
