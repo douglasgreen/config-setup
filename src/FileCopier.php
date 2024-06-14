@@ -47,6 +47,7 @@ class FileCopier
         'run_phpmd.sh',
         'run_phpstan.sh',
         'script/bootstrap',
+        'script/fix',
         'script/lint',
         'script/setup',
         'script/test',
