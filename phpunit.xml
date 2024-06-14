@@ -6,7 +6,7 @@
     cacheResult="true"
     colors="true"
     executionOrder="depends"
-    stopOnFailure="true"
+    stopOnFailure="false"
     testdox="true"
 >
     <php>
