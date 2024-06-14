@@ -6,6 +6,10 @@
     cacheResult="true"
     colors="true"
     executionOrder="random"
+    failOnIncomplete="false"
+    failOnNotice="true"
+    failOnRisky="false"
+    failOnWarning="true"
     stopOnFailure="false"
     testdox="true"
 >
