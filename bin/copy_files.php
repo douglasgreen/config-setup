@@ -19,9 +19,19 @@ if ($dir === false) {
 // Run in current dir which is repository root dir.
 require_once $dir . '/vendor/autoload.php';
 
-$options = getopt('pw:', ['pre-push', 'wrap:']);
+$options = getopt('cjpw:', ['cobertura', 'junit', 'pre-push', 'wrap:']);
 
 $flags = 0;
+
+// Use Cobertura for report format.
+if (isset($options['cobertura']) || isset($options['c'])) {
+    $flags |= FileCopier::COBERTURA;
+}
+
+// Use Junit for logging format.
+if (isset($options['junit']) || isset($options['j'])) {
+    $flags |= FileCopier::JUNIT;
+}
 
 // Use pre-push event instead of pre-commit for fewer interruptions.
 if (isset($options['pre-push']) || isset($options['p'])) {

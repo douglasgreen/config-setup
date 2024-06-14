@@ -6,12 +6,17 @@ declare(strict_types=1);
 namespace DouglasGreen\ConfigSetup;
 
 use Exception;
+use SimpleXMLElement;
 
 class FileCopier
 {
     public const DEFAULT_WRAP = 80;
 
-    public const PRE_PUSH = 1;
+    public const COBERTURA = 1;
+
+    public const JUNIT = 2;
+
+    public const PRE_PUSH = 4;
 
     protected const DIRS_TO_MAKE = [
         '.husky',
@@ -22,6 +27,7 @@ class FileCopier
         'var/cache/phpstan',
         'var/cache/phpunit',
         'var/cache/rector',
+        'var/report/phpunit',
     ];
 
     protected const FILES_TO_COPY = [
@@ -85,7 +91,16 @@ class FileCopier
      */
     protected array $packageJson;
 
+    /**
+     * @var list<string>
+     */
+    protected array $phpDirectories = [];
+
     protected string $phpVersion;
+
+    protected bool $useCobertura;
+
+    protected bool $useJunit;
 
     protected bool $usePrePush;
 
@@ -97,6 +112,8 @@ class FileCopier
         protected int $flags = 0,
         protected int $wrap = self::DEFAULT_WRAP
     ) {
+        $this->useCobertura = (bool) ($this->flags & self::COBERTURA);
+        $this->useJunit = (bool) ($this->flags & self::JUNIT);
         $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
 
         $this->loadGitFiles();
@@ -109,6 +126,7 @@ class FileCopier
 
         $this->setNpmPackages();
         $this->setPhpVersion();
+        $this->updatePhpPaths();
 
         foreach (self::DIRS_TO_MAKE as $dir) {
             $this->makeDir($dir);
@@ -137,31 +155,25 @@ class FileCopier
                 continue;
             }
 
+            $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+            $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
             if ($fileToCopy === 'ecs.php') {
                 // Put temporary copy with correct "line_length" value in var dir.
-                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
-
                 $this->makeEcs($plainFile, $source);
             } elseif ($fileToCopy === '.eslintrc.json') {
                 // Put temporary copy with correct "extends" value in var dir.
-                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
-
                 $this->makeEslintrc($plainFile, $source);
             } elseif ($fileToCopy === 'phpstan.neon') {
                 // Put PHPStan temporary copy with PHP version in var dir.
-                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
-
                 $this->makePhpStan($plainFile, $source);
+            } elseif ($fileToCopy === 'phpunit.xml') {
+                // Put PHPUnit temporary copy with PHP version in var dir.
+                $this->makePhpunit($plainFile, $source);
             } elseif ($fileToCopy === '.prettierrc.json') {
                 // Put Prettier temporary copy with new plugin list in var dir.
-                $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
-
                 $this->makePrettierrc($plainFile, $source);
             } else {
+                // Use original, unmodified source.
                 $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
             }
 
@@ -196,8 +208,6 @@ class FileCopier
                 chmod($destination, 0o644);
             }
         }
-
-        $this->updatePhpPaths();
 
         if ($excludeLines !== $oldExcludeLines) {
             file_put_contents($this->excludeFile, implode(PHP_EOL, $excludeLines) . PHP_EOL);
@@ -354,6 +364,44 @@ class FileCopier
         }
     }
 
+    protected function makePhpunit(string $source, string $destination): void
+    {
+        // Load the XML file.
+        $xmlSource = file_get_contents($source);
+        if ($xmlSource === false) {
+            throw new Exception('Unable to load phpunit.xml');
+        }
+
+        $xml = new SimpleXMLElement($xmlSource);
+
+        // Add JUnit logging if requested.
+        if ($this->useJunit) {
+            $logging = $xml->addChild('logging');
+            $logging->addChild('junit')
+                ->addAttribute('outputFile', 'var/report/phpunit/junit.xml');
+        }
+
+        // Add Cobertura coverage if requested.
+        if ($this->useCobertura) {
+            $coverage = $xml->addChild('coverage');
+            $include = $coverage->addChild('include');
+
+            // Add each PHP directory to the include section.
+            foreach ($this->phpDirectories as $phpDirectory) {
+                $directory = $include->addChild('directory', $phpDirectory);
+                $directory->addAttribute('suffix', '.php');
+            }
+
+            $report = $coverage->addChild('report');
+            $report
+                ->addChild('cobertura')
+                ->addAttribute('outputFile', 'var/report/phpunit/cobertura.xml');
+        }
+
+        // Save the modified XML to the new file.
+        $xml->asXML($destination);
+    }
+
     /**
      * @throws Exception
      */
@@ -449,19 +497,21 @@ class FileCopier
         foreach ($this->gitFiles as $gitFile) {
             if (pathinfo($gitFile, PATHINFO_EXTENSION) === 'php') {
                 $topLevelDir = explode('/', $gitFile)[0];
-                $phpPaths[$topLevelDir] = true;
+                if (is_dir($topLevelDir)) {
+                    $phpPaths[$topLevelDir] = true;
+                }
             }
         }
 
-        $phpPaths = array_keys($phpPaths);
-        sort($phpPaths);
+        $this->phpDirectories = array_keys($phpPaths);
+        sort($this->phpDirectories);
 
         $pathFile = $this->repoDir . '/php_paths';
         $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];
 
         // Write the list of directories to php_paths file
-        if ($oldPaths !== $phpPaths) {
-            file_put_contents($pathFile, implode(PHP_EOL, $phpPaths) . PHP_EOL);
+        if ($oldPaths !== $this->phpDirectories) {
+            file_put_contents($pathFile, implode(PHP_EOL, $this->phpDirectories) . PHP_EOL);
             echo 'php_paths file has been created.' . PHP_EOL;
         }
     }
