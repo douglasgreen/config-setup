@@ -396,7 +396,8 @@ class FileCopier
         // Add Cobertura coverage if requested.
         if ($this->useCobertura) {
             $coverage = $xml->addChild('coverage');
-            $include = $coverage->addChild('include');
+            $filter = $coverage->addChild('filter');
+            $include = $filter->addChild('include');
 
             // Add each PHP directory to the include section.
             foreach ($this->phpDirectories as $phpDirectory) {
