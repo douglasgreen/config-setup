@@ -12,11 +12,7 @@ class FileCopier
 {
     public const DEFAULT_WRAP = 80;
 
-    public const COBERTURA = 1;
-
-    public const JUNIT = 2;
-
-    public const PRE_PUSH = 4;
+    public const PRE_PUSH = 1;
 
     protected const DIRS_TO_MAKE = [
         '.husky',
@@ -112,8 +108,6 @@ class FileCopier
         protected int $flags = 0,
         protected int $wrap = self::DEFAULT_WRAP
     ) {
-        $this->useCobertura = (bool) ($this->flags & self::COBERTURA);
-        $this->useJunit = (bool) ($this->flags & self::JUNIT);
         $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
 
         $this->loadGitFiles();
@@ -386,34 +380,19 @@ class FileCopier
 
         $xml = new SimpleXMLElement($xmlSource);
 
-        // Add JUnit logging if requested.
-        if ($this->useJunit) {
-            $logging = $xml->addChild('logging');
-            $logging->addChild('junit')
-                ->addAttribute('outputFile', 'var/report/phpunit/junit.xml');
-        }
+        // Add source files.
+        $source = $xml->addChild('source');
+        $include = $source->addChild('include');
 
-        // Add Cobertura coverage if requested.
-        if ($this->useCobertura) {
-            $coverage = $xml->addChild('coverage');
-            $filter = $coverage->addChild('filter');
-            $include = $filter->addChild('include');
-
-            // Add each PHP directory to the include section.
-            foreach ($this->phpDirectories as $phpDirectory) {
-                // Don't provide coverage of the unit tests directory.
-                if ($phpDirectory === 'tests') {
-                    continue;
-                }
-
-                $directory = $include->addChild('directory', $phpDirectory);
-                $directory->addAttribute('suffix', '.php');
+        // Add each PHP directory to the include section.
+        foreach ($this->phpDirectories as $phpDirectory) {
+            // Don't provide coverage of the unit tests directory.
+            if ($phpDirectory === 'tests') {
+                continue;
             }
 
-            $report = $coverage->addChild('report');
-            $report
-                ->addChild('cobertura')
-                ->addAttribute('outputFile', 'var/report/phpunit/cobertura.xml');
+            $directory = $include->addChild('directory', $phpDirectory);
+            $directory->addAttribute('suffix', '.php');
         }
 
         // Save the modified XML to the new file.

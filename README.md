@@ -38,11 +38,9 @@ committed to Git.
 
 ### File Copy Arguments
 
-When running `copy_files.php`, there are four possible arguments:
+When running `copy_files.php`, there are two possible arguments:
 
 -   `--wrap INT` or `-w INT`: Set a different integer (INT) wrap than the default of 80.
--   `--cobertura` or `-c`: Use Cobertura for PHPUnit report format.
--   `--junit` or `-j`: Use JUnit for PHPUnit logging.
 -   `--pre-push` or `-p`: Use the pre-push event instead of pre-commit for fewer interruptions.
 
 ### File Customization
