@@ -145,7 +145,6 @@ if ($currentDirectory === false) {
 return ECSConfig::configure()
     ->withCache(directory: 'var/cache/ecs', namespace: $currentDirectory)
     ->withPaths($paths)
-    ->withRootFiles()
     ->withPreparedSets(cleanCode: true, common: true, psr12: true, strict: true, symplify: true)
     ->withPhpCsFixerSets(
         doctrineAnnotation: $sets['doctrineAnnotation'],
