@@ -19,12 +19,12 @@
     </testsuites>
     <coverage cacheDirectory="var/report/phpunit/cache/">
         <report>
-            <cobertura outputFile="var/report/phpunit/cobertura.xml"/>
-            <html outputDirectory="var/report/phpunit/html"/>
-            <text outputFile="php://stdout"/>
+            <cobertura outputFile="var/report/phpunit/cobertura.xml" />
+            <html outputDirectory="var/report/phpunit/html" />
+            <text outputFile="php://stdout" />
         </report>
     </coverage>
     <logging>
-        <junit outputFile="var/report/phpunit/junit.xml"/>
+        <junit outputFile="var/report/phpunit/junit.xml" />
     </logging>
 </phpunit>

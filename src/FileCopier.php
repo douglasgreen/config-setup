@@ -14,45 +14,71 @@ class FileCopier
 
     public const PRE_PUSH = 1;
 
-    protected const DIRS_TO_MAKE = [
-        '.husky',
-        'script',
-        'var/cache/ecs',
-        'var/cache/eslint',
-        'var/cache/phpmd',
-        'var/cache/phpstan',
-        'var/cache/phpunit',
-        'var/cache/rector',
-        'var/report/phpunit',
+    /**
+     * @var array<string, ?string> Names of files to copy if the project is installed
+     */
+    protected const COPY_FILES = [
+        '.eslintignore' => 'eslint',
+        '.eslintrc.json' => 'eslint',
+        '.prettierignore' => 'prettier',
+        '.prettierrc.json' => 'prettier',
+        '.stylelintignore' => 'stylelint',
+        '.stylelintrc.json' => 'stylelint',
+        'commitlint.config.js' => 'commitlint',
+        'ecs.php' => 'ecs',
+        'phpmd.xml' => 'phpmd',
+        'phpstan.neon' => 'phpstan',
+        'phpunit.xml' => 'phpunit',
+        'rector.php' => 'rector',
     ];
 
-    protected const FILES_TO_COPY = [
-        '.eslintignore',
-        '.eslintrc.json',
-        '.prettierignore',
-        '.prettierrc.json',
-        '.stylelintignore',
-        '.stylelintrc.json',
-        'commitlint.config.js',
-        'ecs.php',
-        'phpmd.xml',
-        'phpstan.neon',
-        'phpunit.xml',
-        'rector.php',
+    /**
+     * @var array<string, ?string> Names of scripts to copy if the project is installed
+     */
+    protected const COPY_SCRIPTS = [
+        '.husky/commit-msg' => 'husky',
+        '.husky/post-checkout' => 'husky',
+        '.husky/post-merge' => 'husky',
+        '.husky/pre-commit' => 'husky',
+        'run_phpmd.sh' => 'phpmd',
+        'run_phpstan.sh' => 'phpstan',
+        'script/bootstrap' => null,
+        'script/fix' => null,
+        'script/lint' => null,
+        'script/setup' => null,
+        'script/test' => null,
     ];
 
-    protected const SCRIPTS_TO_COPY = [
-        '.husky/commit-msg',
-        '.husky/post-checkout',
-        '.husky/post-merge',
-        '.husky/pre-commit',
-        'run_phpmd.sh',
-        'run_phpstan.sh',
-        'script/bootstrap',
-        'script/fix',
-        'script/lint',
-        'script/setup',
-        'script/test',
+    /**
+     * @var array<string, ?string> Names of directories to make if the project is installed
+     */
+    protected const MAKE_DIRS = [
+        '.husky' => 'husky',
+        'script' => null,
+        'var/cache/ecs' => 'ecs',
+        'var/cache/eslint' => 'eslint',
+        'var/cache/phpmd' => 'phpmd',
+        'var/cache/phpstan' => 'phpstan',
+        'var/cache/phpunit' => 'phpunit',
+        'var/cache/rector' => 'rector',
+        'var/report/phpunit' => 'phpunit',
+    ];
+
+    /**
+     * @var array<string, string> Project name and its actual package name
+     */
+    protected const PACKAGE_NAMES = [
+        'ecs' => 'symplify/easy-coding-standard',
+        'phpmd' => 'phpmd/phpmd',
+        'phpstan' => 'phpstan/phpstan',
+        'phpunit' => 'phpunit/phpunit',
+        'rector' => 'rector/rector',
+
+        'commitlint' => '@commitlint/cli',
+        'husky' => 'husky',
+        'mocha' => 'mocha',
+        'prettier' => 'prettier',
+        'stylelint' => 'stylelint',
     ];
 
     /**
@@ -65,10 +91,15 @@ class FileCopier
      */
     protected array $composerJson;
 
+    /**
+     * @var list<string>
+     */
+    protected array $composerPackages = [];
+
     protected string $excludeFile;
 
     /**
-     * @var list<string>
+     * @var array<string, ?string>
      */
     protected array $filesToCopy;
 
@@ -114,15 +145,22 @@ class FileCopier
         $this->loadComposerJson();
         $this->loadPackageJson();
 
-        $this->filesToCopy = array_merge(self::FILES_TO_COPY, self::SCRIPTS_TO_COPY);
+        $this->filesToCopy = array_merge(self::COPY_FILES, self::COPY_SCRIPTS);
+        ksort($this->filesToCopy);
 
         $this->excludeFile = $this->repoDir . '/' . self::GIT_EXCLUDE_FILE;
 
+        $this->setComposerPackages();
         $this->setNpmPackages();
         $this->setPhpVersion();
         $this->updatePhpPaths();
 
-        foreach (self::DIRS_TO_MAKE as $dir) {
+        foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
+            // Don't make directories if their package isn't installed.
+            if (! $this->hasPackage($requiredPackage)) {
+                continue;
+            }
+
             $this->makeDir($dir);
         }
     }
@@ -143,9 +181,14 @@ class FileCopier
         $oldExcludeLines = $excludeLines;
 
         $gitFiles = array_flip($this->gitFiles);
-        foreach ($this->filesToCopy as $fileToCopy) {
+        foreach ($this->filesToCopy as $fileToCopy => $requiredPackage) {
             // Don't overwrite Git files in the repo.
             if (isset($gitFiles[$fileToCopy])) {
+                continue;
+            }
+
+            // Don't copy files if their package isn't installed.
+            if (! $this->hasPackage($requiredPackage)) {
                 continue;
             }
 
@@ -196,7 +239,7 @@ class FileCopier
             }
 
             echo sprintf('Copied %s to %s.', $source, $destination) . PHP_EOL;
-            if (in_array($fileToCopy, self::SCRIPTS_TO_COPY, true)) {
+            if (in_array($fileToCopy, self::COPY_SCRIPTS, true)) {
                 chmod($destination, 0o755);
             } else {
                 chmod($destination, 0o644);
@@ -219,6 +262,21 @@ class FileCopier
         } else {
             echo $this->excludeFile . ' has been updated.' . PHP_EOL;
         }
+    }
+
+    /**
+     * Check if the repository has the required package, either in Composer or NPM.
+     */
+    protected function hasPackage(?string $requiredPackage): bool
+    {
+        // If there are no requirements, they can't fail.
+        if ($requiredPackage === null) {
+            return true;
+        }
+
+        $packageName = self::PACKAGE_NAMES[$requiredPackage];
+        return in_array($packageName, $this->composerPackages, true) ||
+            in_array($packageName, $this->npmPackages, true);
     }
 
     /**
@@ -447,6 +505,26 @@ class FileCopier
         if (file_put_contents($destination, $prettierJsonString) === false) {
             throw new Exception('Unable to write Prettier config file to var');
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function setComposerPackages(): void
+    {
+        // Find the plugins.
+        if (! isset($this->composerJson['require-dev'])) {
+            return;
+        }
+
+        $packageList = [];
+        foreach (array_keys($this->composerJson['require-dev']) as $package) {
+            if (is_string($package)) {
+                $packageList[] = $package;
+            }
+        }
+
+        $this->composerPackages = $packageList;
     }
 
     /**
