@@ -206,7 +206,7 @@ class FileCopier
                 // Put PHPStan temporary copy with PHP version in var dir.
                 $this->makePhpStan($plainFile, $source);
             } elseif ($fileToCopy === 'phpunit.xml') {
-                // Put PHPUnit temporary copy with PHP version in var dir.
+                // Put PHPUnit temporary copy with directory list and coverage options in var dir.
                 $this->makePhpunit($plainFile, $source);
             } elseif ($fileToCopy === '.prettierrc.json') {
                 // Put Prettier temporary copy with new plugin list in var dir.
@@ -477,7 +477,7 @@ class FileCopier
             $report->addChild('html')
                 ->addAttribute('outputDirectory', 'var/report/phpunit/html');
             $report->addChild('text')
-                ->addAttribute('outputFile', 'php://stdout');
+                ->addAttribute('outputFile', 'var/report/phpunit/text');
         }
 
         // Save the modified XML to the new file with pretty print.

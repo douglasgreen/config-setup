@@ -40,6 +40,9 @@ Here is a summary of the configuration options in the `ecs.php` file:
 These rulesets collectively ensure that the codebase adheres to industry standards, follows best
 practices, and maintains a high level of code quality.
 
+The file is customized when copied to your project depending on the value of the `--wrap` parameter,
+which sets the line length.
+
 ### Rector
 
 Here is a summary of the configuration options in the `rector.php` file:
@@ -106,13 +109,14 @@ Here is a summary of the `phpstan.neon` file:
 
 -   **Level**: Set to 8 to avoid using level 9, as PHP functions return mixed types frequently.
 -   **PHP Version**: The PHP version is set to the value of the required PHP version in the
-    `composer.json` of the repository.
+    `composer.json` of your repository when the file is copied to your repository.
 
 ### PHPUnit
 
 Here is a summary of the configuration options in the `phpunit.xml` file:
 
 -   `bootstrap="vendor/autoload.php"` - Use the autoload file by default.
+-   `cacheDirectory="var/cache/phpunit"` - Save cache to typical directory.
 -   `cacheResult="true"` - Cache results to save time.
 -   `colors="true"` - Use colors for better display.
 -   `executionOrder="random"` - Use random order to check for order dependency issues.
@@ -122,6 +126,13 @@ Here is a summary of the configuration options in the `phpunit.xml` file:
 -   `failOnWarning="true"` - Fail when a warning occurs in tested code.
 -   `stopOnFailure="false"` - Don't stop when failure occurs because a different failure may provide
     more information.
+
+Other settings include:
+
+-   `tests` - the test directory
+-   `logging` - sent in JUnit format to var/report/phpunit/junit.xml
+-   `coverage` - if a code coverage drive like pcov or xdebug is detected, coverage output will be
+    sent to the `var/report/phpunit` directory in cobertura, HTML, and text formats.
 
 ## JavaScript
 
@@ -155,6 +166,9 @@ Here is a summary of the configuration options in the `.eslintrc.json` file:
 }
 ```
 
+This file is customized when copied to your project. It will extend the `standard` or `airbnb-base`
+depending on which plugins are installed in `package.json`.
+
 ### Mocha
 
 Here is a summary of the configuration options in the `.mocharc.json` file:
@@ -178,7 +192,8 @@ file:
 1. **"printWidth": 100**
 
     - Sets the maximum line length to 100 characters. Lines longer than this will be wrapped
-      according to Prettier's wrapping rules.
+      according to Prettier's wrapping rules. This value is modified when the file is copied to your
+      project to be equal to the value of the `--wrap` parameter.
 
 2. **"proseWrap": "always"**
 
