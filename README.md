@@ -2,7 +2,7 @@
 
 Preconfigured setup files for linting, fixing, and testing PHP and JavaScript projects
 
-## Process
+## Initial Setup
 
 First, add the repository to `composer.json`:
 
@@ -32,9 +32,14 @@ Then add this script to `composer.json` to copy the config files to your project
 }
 ```
 
+The config files will be copied every time you run `composer update` or `composer install`.
+
 The file copier will check your list of Git project files and overwrite any file not listed there.
 Then it will add the list of files copied to `/.git/info/exclude` to exclude them from being
 committed to Git.
+
+The file copier also checks if the same config file already exists unmodified before copying it
+again to cut down on the noise.
 
 ### File Copy Arguments
 
