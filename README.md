@@ -206,7 +206,7 @@ and with `composer lint:fix`. You should run `npm run lint:fix` first and let `c
 clean up afterward.
 
 Currently `@prettier/plugin-php` only supports up to PHP 8.2 so it may give up with some syntax
-errors.
+errors if you use PHP 3 features like type hints on class constants.
 
 ## Husky Hooks
 
