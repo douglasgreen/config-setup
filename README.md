@@ -43,6 +43,12 @@ The file copier skips copying files if:
 The file copier will add the list of files copied to `/.git/info/exclude` to exclude them from being
 committed to Git.
 
+## Cloning
+
+After you clone a repository that uses this config setup library, run `composer install` to copy the
+files into place. Then you can run `script/setup` to complex the install process and get the Husky
+hooks to work.
+
 ### File Copy Arguments
 
 When running `copy_files.php`, there are two possible arguments:
