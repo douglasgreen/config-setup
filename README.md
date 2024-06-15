@@ -50,6 +50,13 @@ When running `copy_files.php`, there are two possible arguments:
 -   `--wrap INT` or `-w INT`: Set a different integer (INT) wrap than the default of 80.
 -   `--pre-push` or `-p`: Use the pre-push event instead of pre-commit for fewer interruptions.
 
+### Environment Variables
+
+Two of the PHP files check environment variables for configuration.
+
+-   `ecs.php` checks if `ECS_RISKY` is true before running risky tests.
+-   `rector.php` checks if `RECTOR_UPGRADE` is true before doing slow, comprehensive upgrades.
+
 ### File Customization
 
 Several scripts are customized during the install process.
@@ -219,4 +226,4 @@ created by the `bin/copy_files.php` script if they don't exist.
 ## More Information
 
 For more information about the decisions behind configuration choices, see
-[Project Notes](docs/notes.md).
+[Project Configuration](docs/configuration.md).
