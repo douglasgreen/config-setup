@@ -129,8 +129,8 @@ Here is a summary of the configuration options in the `phpunit.xml` file:
 
 Other settings include:
 
--   `tests` - the test directory
--   `logging` - sent in JUnit format to var/report/phpunit/junit.xml
+-   `tests` - the typical test directory
+-   `logging` - sent in JUnit format to `var/report/phpunit/junit.xml`
 -   `coverage` - if a code coverage drive like pcov or xdebug is detected, coverage output will be
     sent to the `var/report/phpunit` directory in cobertura, HTML, and text formats.
 
