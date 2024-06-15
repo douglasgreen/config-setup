@@ -75,6 +75,7 @@ class FileCopier
         'rector' => 'rector/rector',
 
         'commitlint' => '@commitlint/cli',
+        'eslint' => 'eslint',
         'husky' => 'husky',
         'mocha' => 'mocha',
         'prettier' => 'prettier',
