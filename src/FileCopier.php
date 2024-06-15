@@ -269,7 +269,7 @@ class FileCopier
     protected function hasCodeCoverageDriver(): bool
     {
         exec('php -m | grep -E "xdebug|pcov"', $output, $returnCode);
-        if ($returnCode !== 0) {
+        if ($returnCode !== 0 && $returnCode !== 1) {
             throw new Exception('Unable to determine if code coverage driver is available');
         }
 
