@@ -239,7 +239,7 @@ class FileCopier
             }
 
             echo sprintf('Copied %s to %s.', $source, $destination) . PHP_EOL;
-            if (in_array($fileToCopy, self::COPY_SCRIPTS, true)) {
+            if (isset(self::COPY_SCRIPTS[$fileToCopy])) {
                 chmod($destination, 0o755);
             } else {
                 chmod($destination, 0o644);
