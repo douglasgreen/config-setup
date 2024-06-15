@@ -61,10 +61,14 @@ Two of the PHP files check environment variables for configuration.
 
 Several scripts are customized during the install process.
 
+-   `ecs.php` sets the value of `line_length` to the value specified in the `--wrap` parameter.
 -   `.eslintrc.json` adds an "extends" field if the Standard (eslint-config-standard) or Airbnb
     (eslint-config-airbnb-base) NPM packages are installed.
 -   `phpstan.neon` updates the phpVersion field to the "require" php version in `composer.json`.
--   `.prettierrc.json` adds any Prettier plugins it finds in `package.json` to the "plugins" list.
+-   `phpunit.xml` adds the list of PHP file directories to cover and adds coverage options if either
+    pcov or xdebug is detected as a code coverage driver.
+-   `.prettierrc.json` adds any Prettier plugins it finds in `package.json` to the "plugins" list
+    and updates the `printWidth` to the value specified in the `--wrap` parameter.
 
 ## Setup Scripts
 
