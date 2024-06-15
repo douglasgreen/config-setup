@@ -34,12 +34,14 @@ Then add this script to `composer.json` to copy the config files to your project
 
 The config files will be copied every time you run `composer update` or `composer install`.
 
-The file copier will check your list of Git project files and overwrite any file not listed there.
-Then it will add the list of files copied to `/.git/info/exclude` to exclude them from being
-committed to Git.
+The file copier skips copying files if:
 
-The file copier also checks if the same config file already exists unmodified before copying it
-again to cut down on the noise.
+-   The relevant project was not found in your `composer.json` or `package.json` file.
+-   The same file is committed into your Git project and shouldn't be overwritten.
+-   The same file was already copied before and is unchanged.
+
+The file copier will add the list of files copied to `/.git/info/exclude` to exclude them from being
+committed to Git.
 
 ### File Copy Arguments
 
