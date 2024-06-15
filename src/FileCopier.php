@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\ConfigSetup;
 
+use DOMDocument;
 use Exception;
 use SimpleXMLElement;
 
@@ -265,6 +266,16 @@ class FileCopier
         }
     }
 
+    protected function hasCodeCoverageDriver(): bool
+    {
+        exec('php -m | grep -E "xdebug|pcov"', $output, $returnCode);
+        if ($returnCode !== 0) {
+            throw new Exception('Unable to determine if code coverage driver is available');
+        }
+
+        return ! empty($output);
+    }
+
     /**
      * Check if the repository has the required package, either in Composer or NPM.
      */
@@ -454,8 +465,32 @@ class FileCopier
             $directory->addAttribute('suffix', '.php');
         }
 
-        // Save the modified XML to the new file.
-        $xml->asXML($destination);
+        // Add coverage if a code coverage driver is available.
+        if ($this->hasCodeCoverageDriver()) {
+            $coverage = $xml->addChild('coverage');
+            $coverage->addAttribute('cacheDirectory', 'var/report/phpunit/cache/');
+
+            $report = $coverage->addChild('report');
+            $report
+                ->addChild('cobertura')
+                ->addAttribute('outputFile', 'var/report/phpunit/cobertura.xml');
+            $report->addChild('html')
+                ->addAttribute('outputDirectory', 'var/report/phpunit/html');
+            $report->addChild('text')
+                ->addAttribute('outputFile', 'php://stdout');
+        }
+
+        // Save the modified XML to the new file with pretty print.
+        $domDocument = new DOMDocument('1.0');
+        $domDocument->preserveWhiteSpace = false;
+        $domDocument->formatOutput = true;
+        $xmlOutput = $xml->asXML();
+        if ($xmlOutput === false) {
+            throw new Exception('Unable to make PHPUnit XML');
+        }
+
+        $domDocument->loadXML($xmlOutput);
+        $domDocument->save($destination);
     }
 
     /**
