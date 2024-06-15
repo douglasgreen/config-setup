@@ -11,28 +11,30 @@
     @see https://phpmd.org/documentation/creating-a-ruleset.html
     -->
 
-    <!-- Exclude stubs, which are empty classes and functions defined for PHPStan. -->
+    <!-- Exclude stubs, which are empty classes and functions defined for PHPStan -->
     <exclude-pattern>stubs/*</exclude-pattern>
 
-    <!-- Exclude unit test files. -->
+    <!-- Exclude unit test files -->
     <exclude-pattern>tests/*</exclude-pattern>
 
     <rule ref="rulesets/cleancode.xml">
         <!-- Avoiding else expresssions does not help -->
         <exclude name="ElseExpression" />
 
-        <!-- This does not help since = is not === so we don't confuse them. -->
+        <!-- This does not help since = is not === so we don't confuse them -->
         <exclude name="IfStatementAssignment" />
 
-        <!-- Calling static functions is necessary sometimes. -->
+        <!-- Calling static functions is necessary sometimes -->
         <exclude name="StaticAccess" />
     </rule>
     <rule ref="rulesets/codesize.xml">
-        <!-- Redundant, not visible in code, and not good measurements. -->
+        <!-- Redundant to simple line counts -->
         <exclude name="ExcessiveClassComplexity" />
+
+        <!-- Exaggerates some complexity and ingores other complexity -->
         <exclude name="NPathComplexity" />
 
-        <!-- Uses McCabe's cyclomatic complexity which overcounts case statements. -->
+        <!-- Uses McCabe's cyclomatic complexity which overcounts case statements -->
         <exclude name="CyclomaticComplexity" />
 
         <!-- Lumps together public properties and methods so it's redundant -->
@@ -56,28 +58,28 @@
     <rule ref="rulesets/naming.xml" />
     <rule ref="rulesets/unusedcode.xml" />
 
-    <!-- 99% of our PHP classes are less than this length. -->
+    <!-- 99% of our PHP classes are less than this length -->
     <rule ref="rulesets/codesize.xml/ExcessiveClassLength">
         <properties>
             <property name="minimum" value="2500" />
         </properties>
     </rule>
 
-    <!-- 99% of our PHP functions are less than this length. -->
+    <!-- 99% of our PHP functions are less than this length -->
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
         <properties>
             <property name="minimum" value="150" />
         </properties>
     </rule>
 
-    <!-- 99% of our PHP functions are less than this parameter count. -->
+    <!-- 99% of our PHP functions are less than this parameter count -->
     <rule ref="rulesets/codesize.xml/ExcessiveParameterList">
         <properties>
             <property name="minimum" value="8" />
         </properties>
     </rule>
 
-    <!-- 99% of our PHP classes have less public methods, excluding get|set. -->
+    <!-- 99% of our PHP classes have less public methods, excluding get|set -->
     <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
         <properties>
             <property name="maxmethods" value="25" />
