@@ -75,13 +75,11 @@ Several scripts are customized during the install process.
 This project uses the
 [GitLab script system](https://github.blog/2015-06-30-scripts-to-rule-them-all/).
 
-To install project dependencies, run `script/bootstrap`.
-
-To set up the project, run `script/setup`.
-
-To lint the project, run `script/lint`.
-
-To test the project, run `script/test`.
+-   To install project dependencies, run `script/bootstrap`.
+-   To set up the project, run `script/setup`.
+-   To lint the project, run `script/lint`.
+-   To lint:fix the project, run `script/fix`.
+-   To test the project, run `script/test`.
 
 ## Installing Dependencies
 
