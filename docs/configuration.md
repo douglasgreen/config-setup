@@ -81,8 +81,8 @@ Here is a description of the configuration choices made in the `phpmd.xml` file:
 -   **Code Size Ruleset**:
 
     -   **Excluded Rules**:
-        -   `ExcessiveClassComplexity`: Redundant and not visible in code.
-        -   `NPathComplexity`: Not good measurements.
+        -   `ExcessiveClassComplexity`: Redundant to simple line counts.
+        -   `NPathComplexity`: Exaggerates some complexity and ingores other complexity.
         -   `CyclomaticComplexity`: Overcounts case statements.
         -   `ExcessivePublicCount`: Redundant as it lumps together public properties and methods.
         -   `TooManyFields`: Protected and private properties are not part of the class API.
