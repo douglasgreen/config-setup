@@ -84,10 +84,6 @@ Here is a description of the configuration choices made in the `phpmd.xml` file:
         -   `ExcessivePublicCount`: Redundant as it lumps together public properties and methods.
         -   `TooManyFields`: Protected and private properties are not part of the class API.
         -   `TooManyMethods`: Lumps together public, protected, and private methods.
-        -   `ExcessiveClassLength`: Customized below.
-        -   `ExcessiveMethodLength`: Customized below.
-        -   `ExcessiveParameterList`: Customized below.
-        -   `TooManyPublicMethods`: Customized below.
 
 -   **Controversial Ruleset**: Include the entire controversial ruleset.
 -   **Design Ruleset**: Include the entire design ruleset.
