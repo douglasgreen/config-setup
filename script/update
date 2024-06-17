@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# script/update: Update application to run for its current checkout.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+script/bootstrap
+
+# Update DB if the script exists
+if [ -f "script/update_db.sh" ]; then
+    echo "==> Updating DB..."
+    script/update_db.sh
+else
+    echo "==> No script/update_db.sh found, skipping DB update."
+fi
+
+# Update environment variables if the .env file exists
+if [ -f ".env" ]; then
+    echo "==> Setting up environment variables..."
+    source .env
+else
+    echo "==> No .env file found, skipping environment update."
+fi
+
+echo "==> Repo is now ready to go!"

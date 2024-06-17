@@ -1,7 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # script/setup: Set up application to initial state.
-# @see https://github.blog/2015-06-30-scripts-to-rule-them-all/
 
 set -e
 
@@ -9,10 +8,20 @@ cd "$(dirname "$0")/.."
 
 script/bootstrap
 
-# Set up DB here
-#echo "==> Setting up DB..."
+# Set up DB if the script exists
+if [ -f "script/setup_db.sh" ]; then
+    echo "==> Setting up DB..."
+    script/setup_db.sh
+else
+    echo "==> No script/setup_db.sh found, skipping DB setup."
+fi
 
-# Set up env here here
-#echo "==> Setting up env..."
+# Set up environment variables if the .env file exists
+if [ -f ".env" ]; then
+    echo "==> Setting up environment variables..."
+    source .env
+else
+    echo "==> No .env file found, skipping environment setup."
+fi
 
 echo "==> Repo is now ready to go!"

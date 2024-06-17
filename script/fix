@@ -1,7 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # script/fix: Run lint:fix scripts.
-# @see https://github.blog/2015-06-30-scripts-to-rule-them-all/
 
 set -e
 
