@@ -55,7 +55,10 @@
     </rule>
     <rule ref="rulesets/controversial.xml" />
     <rule ref="rulesets/design.xml" />
-    <rule ref="rulesets/naming.xml" />
+    <rule ref="rulesets/naming.xml">
+        <!-- Customized below -->
+        <exclude name="LongVariable" />
+    </rule>
     <rule ref="rulesets/unusedcode.xml" />
 
     <!-- 99% of our PHP classes are less than this length -->
@@ -83,6 +86,13 @@
     <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
         <properties>
             <property name="maxmethods" value="25" />
+        </properties>
+    </rule>
+
+    <!-- 99% of our PHP variable names are shorter than 20 characters so allow 25 -->
+    <rule ref="rulesets/naming.xml/LongVariable">
+        <properties>
+            <property name="maximum" value="25" />
         </properties>
     </rule>
 </ruleset>
