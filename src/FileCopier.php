@@ -490,6 +490,11 @@ class FileCopier
 
         // Add coverage if a code coverage driver is available.
         if ($this->hasCodeCoverageDriver()) {
+            $php = $xml->addChild('php');
+            $env = $php->addChild('env');
+            $env->addAttribute('name', 'XDEBUG_MODE');
+            $env->addAttribute('value', 'coverage');
+
             $coverage = $xml->addChild('coverage');
             $coverage->addAttribute(
                 'cacheDirectory',
