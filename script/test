@@ -14,6 +14,9 @@ if [ -f "composer.json" ]; then
         composer install --no-interaction --prefer-dist
     fi
 
+    # Set the XDEBUG_MODE environment variable
+    export XDEBUG_MODE=coverage
+
     # Check if the composer script "test" exists and run it
     if composer run-script --list | grep -q -P "^\s+test\s+"; then
         echo "==> Running Composer test..."
