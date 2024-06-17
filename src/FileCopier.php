@@ -442,31 +442,35 @@ class FileCopier
 
     protected function makePhpUnit(string $destination): void
     {
-        // Create a new XML structure.
-        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><phpunit></phpunit>');
+        // Initialize the XML structure with the necessary attributes because SimpleXML doesn't
+        // support namespaces directly.
+        $xmlString = <<<XML
+            <?xml version="1.0" encoding="UTF-8"?>
+            <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" 
+                bootstrap="{$this->repoDir}/vendor/autoload.php" 
+                cacheDirectory="{$this->repoDir}/var/cache/phpunit" 
+                cacheResult="true" 
+                colors="true" 
+                executionOrder="random" 
+                failOnIncomplete="false" 
+                failOnNotice="true" 
+                failOnRisky="false" 
+                failOnWarning="true" 
+                stopOnFailure="false">
+                <testsuites>
+                    <testsuite name="Project Test Suite">
+                        <directory>{$this->repoDir}/tests</directory>
+                    </testsuite>
+                </testsuites>
+                <logging>
+                    <junit outputFile="{$this->repoDir}/var/report/phpunit/junit.xml"/>
+                </logging>
+            </phpunit>
+            XML;
 
-        // Add attributes to the phpunit element.
-        $xml->addAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-        $xml->addAttribute(
-            'xsi:noNamespaceSchemaLocation',
-            'https://schema.phpunit.de/10.5/phpunit.xsd'
-        );
-        $xml->addAttribute('bootstrap', $this->repoDir . '/vendor/autoload.php');
-        $xml->addAttribute('cacheDirectory', $this->repoDir . '/var/cache/phpunit');
-        $xml->addAttribute('cacheResult', 'true');
-        $xml->addAttribute('colors', 'true');
-        $xml->addAttribute('executionOrder', 'random');
-        $xml->addAttribute('failOnIncomplete', 'false');
-        $xml->addAttribute('failOnNotice', 'true');
-        $xml->addAttribute('failOnRisky', 'false');
-        $xml->addAttribute('failOnWarning', 'true');
-        $xml->addAttribute('stopOnFailure', 'false');
-
-        // Add testsuites element.
-        $testsuites = $xml->addChild('testsuites');
-        $testsuite = $testsuites->addChild('testsuite');
-        $testsuite->addAttribute('name', 'Project Test Suite');
-        $testsuite->addChild('directory', $this->repoDir . '/tests');
+        // Load the XML string into SimpleXMLElement.
+        $xml = new SimpleXMLElement($xmlString);
 
         // Add source files.
         $source = $xml->addChild('source');
@@ -502,11 +506,6 @@ class FileCopier
                 ->addChild('text')
                 ->addAttribute('outputFile', $this->repoDir . '/var/report/phpunit/text');
         }
-
-        // Add logging
-        $logging = $xml->addChild('logging');
-        $junit = $logging->addChild('junit');
-        $junit->addAttribute('outputFile', $this->repoDir . '/var/report/phpunit/junit.xml');
 
         // Save the modified XML to the new file with pretty print.
         $domDocument = new DOMDocument('1.0');
