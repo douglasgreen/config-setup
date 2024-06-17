@@ -207,7 +207,7 @@ return ECSConfig::configure()
                 // Use license file instead
                 'license',
 
-                // Use void return type instead
+                // Use never return type instead
                 'noreturn',
 
                 // Use namespaces instead
