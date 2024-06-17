@@ -232,7 +232,7 @@ class FileCopier
             if (is_link($symlink)) {
                 $actualTarget = readlink($symlink);
                 if ($actualTarget === false) {
-                    throw new Exception(sprintf('Unable to read link "%s"', $symlink));
+                    throw new Exception(sprintf('Unable to read link %s', $symlink));
                 }
 
                 // Check if link is pointing to the right target.
@@ -250,12 +250,10 @@ class FileCopier
 
             // Create a soft link instead of copying the file
             if (! symlink($target, $symlink)) {
-                throw new Exception(
-                    sprintf('Failed to create symlink from "%s" to "%s".', $symlink, $target)
-                );
+                throw new Exception(sprintf('Failed to create symlink %s', $symlink));
             }
 
-            printf('Created symlink from "%s" to "%s".' . PHP_EOL, $symlink, $target);
+            printf('Created symlink %s.' . PHP_EOL, $symlink);
         }
 
         if ($excludeLines === []) {
@@ -308,7 +306,7 @@ class FileCopier
     {
         $composerJsonString = file_get_contents('composer.json');
         if ($composerJsonString === false) {
-            throw new Exception('Unable to read composer.json file.');
+            throw new Exception('Unable to read composer.json file');
         }
 
         $this->composerJson = json_decode($composerJsonString, true, 16, JSON_THROW_ON_ERROR);
@@ -351,7 +349,7 @@ class FileCopier
             return;
         }
 
-        throw new Exception(sprintf('Unable to make directory: "%s"', $dir));
+        throw new Exception(sprintf('Unable to make directory %s', $dir));
     }
 
     /**
@@ -503,7 +501,7 @@ class FileCopier
         // Load .prettierrc.json
         $prettierJsonString = file_get_contents($source);
         if ($prettierJsonString === false) {
-            throw new Exception('Unable to read .prettierrc.json file.');
+            throw new Exception('Unable to read .prettierrc.json file');
         }
 
         $prettierJson = json_decode($prettierJsonString, true, 16, JSON_THROW_ON_ERROR);
@@ -513,7 +511,7 @@ class FileCopier
 
         // Find the plugins.
         if (! isset($prettierJson['plugins'])) {
-            throw new Exception('Plugins not specified in .prettierrc.json.');
+            throw new Exception('Plugins not specified in .prettierrc.json');
         }
 
         $plugins = [];
@@ -589,14 +587,14 @@ class FileCopier
     {
         // Find the PHP version in the require section
         if (! isset($this->composerJson['require']['php'])) {
-            throw new Exception('PHP version not specified in composer.json.');
+            throw new Exception('PHP version not specified in composer.json');
         }
 
         $phpVersionConstraint = $this->composerJson['require']['php'];
 
         // Extract the PHP version number
         if (preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) === 0) {
-            throw new Exception('Unable to extract PHP version from composer.json.');
+            throw new Exception('Unable to extract PHP version from composer.json');
         }
 
         $this->phpVersion = $match[0];
