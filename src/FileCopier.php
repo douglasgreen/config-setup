@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 declare(strict_types=1);
@@ -85,11 +84,6 @@ class FileCopier
     ];
 
     /**
-     * @var string Add to .git/info/exclude to ignore without modifying .gitignore.
-     */
-    public const GIT_EXCLUDE_FILE = '.git/info/exclude';
-
-    /**
      * @var array<string, mixed>
      */
     protected array $composerJson;
@@ -97,7 +91,7 @@ class FileCopier
     /**
      * @var list<string>
      */
-    protected array $composerPackages = [];
+    protected array $composerPackages;
 
     protected string $excludeFile;
 
@@ -114,7 +108,7 @@ class FileCopier
     /**
      * @var list<string>
      */
-    protected array $npmPackages = [];
+    protected array $npmPackages;
 
     /**
      * @var array<string, mixed>
@@ -124,7 +118,7 @@ class FileCopier
     /**
      * @var list<string>
      */
-    protected array $phpDirectories = [];
+    protected array $phpDirectories;
 
     protected string $phpVersion;
 
@@ -138,9 +132,9 @@ class FileCopier
      * @throws Exception
      */
     public function __construct(
-        protected string $repoDir,
-        protected int $flags = 0,
-        protected int $wrap = self::DEFAULT_WRAP
+        protected readonly string $repoDir,
+        protected readonly int $flags = 0,
+        protected readonly int $wrap = self::DEFAULT_WRAP
     ) {
         $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
 
@@ -148,10 +142,12 @@ class FileCopier
         $this->loadComposerJson();
         $this->loadPackageJson();
 
-        $this->filesToCopy = array_merge(self::COPY_FILES, self::COPY_SCRIPTS);
-        ksort($this->filesToCopy);
+        $filesToCopy = array_merge(self::COPY_FILES, self::COPY_SCRIPTS);
+        ksort($filesToCopy);
+        $this->filesToCopy = $filesToCopy;
 
-        $this->excludeFile = $this->repoDir . '/' . self::GIT_EXCLUDE_FILE;
+        // Add to .git/info/exclude to ignore without modifying .gitignore.
+        $this->excludeFile = $this->repoDir . '/.git/info/exclude';
 
         $this->setComposerPackages();
         $this->setNpmPackages();
@@ -427,33 +423,25 @@ class FileCopier
         }
     }
 
-    /**
-     * @throws Exception
-     */
     protected function makePhpStan(string $source, string $destination): void
     {
         [$major, $minor] = explode('.', $this->phpVersion);
         $phpStanVersion = sprintf('%d0%d00', $major, $minor);
 
         // Load phpstan.neon
-        if (! file_exists($source)) {
-            throw new Exception('phpstan.neon file not found.');
-        }
-
-        $phpStanConfig = file_get_contents($source);
-        if ($phpStanConfig === false) {
-            throw new Exception('Unable to load PHPStan config');
-        }
+        $sourceFile = new NeonFile($source);
+        $phpStanConfig = $sourceFile->load();
 
         // Update phpVersion entry with project version.
-        $phpStanConfig = preg_replace(
-            '/phpVersion: \d+/',
-            'phpVersion: ' . $phpStanVersion,
-            $phpStanConfig
-        );
-        if (file_put_contents($destination, $phpStanConfig) === false) {
-            throw new Exception('Unable to write PHPStan config file to var');
+        $phpStanConfig['parameters']['phpVersion'] = $phpStanVersion;
+
+        // Add bootstrap file if exists at usual location.
+        if (file_exists($this->repoDir . '/phpstan-bootstrap.php')) {
+            $phpStanConfig['parameters']['bootstrapFiles'] = 'phpstan-bootstrap.php';
         }
+
+        $destFile = new NeonFile($destination);
+        $destFile->save($phpStanConfig);
     }
 
     protected function makePhpunit(string $source, string $destination): void
@@ -630,8 +618,9 @@ class FileCopier
             }
         }
 
-        $this->phpDirectories = array_keys($phpPaths);
-        sort($this->phpDirectories);
+        $phpDirectories = array_keys($phpPaths);
+        sort($phpDirectories);
+        $this->phpDirectories = $phpDirectories;
 
         $pathFile = $this->repoDir . '/php_paths';
         $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];
