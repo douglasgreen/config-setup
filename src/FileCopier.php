@@ -433,11 +433,11 @@ class FileCopier
         $phpStanConfig = $sourceFile->load();
 
         // Update phpVersion entry with project version.
-        $phpStanConfig['parameters']['phpVersion'] = $phpStanVersion;
+        $phpStanConfig['parameters']['phpVersion'] = (int) $phpStanVersion;
 
         // Add bootstrap file if exists at usual location.
         if (file_exists($this->repoDir . '/phpstan-bootstrap.php')) {
-            $phpStanConfig['parameters']['bootstrapFiles'] = 'phpstan-bootstrap.php';
+            $phpStanConfig['parameters']['bootstrapFiles'] = ['phpstan-bootstrap.php'];
         }
 
         $destFile = new NeonFile($destination);
