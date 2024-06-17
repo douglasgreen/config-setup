@@ -40,7 +40,6 @@
     "require-dev": {
         "phpmd/phpmd": "^2.15",
         "phpstan/phpstan": "^1.10",
-        "phpunit/phpunit": "^10.5",
         "rector/rector": "^1.0",
         "symplify/easy-coding-standard": "^12.2"
     },

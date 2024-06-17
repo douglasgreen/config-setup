@@ -204,7 +204,7 @@ class FileCopier
                 $this->makePhpStan($plainFile, $target);
             } elseif ($fileToCopy === 'phpunit.xml') {
                 // Put PHPUnit temporary copy with directory list and coverage options in var dir.
-                $this->makePhpunit($plainFile, $target);
+                $this->makePhpUnit($target);
             } elseif ($fileToCopy === '.prettierrc.json') {
                 // Put Prettier temporary copy with new plugin list in var dir.
                 $this->makePrettierrc($plainFile, $target);
@@ -440,15 +440,33 @@ class FileCopier
         $destFile->save($phpStanConfig);
     }
 
-    protected function makePhpunit(string $source, string $destination): void
+    protected function makePhpUnit(string $destination): void
     {
-        // Load the XML file.
-        $xmlSource = file_get_contents($source);
-        if ($xmlSource === false) {
-            throw new Exception('Unable to load phpunit.xml');
-        }
+        // Create a new XML structure.
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><phpunit></phpunit>');
 
-        $xml = new SimpleXMLElement($xmlSource);
+        // Add attributes to the phpunit element.
+        $xml->addAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $xml->addAttribute(
+            'xsi:noNamespaceSchemaLocation',
+            'https://schema.phpunit.de/10.5/phpunit.xsd'
+        );
+        $xml->addAttribute('bootstrap', $this->repoDir . '/vendor/autoload.php');
+        $xml->addAttribute('cacheDirectory', $this->repoDir . '/var/cache/phpunit');
+        $xml->addAttribute('cacheResult', 'true');
+        $xml->addAttribute('colors', 'true');
+        $xml->addAttribute('executionOrder', 'random');
+        $xml->addAttribute('failOnIncomplete', 'false');
+        $xml->addAttribute('failOnNotice', 'true');
+        $xml->addAttribute('failOnRisky', 'false');
+        $xml->addAttribute('failOnWarning', 'true');
+        $xml->addAttribute('stopOnFailure', 'false');
+
+        // Add testsuites element.
+        $testsuites = $xml->addChild('testsuites');
+        $testsuite = $testsuites->addChild('testsuite');
+        $testsuite->addAttribute('name', 'Project Test Suite');
+        $testsuite->addChild('directory', $this->repoDir . '/tests');
 
         // Add source files.
         $source = $xml->addChild('source');
@@ -461,24 +479,34 @@ class FileCopier
                 continue;
             }
 
-            $directory = $include->addChild('directory', $phpDirectory);
+            $directory = $include->addChild('directory', $this->repoDir . '/' . $phpDirectory);
             $directory->addAttribute('suffix', '.php');
         }
 
         // Add coverage if a code coverage driver is available.
         if ($this->hasCodeCoverageDriver()) {
             $coverage = $xml->addChild('coverage');
-            $coverage->addAttribute('cacheDirectory', 'var/report/phpunit/cache/');
+            $coverage->addAttribute(
+                'cacheDirectory',
+                $this->repoDir . '/var/report/phpunit/cache/'
+            );
 
             $report = $coverage->addChild('report');
             $report
                 ->addChild('cobertura')
-                ->addAttribute('outputFile', 'var/report/phpunit/cobertura.xml');
-            $report->addChild('html')
-                ->addAttribute('outputDirectory', 'var/report/phpunit/html');
-            $report->addChild('text')
-                ->addAttribute('outputFile', 'var/report/phpunit/text');
+                ->addAttribute('outputFile', $this->repoDir . '/var/report/phpunit/cobertura.xml');
+            $report
+                ->addChild('html')
+                ->addAttribute('outputDirectory', $this->repoDir . '/var/report/phpunit/html');
+            $report
+                ->addChild('text')
+                ->addAttribute('outputFile', $this->repoDir . '/var/report/phpunit/text');
         }
+
+        // Add logging
+        $logging = $xml->addChild('logging');
+        $junit = $logging->addChild('junit');
+        $junit->addAttribute('outputFile', $this->repoDir . '/var/report/phpunit/junit.xml');
 
         // Save the modified XML to the new file with pretty print.
         $domDocument = new DOMDocument('1.0');
