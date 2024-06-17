@@ -233,7 +233,10 @@ class FileCopier
             }
 
             // Skip copying of identical files.
-            if (file_exists($destination) && md5_file($source) === md5_file($destination)) {
+            if (
+                file_exists($destination) &&
+                $this->getMd5($source) === $this->getMd5($destination)
+            ) {
                 continue;
             }
 
@@ -290,6 +293,18 @@ class FileCopier
         $packageName = self::PACKAGE_NAMES[$requiredPackage];
         return in_array($packageName, $this->composerPackages, true) ||
             in_array($packageName, $this->npmPackages, true);
+    }
+
+    protected function getMd5(string $filename): string
+    {
+        $text = file_get_contents($filename);
+        if ($text === false) {
+            throw new Exception(sprintf('Unable to read file "%s"', $filename));
+        }
+
+        // Ignore space changes.
+        $compressed = preg_replace('/\s+/', '', $text);
+        return md5((string) $compressed);
     }
 
     /**
