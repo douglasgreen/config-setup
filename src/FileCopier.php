@@ -192,25 +192,25 @@ class FileCopier
             }
 
             $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-            $source = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+            $target = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
             if ($fileToCopy === 'ecs.php') {
                 // Put temporary copy with correct "line_length" value in var dir.
-                $this->makeEcs($plainFile, $source);
+                $this->makeEcs($plainFile, $target);
             } elseif ($fileToCopy === '.eslintrc.json') {
                 // Put temporary copy with correct "extends" value in var dir.
-                $this->makeEslintrc($plainFile, $source);
+                $this->makeEslintrc($plainFile, $target);
             } elseif ($fileToCopy === 'phpstan.neon') {
                 // Put PHPStan temporary copy with PHP version in var dir.
-                $this->makePhpStan($plainFile, $source);
+                $this->makePhpStan($plainFile, $target);
             } elseif ($fileToCopy === 'phpunit.xml') {
                 // Put PHPUnit temporary copy with directory list and coverage options in var dir.
-                $this->makePhpunit($plainFile, $source);
+                $this->makePhpunit($plainFile, $target);
             } elseif ($fileToCopy === '.prettierrc.json') {
                 // Put Prettier temporary copy with new plugin list in var dir.
-                $this->makePrettierrc($plainFile, $source);
+                $this->makePrettierrc($plainFile, $target);
             } else {
                 // Use original, unmodified source.
-                $source = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+                $target = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
             }
 
             // Overwrite target but not source file to copy to different name.
@@ -219,33 +219,43 @@ class FileCopier
                 $fileToCopy = '.husky/pre-push';
             }
 
-            $destination = $this->repoDir . '/' . $fileToCopy;
+            $symlink = $this->repoDir . '/' . $fileToCopy;
 
-            $destinationDir = dirname($destination);
-            $this->makeDir($destinationDir);
+            $symlinkDir = dirname($symlink);
+            $this->makeDir($symlinkDir);
 
             if (! in_array($fileToCopy, $excludeLines, true)) {
                 $excludeLines[] = $fileToCopy;
             }
 
-            // Skip copying of identical files.
-            if (
-                file_exists($destination) &&
-                $this->getMd5($source) === $this->getMd5($destination)
-            ) {
-                continue;
+            // Check if link already exists.
+            if (is_link($symlink)) {
+                $actualTarget = readlink($symlink);
+                if ($actualTarget === false) {
+                    throw new Exception(sprintf('Unable to read link "%s"', $symlink));
+                }
+
+                // Check if link is pointing to the right target.
+                if ($actualTarget === $target) {
+                    continue;
+                }
+
+                unlink($symlink);
             }
 
-            if (! copy($source, $destination)) {
-                throw new Exception(sprintf('Failed to copy %s to %s.', $source, $destination));
+            // Check if the destination exists and is a file, then delete it
+            if (is_file($symlink)) {
+                unlink($symlink);
             }
 
-            echo sprintf('Copied %s to %s.', $source, $destination) . PHP_EOL;
-            if (array_key_exists($fileToCopy, self::COPY_SCRIPTS)) {
-                chmod($destination, 0o755);
-            } else {
-                chmod($destination, 0o644);
+            // Create a soft link instead of copying the file
+            if (! symlink($target, $symlink)) {
+                throw new Exception(
+                    sprintf('Failed to create symlink from "%s" to "%s".', $symlink, $target)
+                );
             }
+
+            printf('Created symlink from "%s" to "%s".' . PHP_EOL, $symlink, $target);
         }
 
         if ($excludeLines === []) {
@@ -289,18 +299,6 @@ class FileCopier
         $packageName = self::PACKAGE_NAMES[$requiredPackage];
         return in_array($packageName, $this->composerPackages, true) ||
             in_array($packageName, $this->npmPackages, true);
-    }
-
-    protected function getMd5(string $filename): string
-    {
-        $text = file_get_contents($filename);
-        if ($text === false) {
-            throw new Exception(sprintf('Unable to read file "%s"', $filename));
-        }
-
-        // Ignore space changes.
-        $compressed = preg_replace('/\s+/', '', $text);
-        return md5((string) $compressed);
     }
 
     /**
