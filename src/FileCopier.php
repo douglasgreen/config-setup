@@ -54,6 +54,8 @@ class FileCopier
     ];
 
     /**
+     * There is no cache for rector because it was having too many errors.
+     *
      * @var array<string, ?string> Names of directories to make if the project is installed
      */
     protected const MAKE_DIRS = [
@@ -64,7 +66,6 @@ class FileCopier
         'var/cache/phpmd' => 'phpmd',
         'var/cache/phpstan' => 'phpstan',
         'var/cache/phpunit' => 'phpunit',
-        'var/cache/rector' => 'rector',
         'var/report/phpunit' => 'phpunit',
     ];
 
@@ -156,13 +157,9 @@ class FileCopier
         $this->setNpmPackages();
         $this->setPhpVersion();
         $this->updatePhpPaths();
+        $this->deleteDirectory('var/cache');
 
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
-            // Clear the cache
-            if (str_starts_with($dir, 'var/cache/')) {
-                $this->deleteDirectory($dir);
-            }
-
             // Don't make directories if their package isn't installed.
             if (! $this->hasPackage($requiredPackage)) {
                 continue;

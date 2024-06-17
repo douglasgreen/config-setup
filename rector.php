@@ -26,7 +26,6 @@
 
 declare(strict_types=1);
 
-use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Naming\Rector\ClassMethod\RenameVariableToMatchNewTypeRector;
@@ -134,7 +133,6 @@ if ($paths === false) {
 $paths = array_map('trim', $paths);
 
 return RectorConfig::configure()
-    ->withCache(cacheDirectory: 'var/cache/rector', cacheClass: FileCacheStorage::class)
     ->withPaths($paths)
     ->withImportNames(importShortClasses: false, removeUnusedImports: true)
     ->withPhpSets()
