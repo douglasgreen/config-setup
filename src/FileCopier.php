@@ -11,7 +11,7 @@ use SimpleXMLElement;
 
 class FileCopier
 {
-    public const DEFAULT_WRAP = 80;
+    public const DEFAULT_WRAP = 100;
 
     public const PRE_PUSH = 1;
 
