@@ -6,6 +6,8 @@ namespace DouglasGreen\ConfigSetup;
 
 use DOMDocument;
 use Exception;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use SimpleXMLElement;
 
 class FileCopier
@@ -156,6 +158,11 @@ class FileCopier
         $this->updatePhpPaths();
 
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
+            // Clear the cache
+            if (str_starts_with($dir, 'var/cache/')) {
+                $this->deleteDirectory($dir);
+            }
+
             // Don't make directories if their package isn't installed.
             if (! $this->hasPackage($requiredPackage)) {
                 continue;
@@ -573,6 +580,29 @@ class FileCopier
 
         if (file_put_contents($destination, $prettierJsonString) === false) {
             throw new Exception('Unable to write Prettier config file to var');
+        }
+    }
+
+    /**
+     * Recursively delete a directory and its contents.
+     */
+    protected function deleteDirectory(string $dirPath): void
+    {
+        if (! is_dir($dirPath)) {
+            return;
+        }
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isDir()) {
+                rmdir($file->getPathname());
+            } else {
+                unlink($file->getPathname());
+            }
         }
     }
 
