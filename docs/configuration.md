@@ -59,7 +59,8 @@ Here is a summary of the configuration options in the `rector.php` file:
     SensioLabs, and Symfony based on their presence.
 -   **Prepared Sets**: Enable prepared sets for code quality, coding style, dead code, early return,
     instanceOf, naming, privatization, strict booleans, and type declarations.
--   **Skip Specific Rules**: Skip specific rules such as `AddSeeTestAnnotationRector`.
+-   **Skip Specific Rules**: Skip specific rules such as `RenameVariableToMatchNewTypeRector`,
+    because variable names can be shorter than class names, and `AddSeeTestAnnotationRector`.
 
 This configuration file sets up various coding standards and rules for PHP projects using the Rector
 tool.

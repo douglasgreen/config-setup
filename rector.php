@@ -29,6 +29,7 @@ declare(strict_types=1);
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
+use Rector\Naming\Rector\ClassMethod\RenameVariableToMatchNewTypeRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\AddSeeTestAnnotationRector;
 use Rector\PHPUnit\Set\PHPUnitLevelSetList;
 use Rector\PHPUnit\Set\PHPUnitSetList;
@@ -159,4 +160,4 @@ return RectorConfig::configure()
         strictBooleans: true,
         typeDeclarations: true
     )
-    ->withSkip([AddSeeTestAnnotationRector::class]);
+    ->withSkip([AddSeeTestAnnotationRector::class, RenameVariableToMatchNewTypeRector::class]);
