@@ -48,6 +48,7 @@ class FileCopier
         'script/lint' => null,
         'script/setup' => null,
         'script/test' => null,
+        'script/update' => null,
     ];
 
     /**
