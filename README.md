@@ -231,6 +231,11 @@ Each of the PHP formatting tools and ESLint is configured to cache its results f
 operation using use subdirectories of the `var/cache` directory. These directories are automatically
 created by the `bin/copy_files.php` script if they don't exist.
 
+## Troubleshooting
+
+Sometimes Rector has trouble deleting files from the cache and gives errors. When that happens, just
+`rm -Rf var/*` and rerun `composer install`.
+
 ## More Information
 
 For more information about the decisions behind configuration choices, see
