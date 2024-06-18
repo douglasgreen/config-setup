@@ -61,8 +61,8 @@ Here is a summary of the configuration options in the `rector.php` file:
     instanceOf, naming, privatization, strict booleans, and type declarations.
 -   **Skip Specific Rules**: Skip specific rules such as `RenameVariableToMatchNewTypeRector`,
     because variable names can be shorter than class names, and `AddSeeTestAnnotationRector`.
--   **Cache Enabled**: Caching was enabled for Rector but parallel processing was disabled because it
-    was causing many errors.
+-   **Cache Enabled**: Caching was enabled for Rector but parallel processing was disabled because
+    it was causing many errors.
 
 This configuration file sets up various coding standards and rules for PHP projects using the Rector
 tool.

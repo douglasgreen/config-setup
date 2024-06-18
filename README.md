@@ -86,6 +86,18 @@ This project uses the
 -   To lint the project, run `script/lint`.
 -   To lint:fix the project, run `script/fix`.
 -   To test the project, run `script/test`.
+-   To update the project, run `script/update`.
+
+Most of the scripts just install Composer and NPM dependencies and run scripts for linting, fixing,
+and testing.
+
+The setup and update scripts attempt to do more by:
+
+-   Running `script/setup_db.sh` or `script/update_db.sh` for database updates if those scripts
+    exist.
+-   Doing `source .env` to set up or update environment variables if the `.env` file exists.
+
+You can create those files to use for standard project configuration.
 
 ## Installing Dependencies
 
