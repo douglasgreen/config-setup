@@ -154,7 +154,6 @@ class FileCopier
         $this->composerPackages = $this->getComposerPackages();
         $this->npmPackages = $this->getNpmPackages();
         $this->phpVersion = $this->getPhpVersion();
-        $this->updatePhpPaths();
         $this->deleteDirectory('var/cache');
 
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
@@ -181,6 +180,10 @@ class FileCopier
         }
 
         $oldExcludeLines = $excludeLines;
+
+        if ($this->updatePhpPaths()) {
+            $excludeLines[] = 'php_paths';
+        }
 
         $gitFiles = array_flip($this->gitFiles);
         foreach ($this->filesToCopy as $fileToCopy => $requiredPackage) {
@@ -267,10 +270,9 @@ class FileCopier
             return;
         }
 
+        $output = implode(PHP_EOL, $excludeLines) . PHP_EOL;
         if (
-            file_put_contents($this->excludeFile, implode(PHP_EOL, $excludeLines) . PHP_EOL) ===
-            false
-        ) {
+            file_put_contents($this->excludeFile, $output) === false) {
             echo 'Error updating ' . $this->excludeFile . PHP_EOL;
         } else {
             echo $this->excludeFile . ' has been updated.' . PHP_EOL;
@@ -705,7 +707,7 @@ class FileCopier
         return $match[0];
     }
 
-    protected function updatePhpPaths(): void
+    protected function updatePhpPaths(): bool
     {
         $pathFile = $this->repoDir . '/php_paths';
         $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];
@@ -713,7 +715,10 @@ class FileCopier
         // Write the list of directories to php_paths file
         if ($oldPaths !== $this->phpDirectories) {
             file_put_contents($pathFile, implode(PHP_EOL, $this->phpDirectories) . PHP_EOL);
-            echo 'php_paths file has been created.' . PHP_EOL;
+            echo 'Created php_paths file.' . PHP_EOL;
+            return true;
         }
+
+        return false;
     }
 }
