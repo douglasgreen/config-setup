@@ -303,12 +303,10 @@ class FileCopier
             $this->composerPackages !== null &&
             in_array($packageName, $this->composerPackages, true)
         ) {
+            return true;
         }
 
-        if ($this->npmPackages !== null && in_array($packageName, $this->npmPackages, true)) {
-        }
-
-        return false;
+        return $this->npmPackages !== null && in_array($packageName, $this->npmPackages, true);
     }
 
     /**
