@@ -332,6 +332,11 @@ class FileCopier
      */
     protected function loadPackageJson(): void
     {
+        if (! file_exists('package.json')) {
+            echo 'File package.json not found' . PHP_EOL;
+            return;
+        }
+
         $packageJsonString = file_get_contents('package.json');
         if ($packageJsonString === false) {
             return;
