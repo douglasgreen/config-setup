@@ -82,10 +82,11 @@
         </properties>
     </rule>
 
-    <!-- 99% of our PHP classes have less public methods, excluding get|set -->
+    <!-- 99% of our PHP classes have less public methods, excluding getters -->
     <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
         <properties>
-            <property name="maxmethods" value="25" />
+            <property name="ignorepattern" value="/^get/i" />
+            <property name="maxmethods" value="30" />
         </properties>
     </rule>
 

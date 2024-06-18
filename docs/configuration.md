@@ -61,8 +61,8 @@ Here is a summary of the configuration options in the `rector.php` file:
     instanceOf, naming, privatization, strict booleans, and type declarations.
 -   **Skip Specific Rules**: Skip specific rules such as `RenameVariableToMatchNewTypeRector`,
     because variable names can be shorter than class names, and `AddSeeTestAnnotationRector`.
--   **Cache Enabled**: Caching was enabled for Rector but paralle processing was disabled because
-    it was causing many errors.
+-   **Cache Enabled**: Caching was enabled for Rector but parallel processing was disabled because it
+    was causing many errors.
 
 This configuration file sets up various coding standards and rules for PHP projects using the Rector
 tool.
@@ -103,8 +103,8 @@ Here is a description of the configuration choices made in the `phpmd.xml` file:
         functions.
     -   **Excessive Parameter List**: Set the maximum parameter count to 8, covering 99% of PHP
         functions.
-    -   **Too Many Public Methods**: Set the maximum public methods to 25, excluding getter and
-        setter methods, covering 99% of PHP classes.
+    -   **Too Many Public Methods**: Set the maximum public methods to 30, excluding getter methods,
+        covering 99% of PHP classes.
     -   **Long Variables**: Set the maximum length to 25 characters, covering 99% of PHP names.
 
 ### PHPStan
