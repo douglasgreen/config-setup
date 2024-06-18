@@ -91,47 +91,43 @@ class FileCopier
     /**
      * @var array<string, mixed>
      */
-    protected array $composerJson;
+    protected readonly array $composerJson;
 
     /**
-     * @var list<string>
+     * @var ?list<string>
      */
-    protected array $composerPackages;
+    protected readonly ?array $composerPackages;
 
-    protected string $excludeFile;
+    protected readonly string $excludeFile;
 
     /**
      * @var array<string, ?string>
      */
-    protected array $filesToCopy;
+    protected readonly array $filesToCopy;
 
     /**
      * @var list<string>
      */
-    protected array $gitFiles;
+    protected readonly array $gitFiles;
+
+    /**
+     * @var ?list<string>
+     */
+    protected readonly ?array $npmPackages;
+
+    /**
+     * @var ?array<string, mixed>
+     */
+    protected readonly ?array $packageJson;
 
     /**
      * @var list<string>
      */
-    protected array $npmPackages;
+    protected readonly array $phpDirectories;
 
-    /**
-     * @var array<string, mixed>
-     */
-    protected array $packageJson;
+    protected readonly string $phpVersion;
 
-    /**
-     * @var list<string>
-     */
-    protected array $phpDirectories;
-
-    protected string $phpVersion;
-
-    protected bool $useCobertura;
-
-    protected bool $useJunit;
-
-    protected bool $usePrePush;
+    protected readonly bool $usePrePush;
 
     /**
      * @throws Exception
@@ -143,9 +139,10 @@ class FileCopier
     ) {
         $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
 
-        $this->loadGitFiles();
-        $this->loadComposerJson();
-        $this->loadPackageJson();
+        $this->gitFiles = $this->loadGitFiles();
+        $this->composerJson = $this->loadComposerJson();
+        $this->packageJson = $this->loadPackageJson();
+        $this->phpDirectories = $this->getPhpDirectories();
 
         $filesToCopy = array_merge(self::COPY_FILES, self::COPY_SCRIPTS);
         ksort($filesToCopy);
@@ -154,9 +151,9 @@ class FileCopier
         // Add to .git/info/exclude to ignore without modifying .gitignore.
         $this->excludeFile = $this->repoDir . '/.git/info/exclude';
 
-        $this->setComposerPackages();
-        $this->setNpmPackages();
-        $this->setPhpVersion();
+        $this->composerPackages = $this->getComposerPackages();
+        $this->npmPackages = $this->getNpmPackages();
+        $this->phpVersion = $this->getPhpVersion();
         $this->updatePhpPaths();
         $this->deleteDirectory('var/cache');
 
@@ -295,54 +292,66 @@ class FileCopier
      */
     protected function hasPackage(?string $requiredPackage): bool
     {
-        // If there are no requirements, they can't fail.
+        // If there are no requirements, it can't fail.
         if ($requiredPackage === null) {
             return true;
         }
 
         $packageName = self::PACKAGE_NAMES[$requiredPackage];
-        return in_array($packageName, $this->composerPackages, true) ||
-            in_array($packageName, $this->npmPackages, true);
+
+        if (
+            $this->composerPackages !== null &&
+            in_array($packageName, $this->composerPackages, true)
+        ) {
+        }
+
+        if ($this->npmPackages !== null && in_array($packageName, $this->npmPackages, true)) {
+        }
+
+        return false;
     }
 
     /**
+     * @return array<string, mixed>
      * @throws Exception
      */
-    protected function loadComposerJson(): void
+    protected function loadComposerJson(): array
     {
         $composerJsonString = file_get_contents('composer.json');
         if ($composerJsonString === false) {
             throw new Exception('Unable to read composer.json file');
         }
 
-        $this->composerJson = json_decode($composerJsonString, true, 16, JSON_THROW_ON_ERROR);
+        return json_decode($composerJsonString, true, 16, JSON_THROW_ON_ERROR);
     }
 
     /**
+     * @return list<string>
      * @throws Exception
      */
-    protected function loadGitFiles(): void
+    protected function loadGitFiles(): array
     {
         exec('git ls-files', $output);
-        $this->gitFiles = $output;
+        return $output;
     }
 
     /**
+     * @return ?array<string, mixed>
      * @throws Exception
      */
-    protected function loadPackageJson(): void
+    protected function loadPackageJson(): ?array
     {
         if (! file_exists('package.json')) {
             echo 'File package.json not found' . PHP_EOL;
-            return;
+            return null;
         }
 
         $packageJsonString = file_get_contents('package.json');
         if ($packageJsonString === false) {
-            return;
+            return null;
         }
 
-        $this->packageJson = json_decode($packageJsonString, true, 16, JSON_THROW_ON_ERROR);
+        return json_decode($packageJsonString, true, 16, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -397,6 +406,10 @@ class FileCopier
      */
     protected function makeEslintrc(string $source, string $destination): void
     {
+        if ($this->npmPackages === null) {
+            return;
+        }
+
         $eslintJsonString = file_get_contents($source);
         if ($eslintJsonString === false) {
             throw new Exception('Unable to load Eslint config');
@@ -541,6 +554,10 @@ class FileCopier
      */
     protected function makePrettierrc(string $source, string $destination): void
     {
+        if ($this->npmPackages === null) {
+            return;
+        }
+
         // Load .prettierrc.json
         $prettierJsonString = file_get_contents($source);
         if ($prettierJsonString === false) {
@@ -610,13 +627,14 @@ class FileCopier
     }
 
     /**
+     * @return ?list<string>
      * @throws Exception
      */
-    protected function setComposerPackages(): void
+    protected function getComposerPackages(): ?array
     {
         // Find the plugins.
         if (! isset($this->composerJson['require-dev'])) {
-            return;
+            return null;
         }
 
         $packageList = [];
@@ -626,17 +644,18 @@ class FileCopier
             }
         }
 
-        $this->composerPackages = $packageList;
+        return $packageList;
     }
 
     /**
+     * @return ?list<string>
      * @throws Exception
      */
-    protected function setNpmPackages(): void
+    protected function getNpmPackages(): ?array
     {
         // Find the plugins.
         if (! isset($this->packageJson['devDependencies'])) {
-            return;
+            return null;
         }
 
         $packageList = [];
@@ -646,27 +665,13 @@ class FileCopier
             }
         }
 
-        $this->npmPackages = $packageList;
+        return $packageList;
     }
 
-    protected function setPhpVersion(): void
-    {
-        // Find the PHP version in the require section
-        if (! isset($this->composerJson['require']['php'])) {
-            throw new Exception('PHP version not specified in composer.json');
-        }
-
-        $phpVersionConstraint = $this->composerJson['require']['php'];
-
-        // Extract the PHP version number
-        if (preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) === 0) {
-            throw new Exception('Unable to extract PHP version from composer.json');
-        }
-
-        $this->phpVersion = $match[0];
-    }
-
-    protected function updatePhpPaths(): void
+    /**
+     * @return list<string>
+     */
+    protected function getPhpDirectories(): array
     {
         // Find top-level directories containing PHP files
         $phpPaths = [];
@@ -682,8 +687,28 @@ class FileCopier
 
         $phpDirectories = array_keys($phpPaths);
         sort($phpDirectories);
-        $this->phpDirectories = $phpDirectories;
+        return $phpDirectories;
+    }
 
+    protected function getPhpVersion(): string
+    {
+        // Find the PHP version in the require section
+        if (! isset($this->composerJson['require']['php'])) {
+            throw new Exception('PHP version not specified in composer.json');
+        }
+
+        $phpVersionConstraint = $this->composerJson['require']['php'];
+
+        // Extract the PHP version number
+        if (preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) === 0) {
+            throw new Exception('Unable to extract PHP version from composer.json');
+        }
+
+        return $match[0];
+    }
+
+    protected function updatePhpPaths(): void
+    {
         $pathFile = $this->repoDir . '/php_paths';
         $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];
 
