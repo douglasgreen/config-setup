@@ -133,6 +133,7 @@ if ($paths === false) {
 $paths = array_map('trim', $paths);
 
 return RectorConfig::configure()
+    ->withoutParallel()
     ->withPaths($paths)
     ->withImportNames(importShortClasses: false, removeUnusedImports: true)
     ->withPhpSets()
