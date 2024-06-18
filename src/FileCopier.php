@@ -66,6 +66,7 @@ class FileCopier
         'var/cache/phpmd' => 'phpmd',
         'var/cache/phpstan' => 'phpstan',
         'var/cache/phpunit' => 'phpunit',
+        'var/cache/rector' => 'rector',
         'var/report/phpunit' => 'phpunit',
     ];
 
