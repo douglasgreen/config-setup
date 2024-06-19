@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b527b63086163d513e2a8024fadeb434",
+    "content-hash": "c163a9a883164d7ce8bf537fe9e712ce",
     "packages": [
         {
             "name": "nette/neon",
-            "version": "v3.4.1",
+            "version": "v3.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/neon.git",
-                "reference": "457bfbf0560f600b30d9df4233af382a478bb44d"
+                "reference": "0edcee11ca631af369180d9f3bc9615ea0cb2dfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/neon/zipball/457bfbf0560f600b30d9df4233af382a478bb44d",
-                "reference": "457bfbf0560f600b30d9df4233af382a478bb44d",
+                "url": "https://api.github.com/repos/nette/neon/zipball/0edcee11ca631af369180d9f3bc9615ea0cb2dfb",
+                "reference": "0edcee11ca631af369180d9f3bc9615ea0cb2dfb",
                 "shasum": ""
             },
             "require": {
@@ -70,9 +70,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/neon/issues",
-                "source": "https://github.com/nette/neon/tree/v3.4.1"
+                "source": "https://github.com/nette/neon/tree/v3.4.2"
             },
-            "time": "2023-09-27T08:59:11+00:00"
+            "time": "2024-06-18T21:02:21+00:00"
         }
     ],
     "packages-dev": [
@@ -1187,16 +1187,16 @@
         },
         {
             "name": "symplify/easy-coding-standard",
-            "version": "12.2.1",
+            "version": "12.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/easy-coding-standard/easy-coding-standard.git",
-                "reference": "095fe591b2e51fd84edd21b8c9be74402eadc50e"
+                "reference": "f919574aa566b4d00fd06700ca61168aafef66e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/easy-coding-standard/easy-coding-standard/zipball/095fe591b2e51fd84edd21b8c9be74402eadc50e",
-                "reference": "095fe591b2e51fd84edd21b8c9be74402eadc50e",
+                "url": "https://api.github.com/repos/easy-coding-standard/easy-coding-standard/zipball/f919574aa566b4d00fd06700ca61168aafef66e1",
+                "reference": "f919574aa566b4d00fd06700ca61168aafef66e1",
                 "shasum": ""
             },
             "require": {
@@ -1232,7 +1232,7 @@
             ],
             "support": {
                 "issues": "https://github.com/easy-coding-standard/easy-coding-standard/issues",
-                "source": "https://github.com/easy-coding-standard/easy-coding-standard/tree/12.2.1"
+                "source": "https://github.com/easy-coding-standard/easy-coding-standard/tree/12.3.0"
             },
             "funding": [
                 {
@@ -1244,7 +1244,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-06-02T01:25:21+00:00"
+            "time": "2024-06-18T07:35:59+00:00"
         }
     ],
     "aliases": [],
