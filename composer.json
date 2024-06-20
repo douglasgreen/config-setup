@@ -47,8 +47,8 @@
         "lint": [
             "ecs",
             "phpstan analyse",
-            "rector --dry-run",
-            "./run_phpmd.sh"
+            "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
+            "rector --dry-run"
         ],
         "lint:fix": [
             "ecs --fix",
