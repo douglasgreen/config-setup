@@ -54,7 +54,7 @@ hooks to work.
 When running `copy_files.php`, there are two possible arguments:
 
 -   `--wrap INT` or `-w INT`: Set a different integer (INT) wrap than the default of 100.
--   `--pre-push` or `-p`: Use the pre-push event instead of pre-commit for fewer interruptions.
+-   `--no-pre-commit` or `-n`: Don't use the pre-commit for fewer interruptions.
 
 ### Environment Variables
 
