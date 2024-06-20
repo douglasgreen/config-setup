@@ -58,6 +58,7 @@
     <rule ref="rulesets/naming.xml">
         <!-- Customized below -->
         <exclude name="LongVariable" />
+        <exclude name="ShortVariable" />
     </rule>
     <rule ref="rulesets/unusedcode.xml" />
 
@@ -94,6 +95,19 @@
     <rule ref="rulesets/naming.xml/LongVariable">
         <properties>
             <property name="maximum" value="25" />
+        </properties>
+    </rule>
+
+    <!--
+        Allow some short names:
+        $db = database
+        $e = exception
+        $i, $j, $k = indexes
+        $id = identifier
+    -->
+    <rule ref="rulesets/naming.xml/ShortVariable">
+        <properties>
+            <property name="exceptions" value="db,e,i,j,k,id" />
         </properties>
     </rule>
 </ruleset>

@@ -106,6 +106,11 @@ Here is a description of the configuration choices made in the `phpmd.xml` file:
     -   **Too Many Public Methods**: Set the maximum public methods to 30, excluding getter methods,
         covering 99% of PHP classes.
     -   **Long Variables**: Set the maximum length to 25 characters, covering 99% of PHP names.
+    -   **Short Variables**: Allow some short names, including:
+        -   $db = database
+        -   $e = exception
+        -   $i, $j, $k = indexes
+        -   $id = identifier
 
 ### PHPStan
 

@@ -271,8 +271,7 @@ class FileCopier
         }
 
         $output = implode(PHP_EOL, $excludeLines) . PHP_EOL;
-        if (
-            file_put_contents($this->excludeFile, $output) === false) {
+        if (file_put_contents($this->excludeFile, $output) === false) {
             echo 'Error updating ' . $this->excludeFile . PHP_EOL;
         } else {
             echo $this->excludeFile . ' has been updated.' . PHP_EOL;
