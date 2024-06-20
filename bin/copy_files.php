@@ -19,13 +19,13 @@ if ($currentDir === false) {
 // Run in current dir which is repository root dir.
 require_once $currentDir . '/vendor/autoload.php';
 
-$options = getopt('pw:', ['pre-push', 'wrap:']);
+$options = getopt('nw:', ['no-pre-commit', 'wrap:']);
 
 $flags = 0;
 
-// Use pre-push event instead of pre-commit for fewer interruptions.
-if (isset($options['pre-push']) || isset($options['p'])) {
-    $flags |= FileCopier::PRE_PUSH;
+// Skip pre-commit for fewer interruptions.
+if (isset($options['no-pre-commit']) || isset($options['n'])) {
+    $flags |= FileCopier::NO_PRE_COMMIT;
 }
 
 $wrapArg = $options['wrap'] ?? ($options['w'] ?? FileCopier::DEFAULT_WRAP);

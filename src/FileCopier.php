@@ -14,7 +14,7 @@ class FileCopier
 {
     public const DEFAULT_WRAP = 100;
 
-    public const PRE_PUSH = 1;
+    public const NO_PRE_COMMIT = 1;
 
     /**
      * @var array<string, ?string> Names of files to copy if the project is installed
@@ -127,7 +127,7 @@ class FileCopier
 
     protected readonly string $phpVersion;
 
-    protected readonly bool $usePrePush;
+    protected readonly bool $noPreCommit;
 
     /**
      * @throws Exception
@@ -137,7 +137,7 @@ class FileCopier
         protected readonly int $flags = 0,
         protected readonly int $wrap = self::DEFAULT_WRAP
     ) {
-        $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
+        $this->noPreCommit = (bool) ($this->flags & self::NO_PRE_COMMIT);
 
         $this->gitFiles = $this->loadGitFiles();
         $this->composerJson = $this->loadComposerJson();
@@ -185,6 +185,10 @@ class FileCopier
             $excludeLines[] = 'php_paths';
         }
 
+        if ($this->wrap !== self::DEFAULT_WRAP) {
+            printf('Setting line wrap to %d characters' . PHP_EOL, $this->wrap);
+        }
+
         $gitFiles = array_flip($this->gitFiles);
         foreach ($this->filesToCopy as $fileToCopy => $requiredPackage) {
             // Don't overwrite Git files in the repo.
@@ -194,6 +198,12 @@ class FileCopier
 
             // Don't copy files if their package isn't installed.
             if (! $this->hasPackage($requiredPackage)) {
+                continue;
+            }
+
+            // Skip pre-commit if requested.
+            if ($this->noPreCommit && $fileToCopy === '.husky/pre-commit') {
+                echo 'Skipping .husky/pre-commit.' . PHP_EOL;
                 continue;
             }
 
@@ -217,12 +227,6 @@ class FileCopier
             } else {
                 // Use original, unmodified source.
                 $target = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-            }
-
-            // Overwrite target but not source file to copy to different name.
-            if ($this->usePrePush && $fileToCopy === '.husky/pre-commit') {
-                echo 'Using .husky/pre-push hook instead of .husky/pre-commit.' . PHP_EOL;
-                $fileToCopy = '.husky/pre-push';
             }
 
             $symlink = $this->repoDir . '/' . $fileToCopy;
