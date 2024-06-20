@@ -19,7 +19,7 @@ if ($currentDir === false) {
 // Run in current dir which is repository root dir.
 require_once $currentDir . '/vendor/autoload.php';
 
-$options = getopt('nw:', ['no-pre-commit', 'wrap:']);
+$options = getopt('nw:', ['no-pre-commit', 'wordpress', 'wrap:']);
 
 $flags = 0;
 
@@ -28,10 +28,16 @@ if (isset($options['no-pre-commit']) || isset($options['n'])) {
     $flags |= FileCopier::NO_PRE_COMMIT;
 }
 
+// Specify a custom line wrap length.
 $wrapArg = $options['wrap'] ?? ($options['w'] ?? FileCopier::DEFAULT_WRAP);
 $wrap = (int) $wrapArg;
 if ($wrap === 0) {
     throw new Exception('Invalid wrap argument');
+}
+
+// Install the WordPress stubs for PHPStan.
+if (isset($options['wordpress'])) {
+    $flags |= FileCopier::USE_WORDPRESS;
 }
 
 $fileCopier = new FileCopier($currentDir, $flags, $wrap);

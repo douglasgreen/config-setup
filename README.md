@@ -51,10 +51,11 @@ hooks to work.
 
 ### File Copy Arguments
 
-When running `copy_files.php`, there are two possible arguments:
+When running `copy_files.php`, there are three possible arguments:
 
--   `--wrap INT` or `-w INT`: Set a different integer (INT) wrap than the default of 100.
 -   `--no-pre-commit` or `-n`: Don't use the pre-commit for fewer interruptions.
+-   `--wordpress`: Install the `stubs/wordpress.php` file for PHPStan to use for WordPress checking.
+-   `--wrap INT` or `-w INT`: Set a different integer (INT) wrap than the default of 100.
 
 ### Environment Variables
 

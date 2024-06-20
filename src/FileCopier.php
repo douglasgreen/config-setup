@@ -16,6 +16,8 @@ class FileCopier
 
     public const NO_PRE_COMMIT = 1;
 
+    public const USE_WORDPRESS = 2;
+
     /**
      * @var array<string, ?string> Names of files to copy if the project is installed
      */
@@ -33,6 +35,7 @@ class FileCopier
         'phpstan.neon' => 'phpstan',
         'phpunit.xml' => 'phpunit',
         'rector.php' => 'rector',
+        'stubs/wordpress.php' => null,
     ];
 
     /**
@@ -61,6 +64,7 @@ class FileCopier
     protected const MAKE_DIRS = [
         '.husky' => 'husky',
         'script' => null,
+        'stubs' => null,
         'var/cache/ecs' => 'ecs',
         'var/cache/eslint' => 'eslint',
         'var/cache/phpmd' => 'phpmd',
@@ -129,6 +133,8 @@ class FileCopier
 
     protected readonly bool $noPreCommit;
 
+    protected readonly bool $useWordpress;
+
     /**
      * @throws Exception
      */
@@ -138,6 +144,7 @@ class FileCopier
         protected readonly int $wrap = self::DEFAULT_WRAP
     ) {
         $this->noPreCommit = (bool) ($this->flags & self::NO_PRE_COMMIT);
+        $this->useWordpress = (bool) ($this->flags & self::USE_WORDPRESS);
 
         $this->gitFiles = $this->loadGitFiles();
         $this->composerJson = $this->loadComposerJson();
@@ -159,6 +166,11 @@ class FileCopier
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
             // Don't make directories if their package isn't installed.
             if (! $this->hasPackage($requiredPackage)) {
+                continue;
+            }
+
+            // Check if the stubs are needed.
+            if ($dir === 'stubs' && ! $this->useWordpress) {
                 continue;
             }
 
