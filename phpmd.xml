@@ -18,6 +18,8 @@
     <exclude-pattern>tests/*</exclude-pattern>
 
     <!-- Exclude other directories -->
+    <exclude-pattern>bower_components/*</exclude-pattern>
+    <exclude-pattern>node_modules/*</exclude-pattern>
     <exclude-pattern>var/*</exclude-pattern>
     <exclude-pattern>vendor/*</exclude-pattern>
 
