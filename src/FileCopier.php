@@ -480,6 +480,16 @@ class FileCopier
             $phpStanConfig['parameters']['bootstrapFiles'] = ['phpstan-bootstrap.php'];
         }
 
+        // Add the PHP paths to process.
+        $phpPaths = $this->phpPaths;
+
+        // Add the stubs directory if we are installing the WordPress stub.
+        if ($this->useWordpress && ! in_array('stubs', $phpPaths, true)) {
+            $phpPaths[] = 'stubs';
+        }
+
+        $phpStanConfig['parameters']['paths'] = $phpPaths;
+
         $destFile = new NeonFile($destination);
         $destFile->save($phpStanConfig);
     }

@@ -3,3 +3,9 @@ parameters:
     level: 8
     tmpDir: ./var/cache/phpstan
     phpVersion: 80100
+    paths:
+        - bin
+        - ecs.php
+        - rector.php
+        - src
+        - stubs/wordpress.php

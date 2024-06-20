@@ -46,9 +46,9 @@
     "scripts": {
         "lint": [
             "ecs",
+            "phpstan analyse",
             "rector --dry-run",
-            "./run_phpmd.sh",
-            "./run_phpstan.sh"
+            "./run_phpmd.sh"
         ],
         "lint:fix": [
             "ecs --fix",
