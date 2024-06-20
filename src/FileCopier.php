@@ -186,7 +186,7 @@ class FileCopier
         }
 
         if ($this->wrap !== self::DEFAULT_WRAP) {
-            printf('Setting line wrap to %d characters' . PHP_EOL, $this->wrap);
+            printf('Setting line wrap to %d characters.' . PHP_EOL, $this->wrap);
         }
 
         $gitFiles = array_flip($this->gitFiles);
@@ -276,9 +276,9 @@ class FileCopier
 
         $output = implode(PHP_EOL, $excludeLines) . PHP_EOL;
         if (file_put_contents($this->excludeFile, $output) === false) {
-            echo 'Error updating ' . $this->excludeFile . PHP_EOL;
+            printf('Error updating %s.' . PHP_EOL, $this->excludeFile);
         } else {
-            echo $this->excludeFile . ' has been updated.' . PHP_EOL;
+            printf('%s has been updated.' . PHP_EOL, $this->excludeFile);
         }
     }
 
@@ -345,7 +345,7 @@ class FileCopier
     protected function loadPackageJson(): ?array
     {
         if (! file_exists('package.json')) {
-            echo 'File package.json not found' . PHP_EOL;
+            echo 'File package.json not found.' . PHP_EOL;
             return null;
         }
 
