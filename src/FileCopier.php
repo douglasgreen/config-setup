@@ -46,8 +46,6 @@ class FileCopier
         '.husky/post-checkout' => 'husky',
         '.husky/post-merge' => 'husky',
         '.husky/pre-commit' => 'husky',
-        'run_phpmd.sh' => 'phpmd',
-        'run_phpstan.sh' => 'phpstan',
         'script/bootstrap' => null,
         'script/fix' => null,
         'script/lint' => null,
