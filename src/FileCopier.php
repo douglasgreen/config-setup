@@ -123,7 +123,7 @@ class FileCopier
     /**
      * @var list<string>
      */
-    protected readonly array $phpDirectories;
+    protected readonly array $phpPaths;
 
     protected readonly string $phpVersion;
 
@@ -142,7 +142,7 @@ class FileCopier
         $this->gitFiles = $this->loadGitFiles();
         $this->composerJson = $this->loadComposerJson();
         $this->packageJson = $this->loadPackageJson();
-        $this->phpDirectories = $this->getPhpDirectories();
+        $this->phpPaths = $this->getPhpPaths();
 
         $filesToCopy = array_merge(self::COPY_FILES, self::COPY_SCRIPTS);
         ksort($filesToCopy);
@@ -504,13 +504,13 @@ class FileCopier
         $include = $source->addChild('include');
 
         // Add each PHP directory to the include section.
-        foreach ($this->phpDirectories as $phpDirectory) {
+        foreach ($this->phpPaths as $phpPath) {
             // Don't provide coverage of the unit tests directory.
-            if ($phpDirectory === 'tests') {
+            if ($phpPath === 'tests') {
                 continue;
             }
 
-            $directory = $include->addChild('directory', $this->repoDir . '/' . $phpDirectory);
+            $directory = $include->addChild('directory', $this->repoDir . '/' . $phpPath);
             $directory->addAttribute('suffix', '.php');
         }
 
@@ -674,7 +674,7 @@ class FileCopier
     /**
      * @return list<string>
      */
-    protected function getPhpDirectories(): array
+    protected function getPhpPaths(): array
     {
         // Find top-level directories containing PHP files
         $phpPaths = [];
@@ -682,15 +682,13 @@ class FileCopier
         foreach ($this->gitFiles as $gitFile) {
             if (pathinfo($gitFile, PATHINFO_EXTENSION) === 'php') {
                 $topLevelDir = explode('/', $gitFile)[0];
-                if (is_dir($topLevelDir)) {
-                    $phpPaths[$topLevelDir] = true;
-                }
+                $phpPaths[$topLevelDir] = true;
             }
         }
 
-        $phpDirectories = array_keys($phpPaths);
-        sort($phpDirectories);
-        return $phpDirectories;
+        $phpPaths = array_keys($phpPaths);
+        sort($phpPaths);
+        return $phpPaths;
     }
 
     protected function getPhpVersion(): string
@@ -716,8 +714,8 @@ class FileCopier
         $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];
 
         // Write the list of directories to php_paths file
-        if ($oldPaths !== $this->phpDirectories) {
-            file_put_contents($pathFile, implode(PHP_EOL, $this->phpDirectories) . PHP_EOL);
+        if ($oldPaths !== $this->phpPaths) {
+            file_put_contents($pathFile, implode(PHP_EOL, $this->phpPaths) . PHP_EOL);
             echo 'Created php_paths file.' . PHP_EOL;
             return true;
         }
