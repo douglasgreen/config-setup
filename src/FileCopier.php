@@ -215,7 +215,12 @@ class FileCopier
 
             // Skip pre-commit if requested.
             if ($this->noPreCommit && $fileToCopy === '.husky/pre-commit') {
-                echo 'Skipping .husky/pre-commit.' . PHP_EOL;
+                echo 'Skipping .husky/pre-commit as requested.' . PHP_EOL;
+                continue;
+            }
+
+            // Skip WordPress if not requested.
+            if (! $this->useWordpress && $fileToCopy === 'stubs/wordpress.php') {
                 continue;
             }
 
