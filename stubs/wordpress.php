@@ -280,7 +280,10 @@ class WP_Error {}
 
 class WP_Post {}
 
-class WP_User {}
+class WP_User
+{
+    public string $display_name;
+}
 
 class WC_Product_Simple
 {
