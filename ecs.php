@@ -37,6 +37,7 @@ use Symplify\EasyCodingStandard\Config\ECSConfig;
 use PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer;
 use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocAnnotationRemoveFixer;
+use PhpCsFixer\Fixer\Phpdoc\PhpdocAlignFixer;
 
 $hasPhpUnit = false;
 $hasSymfony = false;
@@ -160,6 +161,9 @@ return ECSConfig::configure()
     )
     ->withConfiguredRule(LineLengthFixer::class, [
         'line_length' => 100,
+    ])
+    ->withConfiguredRule(PhpdocAlignFixer::class, [
+        'align' => 'left',
     ])
     ->withConfiguredRule(
         // Be careful about this part of the config. ECS removes the tag and its
