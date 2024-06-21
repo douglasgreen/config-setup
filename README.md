@@ -59,10 +59,7 @@ When running `copy_files.php`, there are three possible arguments:
 
 ### Environment Variables
 
-Two of the PHP files check environment variables for configuration.
-
--   `ecs.php` checks if `ECS_RISKY` is true before running risky tests.
--   `rector.php` checks if `RECTOR_UPGRADE` is true before doing slow, comprehensive upgrades.
+The ECS file `ecs.php` checks if `ECS_RISKY` is true before running risky tests.
 
 ### File Customization
 

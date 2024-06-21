@@ -6,9 +6,6 @@
  * This file is used to configure the Rector PHP code quality tool.
  *
  * Usage:
- * - To perform upgrades, set the environment variable RECTOR_UPGRADE to true.
- *   This should only be done once when upgrading, then disabled again for normal
- *   usage.
  * - The file paths for PHP files to analyze come from a file named 'php_paths'
  *   in the top-level directory of the repository. This file should contain PHP
  *   files in the top-level directory as well as directories that contain PHP
@@ -27,14 +24,13 @@
 declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
+use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Naming\Rector\ClassMethod\RenameVariableToMatchNewTypeRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\AddSeeTestAnnotationRector;
-use Rector\PHPUnit\Set\PHPUnitLevelSetList;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
-use Rector\Symfony\Set\SymfonyLevelSetList;
 use Rector\Symfony\Set\SymfonySetList;
 
 $hasPhpUnit = false;
@@ -90,34 +86,15 @@ $upToPhp = match ($phpVersion) {
     default => LevelSetList::UP_TO_PHP_81,
 };
 
-// To do upgrades, set RECTOR_UPGRADE to true in the environment.
-// @see https://getrector.com/blog/5-common-mistakes-in-rector-config-and-how-to-avoid-them
-$upgrading = (bool) getenv('RECTOR_UPGRADE');
 $baseSets = [];
-if ($upgrading) {
-    $baseSets[] = $upToPhp;
-    if ($hasPhpUnit) {
-        $baseSets[] = PHPUnitLevelSetList::UP_TO_PHPUNIT_100;
-    }
-
-    if ($hasSymfony) {
-        $baseSets[] = SymfonyLevelSetList::UP_TO_SYMFONY_64;
-    }
-} else {
-    if ($hasPhpUnit) {
-        $baseSets[] = PHPUnitSetList::PHPUNIT_100;
-    }
-
-    if ($hasSymfony) {
-        $baseSets[] = SymfonySetList::SYMFONY_64;
-    }
-}
 
 if ($hasPhpUnit) {
+    $baseSets[] = PHPUnitSetList::PHPUNIT_100;
     $baseSets[] = PHPUnitSetList::PHPUNIT_CODE_QUALITY;
 }
 
 if ($hasSymfony) {
+    $baseSets[] = SymfonySetList::SYMFONY_64;
     $baseSets[] = SymfonySetList::SYMFONY_CODE_QUALITY;
     $baseSets[] = SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION;
 }
@@ -161,4 +138,8 @@ return RectorConfig::configure()
         strictBooleans: true,
         typeDeclarations: true
     )
-    ->withSkip([AddSeeTestAnnotationRector::class, RenameVariableToMatchNewTypeRector::class]);
+    ->withSkip([
+        AddSeeTestAnnotationRector::class,
+        LocallyCalledStaticMethodToNonStaticRector::class,
+        RenameVariableToMatchNewTypeRector::class,
+    ]);

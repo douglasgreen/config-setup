@@ -47,7 +47,6 @@ which sets the line length.
 
 Here is a summary of the configuration options in the `rector.php` file:
 
--   **Upgrades**: Enable by setting the environment variable `RECTOR_UPGRADE` to true.
 -   **PHP Version Detection**: Set PHP version for upgrades based on the version specified in
     `composer.json`.
 -   **Package Detection**: Enables or disables relevant ECS rule sets based on the presence of

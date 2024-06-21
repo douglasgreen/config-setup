@@ -41,4 +41,5 @@ __pycache__/
 
 # Symfony
 /.env.local.php
+parameters.yml
 /var/

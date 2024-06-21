@@ -10,7 +10,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SimpleXMLElement;
 
-class FileCopier
+final class FileCopier
 {
     public const DEFAULT_WRAP = 100;
 
@@ -21,7 +21,7 @@ class FileCopier
     /**
      * @var array<string, ?string> Names of files to copy if the project is installed
      */
-    protected const COPY_FILES = [
+    private const COPY_FILES = [
         '.eslintignore' => 'eslint',
         '.eslintrc.json' => 'eslint',
         '.mocharc.json' => 'mocha',
@@ -41,7 +41,7 @@ class FileCopier
     /**
      * @var array<string, ?string> Names of scripts to copy if the project is installed
      */
-    protected const COPY_SCRIPTS = [
+    private const COPY_SCRIPTS = [
         '.husky/commit-msg' => 'husky',
         '.husky/post-checkout' => 'husky',
         '.husky/post-merge' => 'husky',
@@ -59,7 +59,7 @@ class FileCopier
      *
      * @var array<string, ?string> Names of directories to make if the project is installed
      */
-    protected const MAKE_DIRS = [
+    private const MAKE_DIRS = [
         '.husky' => 'husky',
         'script' => null,
         'stubs' => null,
@@ -75,7 +75,7 @@ class FileCopier
     /**
      * @var array<string, string> Project name and its actual package name
      */
-    protected const PACKAGE_NAMES = [
+    private const PACKAGE_NAMES = [
         'ecs' => 'symplify/easy-coding-standard',
         'phpmd' => 'phpmd/phpmd',
         'phpstan' => 'phpstan/phpstan',
@@ -93,45 +93,45 @@ class FileCopier
     /**
      * @var array<string, mixed>
      */
-    protected readonly array $composerJson;
+    private readonly array $composerJson;
 
     /**
      * @var ?list<string>
      */
-    protected readonly ?array $composerPackages;
-
-    protected readonly string $excludeFile;
+    private readonly ?array $composerPackages;
 
     /**
      * @var array<string, ?string>
      */
-    protected readonly array $filesToCopy;
+    private readonly array $filesToCopy;
 
     /**
      * @var list<string>
      */
-    protected readonly array $gitFiles;
+    private readonly array $gitFiles;
 
     /**
      * @var ?list<string>
      */
-    protected readonly ?array $npmPackages;
+    private readonly ?array $npmPackages;
 
     /**
      * @var ?array<string, mixed>
      */
-    protected readonly ?array $packageJson;
+    private readonly ?array $packageJson;
 
     /**
      * @var list<string>
      */
-    protected readonly array $phpPaths;
+    private readonly array $phpPaths;
 
-    protected readonly string $phpVersion;
+    private readonly string $excludeFile;
 
-    protected readonly bool $noPreCommit;
+    private readonly string $phpVersion;
 
-    protected readonly bool $useWordpress;
+    private readonly bool $noPreCommit;
+
+    private readonly bool $useWordpress;
 
     /**
      * @throws Exception
@@ -144,9 +144,9 @@ class FileCopier
         $this->noPreCommit = (bool) ($this->flags & self::NO_PRE_COMMIT);
         $this->useWordpress = (bool) ($this->flags & self::USE_WORDPRESS);
 
-        $this->gitFiles = $this->loadGitFiles();
-        $this->composerJson = $this->loadComposerJson();
-        $this->packageJson = $this->loadPackageJson();
+        $this->gitFiles = self::loadGitFiles();
+        $this->composerJson = self::loadComposerJson();
+        $this->packageJson = self::loadPackageJson();
         $this->phpPaths = $this->getPhpPaths();
 
         $filesToCopy = array_merge(self::COPY_FILES, self::COPY_SCRIPTS);
@@ -159,7 +159,7 @@ class FileCopier
         $this->composerPackages = $this->getComposerPackages();
         $this->npmPackages = $this->getNpmPackages();
         $this->phpVersion = $this->getPhpVersion();
-        $this->deleteDirectory('var/cache');
+        self::deleteDirectory('var/cache');
 
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
             // Don't make directories if their package isn't installed.
@@ -172,7 +172,7 @@ class FileCopier
                 continue;
             }
 
-            $this->makeDir($dir);
+            self::makeDir($dir);
         }
     }
 
@@ -247,7 +247,7 @@ class FileCopier
             $symlink = $this->repoDir . '/' . $fileToCopy;
 
             $symlinkDir = dirname($symlink);
-            $this->makeDir($symlinkDir);
+            self::makeDir($symlinkDir);
 
             if (! in_array($fileToCopy, $excludeLines, true)) {
                 $excludeLines[] = $fileToCopy;
@@ -297,7 +297,30 @@ class FileCopier
         }
     }
 
-    protected function hasCodeCoverageDriver(): bool
+    /**
+     * Recursively delete a directory and its contents.
+     */
+    private static function deleteDirectory(string $dirPath): void
+    {
+        if (! is_dir($dirPath)) {
+            return;
+        }
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isDir()) {
+                rmdir($file->getPathname());
+            } else {
+                unlink($file->getPathname());
+            }
+        }
+    }
+
+    private static function hasCodeCoverageDriver(): bool
     {
         exec('php -m | grep -E "xdebug|pcov"', $output, $returnCode);
         if ($returnCode !== 0 && $returnCode !== 1) {
@@ -308,32 +331,10 @@ class FileCopier
     }
 
     /**
-     * Check if the repository has the required package, either in Composer or NPM.
-     */
-    protected function hasPackage(?string $requiredPackage): bool
-    {
-        // If there are no requirements, it can't fail.
-        if ($requiredPackage === null) {
-            return true;
-        }
-
-        $packageName = self::PACKAGE_NAMES[$requiredPackage];
-
-        if (
-            $this->composerPackages !== null &&
-            in_array($packageName, $this->composerPackages, true)
-        ) {
-            return true;
-        }
-
-        return $this->npmPackages !== null && in_array($packageName, $this->npmPackages, true);
-    }
-
-    /**
      * @return array<string, mixed>
      * @throws Exception
      */
-    protected function loadComposerJson(): array
+    private static function loadComposerJson(): array
     {
         $composerJsonString = file_get_contents('composer.json');
         if ($composerJsonString === false) {
@@ -347,7 +348,7 @@ class FileCopier
      * @return list<string>
      * @throws Exception
      */
-    protected function loadGitFiles(): array
+    private static function loadGitFiles(): array
     {
         exec('git ls-files', $output);
         return $output;
@@ -357,7 +358,7 @@ class FileCopier
      * @return ?array<string, mixed>
      * @throws Exception
      */
-    protected function loadPackageJson(): ?array
+    private static function loadPackageJson(): ?array
     {
         if (! file_exists('package.json')) {
             echo 'File package.json not found.' . PHP_EOL;
@@ -377,7 +378,7 @@ class FileCopier
      *
      * @throws Exception
      */
-    protected function makeDir(string $dir): void
+    private static function makeDir(string $dir): void
     {
         if (is_dir($dir)) {
             return;
@@ -391,9 +392,110 @@ class FileCopier
     }
 
     /**
+     * @return ?list<string>
      * @throws Exception
      */
-    protected function makeEcs(string $source, string $destination): void
+    private function getComposerPackages(): ?array
+    {
+        // Find the plugins.
+        if (! isset($this->composerJson['require-dev'])) {
+            return null;
+        }
+
+        $packageList = [];
+        foreach (array_keys($this->composerJson['require-dev']) as $package) {
+            if (is_string($package)) {
+                $packageList[] = $package;
+            }
+        }
+
+        return $packageList;
+    }
+
+    /**
+     * @return ?list<string>
+     * @throws Exception
+     */
+    private function getNpmPackages(): ?array
+    {
+        // Find the plugins.
+        if (! isset($this->packageJson['devDependencies'])) {
+            return null;
+        }
+
+        $packageList = [];
+        foreach (array_keys($this->packageJson['devDependencies']) as $package) {
+            if (is_string($package)) {
+                $packageList[] = $package;
+            }
+        }
+
+        return $packageList;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getPhpPaths(): array
+    {
+        // Find top-level directories containing PHP files
+        $phpPaths = [];
+
+        foreach ($this->gitFiles as $gitFile) {
+            if (pathinfo($gitFile, PATHINFO_EXTENSION) === 'php') {
+                $topLevelDir = explode('/', $gitFile)[0];
+                $phpPaths[$topLevelDir] = true;
+            }
+        }
+
+        $phpPaths = array_keys($phpPaths);
+        sort($phpPaths);
+        return $phpPaths;
+    }
+
+    private function getPhpVersion(): string
+    {
+        // Find the PHP version in the require section
+        if (! isset($this->composerJson['require']['php'])) {
+            throw new Exception('PHP version not specified in composer.json');
+        }
+
+        $phpVersionConstraint = $this->composerJson['require']['php'];
+
+        // Extract the PHP version number
+        if (preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) === 0) {
+            throw new Exception('Unable to extract PHP version from composer.json');
+        }
+
+        return $match[0];
+    }
+
+    /**
+     * Check if the repository has the required package, either in Composer or NPM.
+     */
+    private function hasPackage(?string $requiredPackage): bool
+    {
+        // If there are no requirements, it can't fail.
+        if ($requiredPackage === null) {
+            return true;
+        }
+
+        $packageName = self::PACKAGE_NAMES[$requiredPackage];
+
+        if (
+            $this->composerPackages !== null &&
+            in_array($packageName, $this->composerPackages, true)
+        ) {
+            return true;
+        }
+
+        return $this->npmPackages !== null && in_array($packageName, $this->npmPackages, true);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function makeEcs(string $source, string $destination): void
     {
         $lines = file($source);
         if ($lines === false) {
@@ -422,7 +524,7 @@ class FileCopier
     /**
      * @throws Exception
      */
-    protected function makeEslintrc(string $source, string $destination): void
+    private function makeEslintrc(string $source, string $destination): void
     {
         if ($this->npmPackages === null) {
             return;
@@ -461,7 +563,7 @@ class FileCopier
         }
     }
 
-    protected function makePhpStan(string $source, string $destination): void
+    private function makePhpStan(string $source, string $destination): void
     {
         [$major, $minor] = explode('.', $this->phpVersion);
         $phpStanVersion = sprintf('%d0%d00', $major, $minor);
@@ -492,7 +594,7 @@ class FileCopier
         $destFile->save($phpStanConfig);
     }
 
-    protected function makePhpUnit(string $destination): void
+    private function makePhpUnit(string $destination): void
     {
         // Initialize the XML structure with the necessary attributes because SimpleXML doesn't
         // support namespaces directly.
@@ -540,7 +642,7 @@ class FileCopier
         }
 
         // Add coverage if a code coverage driver is available.
-        if ($this->hasCodeCoverageDriver()) {
+        if (self::hasCodeCoverageDriver()) {
             $php = $xml->addChild('php');
             $env = $php->addChild('env');
             $env->addAttribute('name', 'XDEBUG_MODE');
@@ -580,7 +682,7 @@ class FileCopier
     /**
      * @throws Exception
      */
-    protected function makePrettierrc(string $source, string $destination): void
+    private function makePrettierrc(string $source, string $destination): void
     {
         if ($this->npmPackages === null) {
             return;
@@ -631,109 +733,7 @@ class FileCopier
         }
     }
 
-    /**
-     * Recursively delete a directory and its contents.
-     */
-    protected function deleteDirectory(string $dirPath): void
-    {
-        if (! is_dir($dirPath)) {
-            return;
-        }
-
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($iterator as $file) {
-            if ($file->isDir()) {
-                rmdir($file->getPathname());
-            } else {
-                unlink($file->getPathname());
-            }
-        }
-    }
-
-    /**
-     * @return ?list<string>
-     * @throws Exception
-     */
-    protected function getComposerPackages(): ?array
-    {
-        // Find the plugins.
-        if (! isset($this->composerJson['require-dev'])) {
-            return null;
-        }
-
-        $packageList = [];
-        foreach (array_keys($this->composerJson['require-dev']) as $package) {
-            if (is_string($package)) {
-                $packageList[] = $package;
-            }
-        }
-
-        return $packageList;
-    }
-
-    /**
-     * @return ?list<string>
-     * @throws Exception
-     */
-    protected function getNpmPackages(): ?array
-    {
-        // Find the plugins.
-        if (! isset($this->packageJson['devDependencies'])) {
-            return null;
-        }
-
-        $packageList = [];
-        foreach (array_keys($this->packageJson['devDependencies']) as $package) {
-            if (is_string($package)) {
-                $packageList[] = $package;
-            }
-        }
-
-        return $packageList;
-    }
-
-    /**
-     * @return list<string>
-     */
-    protected function getPhpPaths(): array
-    {
-        // Find top-level directories containing PHP files
-        $phpPaths = [];
-
-        foreach ($this->gitFiles as $gitFile) {
-            if (pathinfo($gitFile, PATHINFO_EXTENSION) === 'php') {
-                $topLevelDir = explode('/', $gitFile)[0];
-                $phpPaths[$topLevelDir] = true;
-            }
-        }
-
-        $phpPaths = array_keys($phpPaths);
-        sort($phpPaths);
-        return $phpPaths;
-    }
-
-    protected function getPhpVersion(): string
-    {
-        // Find the PHP version in the require section
-        if (! isset($this->composerJson['require']['php'])) {
-            throw new Exception('PHP version not specified in composer.json');
-        }
-
-        $phpVersionConstraint = $this->composerJson['require']['php'];
-
-        // Extract the PHP version number
-        if (preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) === 0) {
-            throw new Exception('Unable to extract PHP version from composer.json');
-        }
-
-        return $match[0];
-    }
-
-    protected function updatePhpPaths(): bool
+    private function updatePhpPaths(): bool
     {
         $pathFile = $this->repoDir . '/php_paths';
         $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];

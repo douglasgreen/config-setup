@@ -7,7 +7,7 @@ namespace DouglasGreen\ConfigSetup;
 use Exception;
 use Nette\Neon\Neon;
 
-class NeonFile
+final class NeonFile
 {
     public function __construct(
         protected readonly string $filename
@@ -15,6 +15,7 @@ class NeonFile
 
     /**
      * @return array<string, mixed>
+     * @throws Exception
      */
     public function load(): array
     {
@@ -27,6 +28,7 @@ class NeonFile
 
     /**
      * @param array<string, mixed> $data
+     * @throws Exception
      */
     public function save(array $data): void
     {
