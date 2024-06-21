@@ -281,8 +281,9 @@ class WC_Product_Simple
 
     private readonly string $slug;
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly int $id
+    ) {
         $this->name = '';
         $this->slug = '';
     }
@@ -290,6 +291,11 @@ class WC_Product_Simple
     public function get_attribute(string $attribute): string
     {
         return '';
+    }
+
+    public function get_id(): int
+    {
+        return $this->id;
     }
 
     public function get_name(): string
