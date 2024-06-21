@@ -199,6 +199,11 @@ function wp_add_inline_script(string $handle, string $data, string $position = '
     return true;
 }
 
+function wp_get_current_user(): WP_User
+{
+    return new WP_User();
+}
+
 /**
  * @param array<string> $deps
  */
@@ -274,6 +279,8 @@ function wp_remote_get(string $url, array $args = []): WP_Error|array
 class WP_Error {}
 
 class WP_Post {}
+
+class WP_User {}
 
 class WC_Product_Simple
 {
