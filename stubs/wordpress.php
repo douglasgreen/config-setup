@@ -16,13 +16,12 @@ function add_filter(
     int $accepted_args = 1
 ): void {}
 
-/**
- * @template T
- * @param T $value
- */
-function apply_filters(string $tag, $value, mixed ...$args): void {}
-
 function add_shortcode(string $tag, callable $callback): void {}
+
+function apply_filters(string $hook_name, mixed $value, mixed ...$args): mixed
+{
+    return '';
+}
 
 function bloginfo(string $show): void {}
 
@@ -33,13 +32,28 @@ function body_class($class = ''): void {}
 
 function do_action(string $tag, mixed ...$args): void {}
 
-function esc_attr(string $text): void {}
+function esc_attr(string $text): string
+{
+    return '';
+}
 
-function esc_attr__(string $text): void {}
+function esc_attr__(string $text, string $domain = 'default'): string
+{
+    return '';
+}
 
-function esc_html__(string $text): void {}
+function esc_html__(string $text, string $domain = 'default'): string
+{
+    return '';
+}
 
-function esc_url(string $url): void {}
+/**
+ * @param list<string> $protocols
+ */
+function esc_url(string $url, array $protocols = null, string $_context = 'display'): string
+{
+    return '';
+}
 
 function gdlr_core_esc_style(string $style): void {}
 
@@ -69,13 +83,19 @@ function get_post_meta(int $post_id, string $key = '', bool $single = false): ar
     return $single ? '' : [];
 }
 
-function get_search_query(bool $escaped = true): void {}
+function get_search_query(bool $escaped = true): string
+{
+    return '';
+}
 
 function get_template_part(string $slug, string $name = null): void {}
 
 function get_the_ID(): void {}
 
-function get_theme_file_uri(string $file = ''): void {}
+function get_theme_file_uri(string $file = ''): string
+{
+    return '';
+}
 
 function get_the_modified_author(): string
 {
@@ -87,13 +107,19 @@ function get_the_title(WP_Post|int|null $post = null): string
     return '';
 }
 
-function home_url(string $path = '', string $scheme = null): void {}
+function home_url(string $path = '', ?string $scheme = null): string
+{
+    return '';
+}
 
 function infinite_get_option(string $name, mixed $default = null): void {}
 
 function infinite_get_post_option(string $name, mixed $default = null, int $post_id = null): void {}
 
-function infinite_is_top_search(): void {}
+function infinite_is_top_search(): bool
+{
+    return (bool) mt_rand(0, 1);
+}
 
 function language_attributes(string $doctype = 'html'): void {}
 
