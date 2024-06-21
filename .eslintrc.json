@@ -10,6 +10,7 @@
     "rules": {
         "comma-dangle": "off",
         "indent": ["error", 4],
+        "operator-linebreak": ["error", "after"],
         "quotes": "off",
         "semi": "off",
         "space-before-function-paren": "off"
