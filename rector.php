@@ -28,7 +28,6 @@ use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRe
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Naming\Rector\ClassMethod\RenameVariableToMatchNewTypeRector;
-use Rector\PHPUnit\CodeQuality\Rector\Class_\AddSeeTestAnnotationRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Symfony\Set\SymfonySetList;
@@ -139,7 +138,6 @@ return RectorConfig::configure()
         typeDeclarations: true
     )
     ->withSkip([
-        AddSeeTestAnnotationRector::class,
         LocallyCalledStaticMethodToNonStaticRector::class,
         RenameVariableToMatchNewTypeRector::class,
     ]);
