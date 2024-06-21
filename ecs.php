@@ -162,9 +162,6 @@ return ECSConfig::configure()
     ->withConfiguredRule(LineLengthFixer::class, [
         'line_length' => 100,
     ])
-    ->withConfiguredRule(PhpdocAlignFixer::class, [
-        'align' => 'left',
-    ])
     ->withConfiguredRule(
         // Be careful about this part of the config. ECS removes the tag and its
         // contents when what you often want to do is remove or modify the tag
@@ -258,4 +255,5 @@ return ECSConfig::configure()
     ->withSkip([
         GlobalNamespaceImportFixer::class,
         OrderedImportsFixer::class => __DIR__ . '/ecs.php',
+        PhpdocAlignFixer::class,
     ]);

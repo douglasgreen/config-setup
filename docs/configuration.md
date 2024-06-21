@@ -59,7 +59,8 @@ Here is a summary of the configuration options in the `rector.php` file:
 -   **Prepared Sets**: Enable prepared sets for code quality, coding style, dead code, early return,
     instanceOf, naming, privatization, strict booleans, and type declarations.
 -   **Skip Specific Rules**: Skip specific rules such as `RenameVariableToMatchNewTypeRector`,
-    because variable names can be shorter than class names, and `AddSeeTestAnnotationRector`.
+    because variable names can be shorter than class names, `PhpdocAlignFixer::class` because it
+    wasn't left aligning correctly, and `AddSeeTestAnnotationRector`.
 -   **Cache Enabled**: Caching was enabled for Rector but parallel processing was disabled because
     it was causing many errors.
 
