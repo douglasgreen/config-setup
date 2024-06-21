@@ -55,7 +55,13 @@ function esc_url(string $url, array $protocols = null, string $_context = 'displ
     return '';
 }
 
-function gdlr_core_esc_style(string $style): void {}
+/**
+ * @param array<string, string> $atts
+ */
+function gdlr_core_esc_style(array $atts, bool $wrap = true): string
+{
+    return '';
+}
 
 /**
  * @param array<string, string> $default_headers
@@ -108,9 +114,9 @@ function get_template_part(string $slug, ?string $name = null, array $args = [])
     return false;
 }
 
-function get_the_ID(): int|false
+function get_the_ID(): int
 {
-    return mt_rand(0, 1) === 0 ? false : 1;
+    return 1;
 }
 
 function get_theme_file_uri(string $file = ''): string
