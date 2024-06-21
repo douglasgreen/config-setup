@@ -66,9 +66,21 @@ function get_file_data(string $file, array $default_headers, string $context = '
     return [];
 }
 
-function get_footer(string $name = ''): void {}
+/**
+ * @param list<string> $args
+ */
+function get_footer(string $name = '', array $args = []): false
+{
+    return false;
+}
 
-function get_header(string $name = ''): void {}
+/**
+ * @param list<string> $args
+ */
+function get_header(string $name = '', array $args = []): false
+{
+    return false;
+}
 
 function get_permalink(WP_Post|int|null $post = null): string
 {
@@ -88,9 +100,18 @@ function get_search_query(bool $escaped = true): string
     return '';
 }
 
-function get_template_part(string $slug, string $name = null): void {}
+/**
+ * @param list<string> $args
+ */
+function get_template_part(string $slug, ?string $name = null, array $args = []): false
+{
+    return false;
+}
 
-function get_the_ID(): void {}
+function get_the_ID(): int|false
+{
+    return mt_rand(0, 1) === 0 ? false : 1;
+}
 
 function get_theme_file_uri(string $file = ''): string
 {
@@ -112,9 +133,15 @@ function home_url(string $path = '', ?string $scheme = null): string
     return '';
 }
 
-function infinite_get_option(string $name, mixed $default = null): void {}
+function infinite_get_option(string $option, ?string $key = null, ?string $default = null): string
+{
+    return '';
+}
 
-function infinite_get_post_option(string $name, mixed $default = null, int $post_id = null): void {}
+function infinite_get_post_option(int $post_id, string $key = 'gdlr-core-page-option'): mixed
+{
+    return '';
+}
 
 function infinite_is_top_search(): bool
 {
