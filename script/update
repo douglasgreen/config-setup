@@ -10,7 +10,7 @@ script/bootstrap
 
 # Update DB if the script exists
 if [ -f "script/update_db.sh" ]; then
-    echo "==> Updating DB..."
+    echo "==> Updating database..."
     script/update_db.sh
 fi
 
@@ -22,7 +22,7 @@ fi
 
 # Provide a PDepend summary if the script exists
 if [ -f "script/run_pdepend.sh" ]; then
-    echo "==> Running pdepend..."
+    echo "==> Running PDepend to calculate project metrics..."
     script/run_pdepend.sh
 fi
 

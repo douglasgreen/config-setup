@@ -10,7 +10,7 @@ script/bootstrap
 
 # Set up DB if the script exists
 if [ -f "script/setup_db.sh" ]; then
-    echo "==> Setting up DB..."
+    echo "==> Setting up database..."
     script/setup_db.sh
 fi
 
@@ -22,7 +22,7 @@ fi
 
 # Provide a PDepend summary if the script exists
 if [ -f "script/run_pdepend.sh" ]; then
-    echo "==> Running pdepend..."
+    echo "==> Running PDepend to calculate project metrics..."
     script/run_pdepend.sh
 fi
 
