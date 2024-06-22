@@ -159,9 +159,13 @@ final class FileCopier
         $this->composerPackages = $this->getComposerPackages();
         $this->npmPackages = $this->getNpmPackages();
         $this->phpVersion = $this->getPhpVersion();
-        self::deleteDirectory('var/cache');
 
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
+            // Empty the cache dirs.
+            if (str_starts_with($dir, 'var/cache')) {
+                self::deleteDirectory($dir);
+            }
+
             // Don't make directories if their package isn't installed.
             if (! $this->hasPackage($requiredPackage)) {
                 continue;
