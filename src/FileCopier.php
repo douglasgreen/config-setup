@@ -49,6 +49,7 @@ final class FileCopier
         'script/bootstrap' => null,
         'script/fix' => null,
         'script/lint' => null,
+        'script/run_pdepend.sh' => 'pdepend',
         'script/setup' => null,
         'script/test' => null,
         'script/update' => null,
@@ -65,6 +66,7 @@ final class FileCopier
         'stubs' => null,
         'var/cache/ecs' => 'ecs',
         'var/cache/eslint' => 'eslint',
+        'var/cache/pdepend' => 'pdepend',
         'var/cache/phpmd' => 'phpmd',
         'var/cache/phpstan' => 'phpstan',
         'var/cache/phpunit' => 'phpunit',
@@ -77,6 +79,7 @@ final class FileCopier
      */
     private const PACKAGE_NAMES = [
         'ecs' => 'symplify/easy-coding-standard',
+        'pdepend' => 'pdepend/pdepend',
         'phpmd' => 'phpmd/phpmd',
         'phpstan' => 'phpstan/phpstan',
         'phpunit' => 'phpunit/phpunit',

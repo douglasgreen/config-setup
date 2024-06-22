@@ -10,14 +10,10 @@ cd "$(dirname "$0")/.."
 if [ -f "composer.json" ]; then
     echo "==> Installing Composer dependencies..."
     composer install --no-interaction --prefer-dist
-else
-    echo "==> No composer.json found, skipping Composer dependencies installation."
 fi
 
 # Install NPM dependencies
 if [ -f "package.json" ]; then
     echo "==> Installing NPM dependencies..."
     npm install --silent
-else
-    echo "==> No package.json found, skipping NPM dependencies installation."
 fi
