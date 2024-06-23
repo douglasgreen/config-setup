@@ -6,8 +6,6 @@ namespace DouglasGreen\ConfigSetup;
 
 use DOMDocument;
 use Exception;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use SimpleXMLElement;
 
 final class FileCopier
@@ -164,11 +162,6 @@ final class FileCopier
         $this->phpVersion = $this->getPhpVersion();
 
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
-            // Empty the cache dirs.
-            if (str_starts_with($dir, 'var/cache')) {
-                self::deleteDirectory($dir);
-            }
-
             // Don't make directories if their package isn't installed.
             if (! $this->hasPackage($requiredPackage)) {
                 continue;
@@ -301,29 +294,6 @@ final class FileCopier
             printf('Error updating %s.' . PHP_EOL, $this->excludeFile);
         } else {
             printf('%s has been updated.' . PHP_EOL, $this->excludeFile);
-        }
-    }
-
-    /**
-     * Recursively delete a directory and its contents.
-     */
-    private static function deleteDirectory(string $dirPath): void
-    {
-        if (! is_dir($dirPath)) {
-            return;
-        }
-
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        foreach ($iterator as $file) {
-            if ($file->isDir()) {
-                rmdir($file->getPathname());
-            } else {
-                unlink($file->getPathname());
-            }
         }
     }
 
