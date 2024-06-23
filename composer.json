@@ -33,6 +33,9 @@
             "DouglasGreen\\ConfigSetup\\": "src/"
         }
     },
+    "bin": [
+        "vendor/douglasgreen/config-setup/bin/config_setup.php"
+    ],
     "require": {
         "php": ">=8.1",
         "nette/neon": "^3.4"
