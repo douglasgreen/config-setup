@@ -34,7 +34,7 @@
         }
     },
     "bin": [
-        "vendor/douglasgreen/config-setup/bin/config_setup.php"
+        "bin/config_setup.php"
     ],
     "require": {
         "php": ">=8.1",
