@@ -47,7 +47,6 @@ final class FileCopier
         'script/bootstrap' => null,
         'script/fix' => null,
         'script/lint' => null,
-        'script/run_pdepend.sh' => 'pdepend',
         'script/setup' => null,
         'script/test' => null,
         'script/update' => null,
