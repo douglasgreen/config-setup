@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "888a3a5f211846194b5c3ddd1cb398499d3570ee"
+                "reference": "a8789c2e31191e1336c336fc97cda9046d571cd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/888a3a5f211846194b5c3ddd1cb398499d3570ee",
-                "reference": "888a3a5f211846194b5c3ddd1cb398499d3570ee",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/a8789c2e31191e1336c336fc97cda9046d571cd6",
+                "reference": "a8789c2e31191e1336c336fc97cda9046d571cd6",
                 "shasum": ""
             },
             "require": {
@@ -25,12 +25,13 @@
             },
             "require-dev": {
                 "douglasgreen/config-setup": "dev-main",
+                "douglasgreen/php-linter": "dev-main",
                 "douglasgreen/utility": "dev-main",
                 "phpmd/phpmd": "^2.15",
-                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan": "^1.11",
                 "phpunit/phpunit": "^10.5",
-                "rector/rector": "^1.0",
-                "symplify/easy-coding-standard": "^12.2"
+                "rector/rector": "^1.1",
+                "symplify/easy-coding-standard": "^12.3"
             },
             "default-branch": true,
             "type": "library",
@@ -77,7 +78,7 @@
                 "issues": "https://github.com/douglasgreen/optparser/issues",
                 "source": "https://github.com/douglasgreen/optparser/tree/main"
             },
-            "time": "2024-06-20T19:33:39+00:00"
+            "time": "2024-06-24T14:25:40+00:00"
         },
         {
             "name": "douglasgreen/php-linter",
@@ -85,12 +86,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/php-linter.git",
-                "reference": "798020e8132c0aebc68b7eb1f0fd2339ed07f35b"
+                "reference": "063a03a95d36cf2277be31be9e866d30bdb16b73"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/798020e8132c0aebc68b7eb1f0fd2339ed07f35b",
-                "reference": "798020e8132c0aebc68b7eb1f0fd2339ed07f35b",
+                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/063a03a95d36cf2277be31be9e866d30bdb16b73",
+                "reference": "063a03a95d36cf2277be31be9e866d30bdb16b73",
                 "shasum": ""
             },
             "require": {
@@ -110,9 +111,10 @@
             },
             "default-branch": true,
             "bin": [
-                "bin/check_metrics.php",
-                "bin/check_style.php",
-                "bin/run_pdepend.php"
+                "bin/check-metrics",
+                "bin/check-style",
+                "bin/php-linter",
+                "bin/run-pdepend"
             ],
             "type": "project",
             "autoload": {
@@ -123,6 +125,7 @@
             },
             "scripts": {
                 "lint": [
+                    "php-linter",
                     "ecs",
                     "phpstan analyse",
                     "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
@@ -133,10 +136,10 @@
                     "rector"
                 ],
                 "post-install-cmd": [
-                    "config_setup.php"
+                    "config-setup"
                 ],
                 "post-update-cmd": [
-                    "config_setup.php"
+                    "config-setup"
                 ],
                 "test": [
                     "phpunit"
@@ -172,7 +175,7 @@
                 "source": "https://github.com/douglasgreen/php-linter/tree/main",
                 "issues": "https://github.com/douglasgreen/php-linter/issues"
             },
-            "time": "2024-06-24T14:20:37+00:00"
+            "time": "2024-06-24T17:41:15+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -180,12 +183,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "857fb6b9ccf10c1cc1130000b915d1bff7069431"
+                "reference": "eca96a8b75c0a75286743eb616aea1a0d1695f56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/857fb6b9ccf10c1cc1130000b915d1bff7069431",
-                "reference": "857fb6b9ccf10c1cc1130000b915d1bff7069431",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/eca96a8b75c0a75286743eb616aea1a0d1695f56",
+                "reference": "eca96a8b75c0a75286743eb616aea1a0d1695f56",
                 "shasum": ""
             },
             "require": {
@@ -235,7 +238,7 @@
                 "issues": "https://github.com/douglasgreen/utility/issues",
                 "source": "https://github.com/douglasgreen/utility/tree/main"
             },
-            "time": "2024-06-24T12:53:04+00:00"
+            "time": "2024-06-24T16:54:11+00:00"
         },
         {
             "name": "nette/neon",

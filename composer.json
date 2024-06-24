@@ -57,11 +57,10 @@
     },
     "scripts": {
         "lint": [
-            "check_metrics.php",
-            "check_style.php",
             "ecs",
-            "phpstan analyse",
+            "php-linter",
             "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
+            "phpstan analyse",
             "rector --dry-run"
         ],
         "lint:fix": [
