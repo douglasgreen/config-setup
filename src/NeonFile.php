@@ -7,7 +7,7 @@ namespace DouglasGreen\ConfigSetup;
 use Exception;
 use Nette\Neon\Neon;
 
-final class NeonFile
+class NeonFile
 {
     public function __construct(
         protected readonly string $filename

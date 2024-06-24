@@ -34,7 +34,7 @@
         }
     },
     "bin": [
-        "bin/config_setup.php"
+        "bin/config-setup"
     ],
     "minimum-stability": "dev",
     "prefer-stable": true,

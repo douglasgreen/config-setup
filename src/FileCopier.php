@@ -8,7 +8,7 @@ use DOMDocument;
 use Exception;
 use SimpleXMLElement;
 
-final class FileCopier
+class FileCopier
 {
     public const DEFAULT_WRAP = 100;
 
@@ -19,7 +19,7 @@ final class FileCopier
     /**
      * @var array<string, ?string> Names of files to copy if the project is installed
      */
-    private const COPY_FILES = [
+    protected const COPY_FILES = [
         '.eslintignore' => 'eslint',
         '.eslintrc.json' => 'eslint',
         '.mocharc.json' => 'mocha',
@@ -39,7 +39,7 @@ final class FileCopier
     /**
      * @var array<string, ?string> Names of scripts to copy if the project is installed
      */
-    private const COPY_SCRIPTS = [
+    protected const COPY_SCRIPTS = [
         '.husky/commit-msg' => 'husky',
         '.husky/post-checkout' => 'husky',
         '.husky/post-merge' => 'husky',
@@ -57,7 +57,7 @@ final class FileCopier
      *
      * @var array<string, ?string> Names of directories to make if the project is installed
      */
-    private const MAKE_DIRS = [
+    protected const MAKE_DIRS = [
         '.husky' => 'husky',
         'script' => null,
         'stubs' => null,
@@ -74,7 +74,7 @@ final class FileCopier
     /**
      * @var array<string, string> Project name and its actual package name
      */
-    private const PACKAGE_NAMES = [
+    protected const PACKAGE_NAMES = [
         'ecs' => 'symplify/easy-coding-standard',
         'pdepend' => 'pdepend/pdepend',
         'phpmd' => 'phpmd/phpmd',
@@ -93,45 +93,45 @@ final class FileCopier
     /**
      * @var array<string, mixed>
      */
-    private readonly array $composerJson;
+    protected readonly array $composerJson;
 
     /**
      * @var ?list<string>
      */
-    private readonly ?array $composerPackages;
+    protected readonly ?array $composerPackages;
 
     /**
      * @var array<string, ?string>
      */
-    private readonly array $filesToCopy;
+    protected readonly array $filesToCopy;
 
     /**
      * @var list<string>
      */
-    private readonly array $gitFiles;
+    protected readonly array $gitFiles;
 
     /**
      * @var ?list<string>
      */
-    private readonly ?array $npmPackages;
+    protected readonly ?array $npmPackages;
 
     /**
      * @var ?array<string, mixed>
      */
-    private readonly ?array $packageJson;
+    protected readonly ?array $packageJson;
 
     /**
      * @var list<string>
      */
-    private readonly array $phpPaths;
+    protected readonly array $phpPaths;
 
-    private readonly string $excludeFile;
+    protected readonly string $excludeFile;
 
-    private readonly string $phpVersion;
+    protected readonly string $phpVersion;
 
-    private readonly bool $noPreCommit;
+    protected readonly bool $noPreCommit;
 
-    private readonly bool $useWordpress;
+    protected readonly bool $useWordpress;
 
     /**
      * @throws Exception
@@ -296,7 +296,25 @@ final class FileCopier
         }
     }
 
-    private static function hasCodeCoverageDriver(): bool
+    protected static function checkHashBang(string $filename, string $command): bool
+    {
+        $handle = fopen($filename, 'r');
+        if ($handle === false) {
+            return false;
+        }
+
+        $line = fgets($handle);
+        fclose($handle);
+
+        if ($line === false) {
+            return false;
+        }
+
+        // Check if the line starts with "#!" and contains the command
+        return str_starts_with($line, '#!') && str_contains($line, $command);
+    }
+
+    protected static function hasCodeCoverageDriver(): bool
     {
         exec('php -m | grep -E "xdebug|pcov"', $output, $returnCode);
         if ($returnCode !== 0 && $returnCode !== 1) {
@@ -310,7 +328,7 @@ final class FileCopier
      * @return array<string, mixed>
      * @throws Exception
      */
-    private static function loadComposerJson(): array
+    protected static function loadComposerJson(): array
     {
         $composerJsonString = file_get_contents('composer.json');
         if ($composerJsonString === false) {
@@ -324,7 +342,7 @@ final class FileCopier
      * @return list<string>
      * @throws Exception
      */
-    private static function loadGitFiles(): array
+    protected static function loadGitFiles(): array
     {
         exec('git ls-files', $output);
         return $output;
@@ -334,7 +352,7 @@ final class FileCopier
      * @return ?array<string, mixed>
      * @throws Exception
      */
-    private static function loadPackageJson(): ?array
+    protected static function loadPackageJson(): ?array
     {
         if (! file_exists('package.json')) {
             echo 'File package.json not found.' . PHP_EOL;
@@ -354,7 +372,7 @@ final class FileCopier
      *
      * @throws Exception
      */
-    private static function makeDir(string $dir): void
+    protected static function makeDir(string $dir): void
     {
         if (is_dir($dir)) {
             return;
@@ -371,7 +389,7 @@ final class FileCopier
      * @return ?list<string>
      * @throws Exception
      */
-    private function getComposerPackages(): ?array
+    protected function getComposerPackages(): ?array
     {
         // Find the plugins.
         if (! isset($this->composerJson['require-dev'])) {
@@ -392,7 +410,7 @@ final class FileCopier
      * @return ?list<string>
      * @throws Exception
      */
-    private function getNpmPackages(): ?array
+    protected function getNpmPackages(): ?array
     {
         // Find the plugins.
         if (! isset($this->packageJson['devDependencies'])) {
@@ -412,7 +430,7 @@ final class FileCopier
     /**
      * @return list<string>
      */
-    private function getPhpPaths(): array
+    protected function getPhpPaths(): array
     {
         // Find top-level directories containing PHP files
         $phpPaths = [];
@@ -421,6 +439,8 @@ final class FileCopier
             if (pathinfo($gitFile, PATHINFO_EXTENSION) === 'php') {
                 $topLevelDir = explode('/', $gitFile)[0];
                 $phpPaths[$topLevelDir] = true;
+            } elseif (self::checkHashBang($gitFile, 'php')) {
+                $phpPaths[$gitFile] = true;
             }
         }
 
@@ -429,7 +449,7 @@ final class FileCopier
         return $phpPaths;
     }
 
-    private function getPhpVersion(): string
+    protected function getPhpVersion(): string
     {
         // Find the PHP version in the require section
         if (! isset($this->composerJson['require']['php'])) {
@@ -449,7 +469,7 @@ final class FileCopier
     /**
      * Check if the repository has the required package, either in Composer or NPM.
      */
-    private function hasPackage(?string $requiredPackage): bool
+    protected function hasPackage(?string $requiredPackage): bool
     {
         // If there are no requirements, it can't fail.
         if ($requiredPackage === null) {
@@ -471,7 +491,7 @@ final class FileCopier
     /**
      * @throws Exception
      */
-    private function makeEcs(string $source, string $destination): void
+    protected function makeEcs(string $source, string $destination): void
     {
         $lines = file($source);
         if ($lines === false) {
@@ -500,7 +520,7 @@ final class FileCopier
     /**
      * @throws Exception
      */
-    private function makeEslintrc(string $source, string $destination): void
+    protected function makeEslintrc(string $source, string $destination): void
     {
         if ($this->npmPackages === null) {
             return;
@@ -539,7 +559,7 @@ final class FileCopier
         }
     }
 
-    private function makePhpStan(string $source, string $destination): void
+    protected function makePhpStan(string $source, string $destination): void
     {
         [$major, $minor] = explode('.', $this->phpVersion);
         $phpStanVersion = sprintf('%d0%d00', $major, $minor);
@@ -570,7 +590,7 @@ final class FileCopier
         $destFile->save($phpStanConfig);
     }
 
-    private function makePhpUnit(string $destination): void
+    protected function makePhpUnit(string $destination): void
     {
         // Initialize the XML structure with the necessary attributes because SimpleXML doesn't
         // support namespaces directly.
@@ -658,7 +678,7 @@ final class FileCopier
     /**
      * @throws Exception
      */
-    private function makePrettierrc(string $source, string $destination): void
+    protected function makePrettierrc(string $source, string $destination): void
     {
         if ($this->npmPackages === null) {
             return;
@@ -709,7 +729,7 @@ final class FileCopier
         }
     }
 
-    private function updatePhpPaths(): bool
+    protected function updatePhpPaths(): bool
     {
         $pathFile = $this->repoDir . '/php_paths';
         $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];

@@ -31,8 +31,8 @@ Then add this script to `composer.json` to copy the config files to your project
 ```
 {
     "scripts": {
-        "post-install-cmd": "config_setup.php",
-        "post-update-cmd": "config_setup.php"
+        "post-install-cmd": "config-setup",
+        "post-update-cmd": "config-setup"
     }
 }
 ```
@@ -56,7 +56,7 @@ hooks to work.
 
 ### File Copy Arguments
 
-When running `config_setup.php`, there are three possible arguments:
+When running `config-setup`, there are three possible arguments:
 
 -   `--no-pre-commit` or `-n`: Don't use the pre-commit for fewer interruptions.
 -   `--wordpress`: Install the `stubs/wordpress.php` file for PHPStan to use for WordPress checking.
@@ -244,7 +244,7 @@ by `.husky/commit-msg`. Fix any commit message errors before committing.
 
 Each of the PHP formatting tools and ESLint is configured to cache its results for speedier
 operation using use subdirectories of the `var/cache` directory. These directories are automatically
-created by the `bin/config_setup.php` script if they don't exist.
+created by the `bin/config-setup` script if they don't exist.
 
 ## Troubleshooting
 

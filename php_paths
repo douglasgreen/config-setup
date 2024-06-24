@@ -1,4 +1,4 @@
-bin
+bin/config-setup
 ecs.php
 rector.php
 src
