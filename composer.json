@@ -36,8 +36,17 @@
     "bin": [
         "bin/config_setup.php"
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/douglasgreen/php-linter"
+        }
+    ],
     "require": {
         "php": ">=8.1",
+        "douglasgreen/php-linter": "dev-main",
         "nette/neon": "^3.4"
     },
     "require-dev": {
@@ -48,6 +57,8 @@
     },
     "scripts": {
         "lint": [
+            "check_metrics.php",
+            "check_style.php",
             "ecs",
             "phpstan analyse",
             "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
