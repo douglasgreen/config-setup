@@ -4,7 +4,7 @@ Preconfigured setup files for linting, fixing, and testing PHP and JavaScript pr
 
 ## Initial Setup
 
-First, add the repository to `composer.json`:
+First, add the repository to `composer.json`. It also depends on `php-linter`.
 
 ```
 {
@@ -12,10 +12,15 @@ First, add the repository to `composer.json`:
         {
             "type": "vcs",
             "url": "https://github.com/douglasgreen/config-setup"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/douglasgreen/php-linter"
         }
     ],
     "require-dev": {
-        "douglasgreen/config-setup": "dev-main"
+        "douglasgreen/config-setup": "dev-main",
+        "douglasgreen/php-linter": "dev-main"
     }
 }
 ```
