@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace DouglasGreen\ConfigSetup;
 
 use DOMDocument;
+use DouglasGreen\Utility\FileSystem\PathUtil;
 use Exception;
 use SimpleXMLElement;
 
@@ -296,24 +297,6 @@ class FileCopier
         }
     }
 
-    protected static function checkHashBang(string $filename, string $command): bool
-    {
-        $handle = fopen($filename, 'r');
-        if ($handle === false) {
-            return false;
-        }
-
-        $line = fgets($handle);
-        fclose($handle);
-
-        if ($line === false) {
-            return false;
-        }
-
-        // Check if the line starts with "#!" and contains the command
-        return str_starts_with($line, '#!') && str_contains($line, $command);
-    }
-
     protected static function hasCodeCoverageDriver(): bool
     {
         exec('php -m | grep -E "xdebug|pcov"', $output, $returnCode);
@@ -436,10 +419,7 @@ class FileCopier
         $phpPaths = [];
 
         foreach ($this->gitFiles as $gitFile) {
-            if (pathinfo($gitFile, PATHINFO_EXTENSION) === 'php') {
-                $topLevelDir = explode('/', $gitFile)[0];
-                $phpPaths[$topLevelDir] = true;
-            } elseif (self::checkHashBang($gitFile, 'php')) {
+            if (PathUtil::getFileType($gitFile) === 'php') {
                 $phpPaths[$gitFile] = true;
             }
         }

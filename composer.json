@@ -42,11 +42,16 @@
         {
             "type": "vcs",
             "url": "https://github.com/douglasgreen/php-linter"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/douglasgreen/utility"
         }
     ],
     "require": {
         "php": ">=8.1",
         "douglasgreen/php-linter": "dev-main",
+        "douglasgreen/utility": "dev-main",
         "nette/neon": "^3.4"
     },
     "require-dev": {
