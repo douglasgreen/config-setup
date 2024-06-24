@@ -37,3 +37,7 @@ if [ -f "composer.json" ]; then
         echo "===> Composer lint:fix script not defined"
     fi
 fi
+
+echo "Do not mix manual changes and automated changes in the same changeset."
+echo "If this changeset consists only of automated changes, then run this command:"
+echo "git commit -a -m\"refactor: applying automated changes using lint:fix\""
