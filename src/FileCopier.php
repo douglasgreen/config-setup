@@ -566,8 +566,13 @@ class FileCopier
         $phpPaths = $this->phpPaths;
 
         // Add the stubs directory if we are installing the WordPress stub.
-        if ($this->useWordpress && ! in_array('stubs', $phpPaths, true)) {
-            $phpPaths[] = 'stubs';
+        if ($this->useWordpress) {
+            // Include phpstan-wordpress without needing the PHPStan extension installer.
+            $phpStanConfig['includes'] = ['vendor/szepeviktor/phpstan-wordpress/extension.neon'];
+
+            if (! in_array('stubs', $phpPaths, true)) {
+                $phpPaths[] = 'stubs';
+            }
         }
 
         $phpStanConfig['parameters']['paths'] = $phpPaths;

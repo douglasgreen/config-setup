@@ -62,6 +62,15 @@ When running `config-setup`, there are three possible arguments:
 -   `--wordpress`: Install the `stubs/wordpress.php` file for PHPStan to use for WordPress checking.
 -   `--wrap INT` or `-w INT`: Set a different integer (INT) wrap than the default of 100.
 
+### WordPress Stubs
+
+The WordPress stubs here are for third-party code, including Infinite Theme and WooCommerce. For the
+main WordPress stubs, just install
+[phpstan-wordpress](https://github.com/szepeviktor/phpstan-wordpress).
+
+This file copier automatically adds the phpstan-wordpress include to phpstan.neon so you don't need
+to install the PHPStan extension installer.
+
 ### Environment Variables
 
 The ECS file `ecs.php` checks if `ECS_RISKY` is true before running risky tests.
