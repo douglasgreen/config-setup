@@ -8,12 +8,20 @@ declare(strict_types=1);
  * @see https://github.com/szepeviktor/phpstan-wordpress
  */
 
+/**
+ * @param array<string, string> $atts
+ */
+function gdlr_core_esc_style(array $atts, bool $wrap = true): string
+{
+    return '';
+}
+
 function infinite_get_option(string $option, ?string $key = null, ?string $default = null): string
 {
     return '';
 }
 
-function infinite_get_post_option(int $post_id, string $key = 'gdlr-core-page-option'): mixed
+function infinite_get_post_option(int|false $post_id, string $key = 'gdlr-core-page-option'): mixed
 {
     return '';
 }
