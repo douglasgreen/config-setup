@@ -38,6 +38,7 @@ class FileCopier
         'phpstan.neon' => 'phpstan',
         'phpunit.xml' => 'phpunit',
         'rector.php' => 'rector',
+        'script/functions.py' => null,
         'stubs/wordpress.php' => null,
     ];
 
