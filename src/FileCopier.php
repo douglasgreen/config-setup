@@ -6,6 +6,7 @@ namespace DouglasGreen\ConfigSetup;
 
 use DOMDocument;
 use DouglasGreen\Utility\FileSystem\PathUtil;
+use DouglasGreen\Utility\Regex\Regex;
 use Exception;
 use SimpleXMLElement;
 
@@ -420,11 +421,11 @@ class FileCopier
         $phpPaths = [];
 
         foreach ($this->gitFiles as $gitFile) {
-            if (PathUtil::getFileType($gitFile) === 'php') {
+            if (Regex::hasMatch('/\.php$/', $gitFile)) {
                 // Extract the top-level directory for files with PHP extension
                 $topLevelDir = explode('/', $gitFile)[0];
                 $phpPaths[$topLevelDir] = true;
-            } else {
+            } elseif (PathUtil::getFileType($gitFile) === 'php') {
                 // Store the entire path for other files to be sure they are recognized
                 $phpPaths[$gitFile] = true;
             }
