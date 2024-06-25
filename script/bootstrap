@@ -1,19 +1,15 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
 # script/bootstrap: Resolve all dependencies that the application requires to run.
 
-set -e
+from functions import change_to_parent_directory, install_composer_dependencies, install_npm_dependencies
 
-cd "$(dirname "$0")/.."
+def main():
+    change_to_parent_directory()
+    install_composer_dependencies()
+    install_npm_dependencies()
 
-# Install Composer dependencies
-if [ -f "composer.json" ]; then
-    echo "==> Installing Composer dependencies..."
-    composer install --no-interaction --prefer-dist
-fi
+    print("==> All dependencies resolved and the application is ready to run.")
 
-# Install NPM dependencies
-if [ -f "package.json" ]; then
-    echo "==> Installing NPM dependencies..."
-    npm install --silent
-fi
+if __name__ == "__main__":
+    main()

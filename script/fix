@@ -1,43 +1,26 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
 # script/fix: Run lint:fix scripts.
 
-set -e
+from functions import (
+    change_to_parent_directory,
+    install_npm_dependencies,
+    run_npm_lint_fix,
+    install_composer_dependencies,
+    run_composer_lint_fix
+)
 
-cd "$(dirname "$0")/.."
+def main():
+    change_to_parent_directory()
+    install_npm_dependencies()
+    run_npm_lint_fix()
+    install_composer_dependencies()
+    run_composer_lint_fix()
 
-# Install NPM dependencies if node_modules directory doesn't exist
-if [ -f "package.json" ]; then
-    if [ ! -d "node_modules" ]; then
-        echo "==> Installing NPM dependencies..."
-        npm install --silent
-    fi
+    print("==> Lint:fix scripts have been run successfully.")
+    print("Do not mix manual changes and automated changes in the same changeset.")
+    print("If this changeset consists only of automated changes, then run this command:")
+    print('git commit -a -m"refactor: applying automated changes using lint:fix"')
 
-    # Check if the npm script "lint:fix" exists and run it
-    if npm run | grep -q -P "^\s+lint:fix$"; then
-        echo "==> Running NPM lint:fix..."
-        npm run lint:fix
-    else
-        echo "===> NPM lint:fix script not defined"
-    fi
-fi
-
-# Install Composer dependencies if vendor directory doesn't exist
-if [ -f "composer.json" ]; then
-    if [ ! -d "vendor" ]; then
-        echo "==> Installing Composer dependencies..."
-        composer install --no-interaction --prefer-dist
-    fi
-
-    # Check if the composer script "lint:fix" exists and run it
-    if composer run-script --list | grep -q -P "^\s+lint:fix\s+"; then
-        echo "==> Running Composer lint:fix..."
-        composer lint:fix
-    else
-        echo "===> Composer lint:fix script not defined"
-    fi
-fi
-
-echo "Do not mix manual changes and automated changes in the same changeset."
-echo "If this changeset consists only of automated changes, then run this command:"
-echo "git commit -a -m\"refactor: applying automated changes using lint:fix\""
+if __name__ == "__main__":
+    main()

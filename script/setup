@@ -1,23 +1,21 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
 # script/setup: Set up application to initial state.
 
-set -e
+from functions import (
+    change_to_parent_directory,
+    run_bootstrap_script,
+    setup_database,
+    setup_environment_variables
+)
 
-cd "$(dirname "$0")/.."
+def main():
+    change_to_parent_directory()
+    run_bootstrap_script()
+    setup_database()
+    setup_environment_variables()
 
-script/bootstrap
+    print("==> Repo is set up and ready to go!")
 
-# Set up DB if the script exists
-if [ -f "script/setup_db" ]; then
-    echo "==> Setting up database..."
-    script/setup_db
-fi
-
-# Set up environment variables if the .env file exists
-if [ -f ".env" ]; then
-    echo "==> Setting up environment variables..."
-    source .env
-fi
-
-echo "==> Repo is now ready to go!"
+if __name__ == "__main__":
+    main()

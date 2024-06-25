@@ -1,42 +1,26 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
 # script/test: Run test scripts.
 
-set -e
+from functions import (
+    change_to_parent_directory,
+    install_npm_dependencies,
+    run_npm_test,
+    install_composer_dependencies,
+    run_composer_test,
+    set_xdebug_mode
+)
 
-cd "$(dirname "$0")/.."
+def main():
+    change_to_parent_directory()
+    install_composer_dependencies()
+    set_xdebug_mode()
+    run_composer_test()
+    install_npm_dependencies()
+    run_npm_test()
 
-# Install Composer dependencies if vendor directory doesn't exist
-if [ -f "composer.json" ]; then
-    if [ ! -d "vendor" ]; then
-        echo "==> Installing Composer dependencies..."
-        composer install --no-interaction --prefer-dist
-    fi
+    print("==> All tests have been run successfully.")
 
-    # Set the XDEBUG_MODE environment variable
-    export XDEBUG_MODE=coverage
+if __name__ == "__main__":
+    main()
 
-    # Check if the composer script "test" exists and run it
-    if composer run-script --list | grep -q -P "^\s+test\s+"; then
-        echo "==> Running Composer test..."
-        composer test
-    else
-        echo "==> Composer test script not defined"
-    fi
-fi
-
-# Install NPM dependencies if node_modules directory doesn't exist
-if [ -f "package.json" ]; then
-    if [ ! -d "node_modules" ]; then
-        echo "==> Installing NPM dependencies..."
-        npm install --silent
-    fi
-
-    # Check if the npm script "test" exists and run it
-    if npm run | grep -q -P "^\s*test$"; then
-        echo "==> Running NPM test..."
-        npm run test
-    else
-        echo "==> NPM test script not defined"
-    fi
-fi

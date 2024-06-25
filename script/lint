@@ -1,39 +1,23 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
-# script/lint: Run lint scripts.
+# script/lint: Run lint scripts
 
-set -e
+from functions import (
+    change_to_parent_directory,
+    install_npm_dependencies,
+    run_npm_lint,
+    install_composer_dependencies,
+    run_composer_lint
+)
 
-cd "$(dirname "$0")/.."
+def main():
+    change_to_parent_directory()
+    install_composer_dependencies()
+    run_composer_lint()
+    install_npm_dependencies()
+    run_npm_lint()
 
-# Install Composer dependencies if vendor directory doesn't exist
-if [ -f "composer.json" ]; then
-    if [ ! -d "vendor" ]; then
-        echo "==> Installing Composer dependencies..."
-        composer install --no-interaction --prefer-dist
-    fi
+    print("==> Lint scripts have been run successfully.")
 
-    # Check if the composer script "lint" exists and run it
-    if composer run-script --list | grep -q -P "^\s+lint\s+"; then
-        echo "==> Running Composer lint..."
-        composer lint
-    else
-        echo "===> Composer lint script not defined"
-    fi
-fi
-
-# Install NPM dependencies if node_modules directory doesn't exist
-if [ -f "package.json" ]; then
-    if [ ! -d "node_modules" ]; then
-        echo "==> Installing NPM dependencies..."
-        npm install --silent
-    fi
-
-    # Check if the npm script "lint" exists and run it
-    if npm run | grep -q -P "^\s+lint$"; then
-        echo "==> Running NPM lint..."
-        npm run lint
-    else
-        echo "===> NPM lint script not defined"
-    fi
-fi
+if __name__ == "__main__":
+    main()

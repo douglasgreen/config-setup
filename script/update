@@ -1,23 +1,22 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
 
 # script/update: Update application to run for its current checkout.
 
-set -e
+from functions import (
+    change_to_parent_directory,
+    run_bootstrap_script,
+    update_database,
+    setup_environment_variables
+)
 
-cd "$(dirname "$0")/.."
+def main():
+    change_to_parent_directory()
+    run_bootstrap_script()
+    update_database()
+    setup_environment_variables()
 
-script/bootstrap
+    print("==> Repo is updated and ready to go!")
 
-# Update DB if the script exists
-if [ -f "script/update_db" ]; then
-    echo "==> Updating database..."
-    script/update_db
-fi
+if __name__ == "__main__":
+    main()
 
-# Update environment variables if the .env file exists
-if [ -f ".env" ]; then
-    echo "==> Setting up environment variables..."
-    source .env
-fi
-
-echo "==> Repo is now ready to go!"
