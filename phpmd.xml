@@ -30,7 +30,11 @@
     </rule>
     <rule ref="rulesets/naming.xml">
         <!-- Replaced with PHP Linter -->
+        <exclude name="ConstantNamingConventions" />
+        <exclude name="LongClassName" />
         <exclude name="LongVariable" />
+        <exclude name="ShortClassName" />
+        <exclude name="ShortMethodName" />
         <exclude name="ShortVariable" />
     </rule>
     <rule ref="rulesets/unusedcode.xml" />
