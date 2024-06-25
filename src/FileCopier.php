@@ -18,6 +18,8 @@ class FileCopier
 
     public const USE_WORDPRESS = 2;
 
+    public const USE_WOOCOMMERCE = 4;
+
     /**
      * @var array<string, ?string> Names of files to copy if the project is installed
      */
@@ -134,6 +136,8 @@ class FileCopier
 
     protected readonly bool $noPreCommit;
 
+    protected readonly bool $useWoocommerce;
+
     protected readonly bool $useWordpress;
 
     /**
@@ -145,6 +149,7 @@ class FileCopier
         protected readonly int $wrap = self::DEFAULT_WRAP
     ) {
         $this->noPreCommit = (bool) ($this->flags & self::NO_PRE_COMMIT);
+        $this->useWoocommerce = (bool) ($this->flags & self::USE_WOOCOMMERCE);
         $this->useWordpress = (bool) ($this->flags & self::USE_WORDPRESS);
 
         $this->gitFiles = self::loadGitFiles();
@@ -559,24 +564,32 @@ class FileCopier
         $phpStanConfig['parameters']['phpVersion'] = (int) $phpStanVersion;
 
         // Add bootstrap file if exists at usual location.
+        $bootstrapFiles = [];
         if (file_exists($this->repoDir . '/phpstan-bootstrap.php')) {
-            $phpStanConfig['parameters']['bootstrapFiles'] = ['phpstan-bootstrap.php'];
+            $bootstrapFiles[] = 'phpstan-bootstrap.php';
         }
 
         // Add the PHP paths to process.
         $phpPaths = $this->phpPaths;
 
-        // Add the stubs directory if we are installing the WordPress stub.
         if ($this->useWordpress) {
-            // Include phpstan-wordpress without needing the PHPStan extension installer.
+            // Include WordPress extensions without needing the PHPStan extension installer.
             $phpStanConfig['includes'] = ['vendor/szepeviktor/phpstan-wordpress/extension.neon'];
+            if ($this->useWoocommerce) {
+                $bootstrapFiles[] = 'vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php';
+            }
 
+            // Add the stubs directory if we are installing the WordPress stub.
             if (! in_array('stubs', $phpPaths, true)) {
                 $phpPaths[] = 'stubs';
             }
         }
 
         $phpStanConfig['parameters']['paths'] = $phpPaths;
+
+        if ($bootstrapFiles !== []) {
+            $phpStanConfig['parameters']['bootstrapFiles'] = $bootstrapFiles;
+        }
 
         $destFile = new NeonFile($destination);
         $destFile->save($phpStanConfig);

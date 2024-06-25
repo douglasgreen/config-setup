@@ -19,7 +19,7 @@ if ($currentDir === false) {
 // Run in current dir which is repository root dir.
 require_once $currentDir . '/vendor/autoload.php';
 
-$options = getopt('nw:', ['no-pre-commit', 'wordpress', 'wrap:']);
+$options = getopt('nw:', ['no-pre-commit', 'woocommerce', 'wordpress', 'wrap:']);
 
 $flags = 0;
 
@@ -38,6 +38,11 @@ if ($wrap === 0) {
 // Install the WordPress stubs for PHPStan.
 if (isset($options['wordpress'])) {
     $flags |= FileCopier::USE_WORDPRESS;
+}
+
+// Install the WooCommerce stubs for PHPStan.
+if (isset($options['woocommerce'])) {
+    $flags |= FileCopier::USE_WOOCOMMERCE;
 }
 
 $fileCopier = new FileCopier($currentDir, $flags, $wrap);

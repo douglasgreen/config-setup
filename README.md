@@ -59,17 +59,21 @@ hooks to work.
 When running `config-setup`, there are three possible arguments:
 
 -   `--no-pre-commit` or `-n`: Don't use the pre-commit for fewer interruptions.
--   `--wordpress`: Install the `stubs/wordpress.php` file for PHPStan to use for WordPress checking.
+-   `--wordpress`: Install the `stubs/wordpress.php` file and WordPress extension for PHPStan to
+    use.
+-   `--woocommerce`: Install the WooCommerce extension for PHPStan to use.
 -   `--wrap INT` or `-w INT`: Set a different integer (INT) wrap than the default of 100.
 
 ### WordPress Stubs
 
-The WordPress stubs here are for third-party code, including Infinite Theme and WooCommerce. For the
-main WordPress stubs, just install
-[phpstan-wordpress](https://github.com/szepeviktor/phpstan-wordpress).
+The WordPress stubs here are for third-party code, including Goodlayers and Infinite Theme. For the
+main WordPress stubs, just install:
 
-This file copier automatically adds the phpstan-wordpress include to phpstan.neon so you don't need
-to install the PHPStan extension installer.
+-   [phpstan-wordpress](https://github.com/szepeviktor/phpstan-wordpress)
+-   [woocommerce-stubs](https://github.com/php-stubs/woocommerce-stubs)
+
+This file copier automatically adds the files include and bootstrap files to phpstan.neon so you
+don't need to use the PHPStan extension installer.
 
 ### Environment Variables
 
