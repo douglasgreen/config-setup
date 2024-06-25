@@ -420,6 +420,11 @@ class FileCopier
 
         foreach ($this->gitFiles as $gitFile) {
             if (PathUtil::getFileType($gitFile) === 'php') {
+                // Extract the top-level directory for files with PHP extension
+                $topLevelDir = explode('/', $gitFile)[0];
+                $phpPaths[$topLevelDir] = true;
+            } else {
+                // Store the entire path for other files to be sure they are recognized
                 $phpPaths[$gitFile] = true;
             }
         }
