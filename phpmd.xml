@@ -24,25 +24,14 @@
         <!-- Calling static functions is necessary sometimes -->
         <exclude name="StaticAccess" />
     </rule>
-    <rule ref="rulesets/controversial.xml" />
-    <rule ref="rulesets/design.xml" />
+    <rule ref="rulesets/design.xml">
+        <!-- Replaced with PHP Linter -->
+        <exclude name="DevelopmentCodeFragment" />
+    </rule>
     <rule ref="rulesets/naming.xml">
-        <!-- Customized below -->
+        <!-- Replaced with PHP Linter -->
         <exclude name="LongVariable" />
         <exclude name="ShortVariable" />
     </rule>
     <rule ref="rulesets/unusedcode.xml" />
-
-    <!-- 99% of our PHP variable names are shorter than 20 characters so allow 25 -->
-    <rule ref="rulesets/naming.xml/LongVariable">
-        <properties>
-            <property name="maximum" value="25" />
-        </properties>
-    </rule>
-
-    <rule ref="rulesets/naming.xml/ShortVariable">
-        <properties>
-            <property name="exceptions" value="db,id" />
-        </properties>
-    </rule>
 </ruleset>

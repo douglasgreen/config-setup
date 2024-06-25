@@ -86,12 +86,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/php-linter.git",
-                "reference": "c835dd5e76ebdfc8b6b348341bcfbb7a222cb80a"
+                "reference": "39afd00f95bbb6c1d1b516ec2e9a005a96e469e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/c835dd5e76ebdfc8b6b348341bcfbb7a222cb80a",
-                "reference": "c835dd5e76ebdfc8b6b348341bcfbb7a222cb80a",
+                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/39afd00f95bbb6c1d1b516ec2e9a005a96e469e9",
+                "reference": "39afd00f95bbb6c1d1b516ec2e9a005a96e469e9",
                 "shasum": ""
             },
             "require": {
@@ -154,7 +154,7 @@
                 "issues": "https://github.com/douglasgreen/php-linter/issues",
                 "source": "https://github.com/douglasgreen/php-linter/tree/main"
             },
-            "time": "2024-06-25T16:58:19+00:00"
+            "time": "2024-06-25T17:35:53+00:00"
         },
         {
             "name": "douglasgreen/utility",
