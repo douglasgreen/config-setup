@@ -2,4 +2,3 @@ bin/config-setup
 ecs.php
 rector.php
 src
-stubs/wordpress.php

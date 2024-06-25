@@ -35,7 +35,6 @@ class FileCopier
         'phpstan.neon' => 'phpstan',
         'phpunit.xml' => 'phpunit',
         'rector.php' => 'rector',
-        'stubs/wordpress.php' => null,
     ];
 
     /**
@@ -62,7 +61,6 @@ class FileCopier
     protected const MAKE_DIRS = [
         '.husky' => 'husky',
         'script' => null,
-        'stubs' => null,
         'var/cache/ecs' => 'ecs',
         'var/cache/eslint' => 'eslint',
         'var/cache/pdepend' => 'pdepend',
@@ -165,11 +163,6 @@ class FileCopier
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
             // Don't make directories if their package isn't installed.
             if (! $this->hasPackage($requiredPackage)) {
-                continue;
-            }
-
-            // Check if the stubs are needed.
-            if ($dir === 'stubs' && ! $this->useWordpress) {
                 continue;
             }
 
@@ -564,11 +557,6 @@ class FileCopier
 
         // Add the PHP paths to process.
         $phpPaths = $this->phpPaths;
-
-        // Add the stubs directory if we are installing the WordPress stub.
-        if ($this->useWordpress && ! in_array('stubs', $phpPaths, true)) {
-            $phpPaths[] = 'stubs';
-        }
 
         $phpStanConfig['parameters']['paths'] = $phpPaths;
 
