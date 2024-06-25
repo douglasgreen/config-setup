@@ -5,12 +5,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
 >
-    <!--
-    To customize PHPMD, import each ruleset, excluding rules that are not needed or need to be
-    customized separately.
-    @see https://phpmd.org/documentation/creating-a-ruleset.html
-    -->
-
     <!-- Exclude stubs, which are empty classes and functions defined for PHPStan -->
     <exclude-pattern>stubs/*</exclude-pattern>
 
@@ -26,9 +20,6 @@
     <rule ref="rulesets/cleancode.xml">
         <!-- Avoiding else expresssions does not help -->
         <exclude name="ElseExpression" />
-
-        <!-- This does not help since = is not === so we don't confuse them -->
-        <exclude name="IfStatementAssignment" />
 
         <!-- Calling static functions is necessary sometimes -->
         <exclude name="StaticAccess" />
@@ -49,16 +40,9 @@
         </properties>
     </rule>
 
-    <!--
-        Allow some short names:
-        $db = database
-        $e = exception
-        $i, $j, $k = indexes
-        $id = identifier
-    -->
     <rule ref="rulesets/naming.xml/ShortVariable">
         <properties>
-            <property name="exceptions" value="db,e,i,j,k,id" />
+            <property name="exceptions" value="db,id" />
         </properties>
     </rule>
 </ruleset>
