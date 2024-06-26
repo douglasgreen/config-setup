@@ -5,6 +5,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
 >
+    <!-- The names of rules not listed here were replaced with PHP Linter -->
+
     <!-- Exclude stubs, which are empty classes and functions defined for PHPStan -->
     <exclude-pattern>stubs/*</exclude-pattern>
 
@@ -31,15 +33,6 @@
     <rule ref="rulesets/design.xml">
         <!-- Replaced with PHP Linter -->
         <exclude name="DevelopmentCodeFragment" />
-    </rule>
-    <rule ref="rulesets/naming.xml">
-        <!-- Replaced with PHP Linter -->
-        <exclude name="ConstantNamingConventions" />
-        <exclude name="LongClassName" />
-        <exclude name="LongVariable" />
-        <exclude name="ShortClassName" />
-        <exclude name="ShortMethodName" />
-        <exclude name="ShortVariable" />
     </rule>
     <rule ref="rulesets/unusedcode.xml" />
 </ruleset>
