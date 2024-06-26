@@ -5,7 +5,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
 >
-    <!-- The names of rules not listed here were replaced with PHP Linter -->
+    <!-- The names of rules not listed here were replaced with PHP Linter, including Code Size,
+    Controversion, and Naming Rules -->
 
     <!-- Exclude stubs, which are empty classes and functions defined for PHPStan -->
     <exclude-pattern>stubs/*</exclude-pattern>
