@@ -37,6 +37,7 @@
         <exclude name="EvalExpression" />
         <exclude name="ExitExpression" />
         <exclude name="GotoStatement" />
+        <exclude name="NumberOfChildren" />
     </rule>
     <rule ref="rulesets/unusedcode.xml" />
 </ruleset>
