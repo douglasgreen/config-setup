@@ -29,7 +29,6 @@ class FileCopier
         '.eslintignore' => 'eslint',
         '.eslintrc.json' => 'eslint',
         '.gitignore' => null,
-        '.mocharc.json' => 'mocha',
         '.prettierignore' => 'prettier',
         '.prettierrc.json' => 'prettier',
         '.stylelintignore' => 'stylelint',
@@ -94,7 +93,6 @@ class FileCopier
         'commitlint' => '@commitlint/cli',
         'eslint' => 'eslint',
         'husky' => 'husky',
-        'mocha' => 'mocha',
         'prettier' => 'prettier',
         'stylelint' => 'stylelint',
     ];

@@ -178,21 +178,6 @@ Here is a summary of the configuration options in the `.eslintrc.json` file:
 This file is customized when copied to your project. It will extend the `standard` or `airbnb-base`
 depending on which plugins are installed in `package.json`.
 
-### Mocha
-
-Here is a summary of the configuration options in the `.mocharc.json` file:
-
--   `"ui": "bdd"` - Use the default style of Behavior Driven Development.
--   `"timeout": 2000` - Use the default test timeout.
--   `"slow": 75` - Use the default slow-test threshold.
--   `"retries": 3` - Allow three retries for flaky tests.
--   `"bail": false` - Don't stop running after a test failure.
--   `"checkLeaks": true` - Check for global variable leaks.
--   `"allowUncaught": false` - Catch errors so they don't propagate.
--   `"asyncOnly": false` - Allow tests that don't return a promise or callback.
--   `"forbidOnly": false` - Allow tests that are marked `.only`.
--   `"forbidPending": false` - Allow tests that are marked pending.
-
 ### Prettier
 
 Here is a line-by-line description of the Prettier configuration options in the `.prettierrc.json`
