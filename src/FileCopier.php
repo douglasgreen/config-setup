@@ -247,13 +247,15 @@ class FileCopier
                 // Put Prettier temporary copy with new plugin list in var dir.
                 $this->makePrettierrc($plainFile, $target);
             } elseif ($fileToCopy === '.husky/pre-commit') {
+                // Use original pre-commit file as target in either case.
+                $target = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+
                 // Install either pre-commit, or pre-push, or none.
                 if ($this->usePrePush) {
                     // Pre-push symlink points to pre-commit script.
-                    $target =
-                        $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
                     $fileToCopy = '.husky/pre-push';
                 } elseif (! $this->usePreCommit) {
+                    // No symlink was requested.
                     continue;
                 }
             } else {
