@@ -23,7 +23,6 @@
 
 declare(strict_types=1);
 
-use DouglasGreen\ConfigSetup\ComposerFile;
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
 use Rector\Config\RectorConfig;
@@ -33,13 +32,52 @@ use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Symfony\Set\SymfonySetList;
 
-require_once __DIR__ . '/vendor/autoload.php';
+$hasPhpUnit = false;
+$hasSymfony = false;
+$hasDoctrine = false;
+$phpVersion = null;
 
-$composerFile = new ComposerFile();
-$hasPhpUnit = $composerFile->hasPhpUnit();
-$hasSymfony = $composerFile->hasSymfony();
-$hasDoctrine = $composerFile->hasDoctrine();
-$phpVersion = $composerFile->getPhpVersion();
+if (file_exists('composer.json')) {
+    $composerContent = file_get_contents('composer.json');
+    if ($composerContent !== false) {
+        $composerData = json_decode($composerContent, true, 16, JSON_THROW_ON_ERROR);
+
+        // Check for PHPUnit, Symfony, and Doctrine
+        $requires = $composerData['require'] ?? [];
+        $requiresDev = $composerData['require-dev'] ?? [];
+
+        $allDependencies = array_merge($requires, $requiresDev);
+
+        $hasPhpUnit = isset($allDependencies['phpunit/phpunit']);
+        foreach ($allDependencies as $name => $value) {
+            if (preg_match('#^phpunit/#', $name) === 1) {
+                $hasPhpUnit = true;
+            }
+
+            if (preg_match('#^symfony/#', $name) === 1) {
+                $hasSymfony = true;
+            }
+
+            if (preg_match('#^doctrine/#', $name) === 1) {
+                $hasDoctrine = true;
+            }
+
+            if ($name !== 'php') {
+                continue;
+            }
+
+            if (! is_string($value)) {
+                continue;
+            }
+
+            if (preg_match('/\d+\.\d+/', $value, $match) !== 1) {
+                continue;
+            }
+
+            $phpVersion = $match[0];
+        }
+    }
+}
 
 $upToPhp = match ($phpVersion) {
     '8.2' => LevelSetList::UP_TO_PHP_82,
