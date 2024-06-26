@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "098e6cc460e0d40ccd726c8d6455eef70fa2ae14"
+                "reference": "ed7e6d1b636768f5973f108b7dca145529cb7fae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/098e6cc460e0d40ccd726c8d6455eef70fa2ae14",
-                "reference": "098e6cc460e0d40ccd726c8d6455eef70fa2ae14",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/ed7e6d1b636768f5973f108b7dca145529cb7fae",
+                "reference": "ed7e6d1b636768f5973f108b7dca145529cb7fae",
                 "shasum": ""
             },
             "require": {
@@ -78,7 +78,7 @@
                 "issues": "https://github.com/douglasgreen/optparser/issues",
                 "source": "https://github.com/douglasgreen/optparser/tree/main"
             },
-            "time": "2024-06-25T18:31:40+00:00"
+            "time": "2024-06-26T17:46:52+00:00"
         },
         {
             "name": "douglasgreen/php-linter",
@@ -86,12 +86,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/php-linter.git",
-                "reference": "9f113c0ba5bc9d6d6c27583687802db2233c8984"
+                "reference": "2b5d9a2457e20a4e0668bdfd43cf5298ef923e2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/9f113c0ba5bc9d6d6c27583687802db2233c8984",
-                "reference": "9f113c0ba5bc9d6d6c27583687802db2233c8984",
+                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/2b5d9a2457e20a4e0668bdfd43cf5298ef923e2b",
+                "reference": "2b5d9a2457e20a4e0668bdfd43cf5298ef923e2b",
                 "shasum": ""
             },
             "require": {
@@ -154,7 +154,7 @@
                 "issues": "https://github.com/douglasgreen/php-linter/issues",
                 "source": "https://github.com/douglasgreen/php-linter/tree/main"
             },
-            "time": "2024-06-26T10:49:20+00:00"
+            "time": "2024-06-26T17:48:51+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -162,12 +162,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "e14e16b83544928ae3e1f4a622b2642ab56dfe59"
+                "reference": "2526ec0a729f35de521008740dd86021673f7b85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/e14e16b83544928ae3e1f4a622b2642ab56dfe59",
-                "reference": "e14e16b83544928ae3e1f4a622b2642ab56dfe59",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/2526ec0a729f35de521008740dd86021673f7b85",
+                "reference": "2526ec0a729f35de521008740dd86021673f7b85",
                 "shasum": ""
             },
             "require": {
@@ -217,20 +217,20 @@
                 "issues": "https://github.com/douglasgreen/utility/issues",
                 "source": "https://github.com/douglasgreen/utility/tree/main"
             },
-            "time": "2024-06-25T18:29:11+00:00"
+            "time": "2024-06-26T18:09:15+00:00"
         },
         {
             "name": "nette/neon",
-            "version": "v3.4.2",
+            "version": "v3.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/neon.git",
-                "reference": "0edcee11ca631af369180d9f3bc9615ea0cb2dfb"
+                "reference": "c8481c104431c8d94cc88424a1e21f47f8c93280"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/neon/zipball/0edcee11ca631af369180d9f3bc9615ea0cb2dfb",
-                "reference": "0edcee11ca631af369180d9f3bc9615ea0cb2dfb",
+                "url": "https://api.github.com/repos/nette/neon/zipball/c8481c104431c8d94cc88424a1e21f47f8c93280",
+                "reference": "c8481c104431c8d94cc88424a1e21f47f8c93280",
                 "shasum": ""
             },
             "require": {
@@ -283,9 +283,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/neon/issues",
-                "source": "https://github.com/nette/neon/tree/v3.4.2"
+                "source": "https://github.com/nette/neon/tree/v3.4.3"
             },
-            "time": "2024-06-18T21:02:21+00:00"
+            "time": "2024-06-26T14:53:59+00:00"
         },
         {
             "name": "nikic/php-parser",

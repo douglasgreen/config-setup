@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\ConfigSetup;
 
-use Exception;
+use DouglasGreen\Utility\FileSystem\FileException;
+use DouglasGreen\Utility\FileSystem\PathUtil;
 use Nette\Neon\Neon;
 
 class NeonFile
@@ -15,12 +16,12 @@ class NeonFile
 
     /**
      * @return array<string, mixed>
-     * @throws Exception
+     * @throws FileException
      */
     public function load(): array
     {
         if (! file_exists($this->filename)) {
-            throw new Exception('File not found: ' . $this->filename);
+            throw new FileException('File not found: ' . $this->filename);
         }
 
         return Neon::decodeFile($this->filename);
@@ -28,13 +29,10 @@ class NeonFile
 
     /**
      * @param array<string, mixed> $data
-     * @throws Exception
      */
     public function save(array $data): void
     {
         $neonContent = Neon::encode($data, Neon::BLOCK);
-        if (file_put_contents($this->filename, $neonContent) === false) {
-            throw new Exception('Unable to write to file: ' . $this->filename);
-        }
+        PathUtil::saveString($this->filename, $neonContent);
     }
 }

@@ -6,6 +6,9 @@ namespace DouglasGreen\ConfigSetup;
 
 use DOMDocument;
 use DouglasGreen\Utility\FileSystem\PathUtil;
+use DouglasGreen\Utility\FileSystem\DirUtil;
+use DouglasGreen\Utility\Program\Command;
+use DouglasGreen\Utility\Program\CommandException;
 use DouglasGreen\Utility\Regex\Regex;
 use Exception;
 use SimpleXMLElement;
@@ -143,9 +146,6 @@ class FileCopier
 
     protected readonly bool $useWordpress;
 
-    /**
-     * @throws Exception
-     */
     public function __construct(
         protected readonly string $repoDir,
         protected readonly int $flags = 0,
@@ -187,17 +187,11 @@ class FileCopier
         }
     }
 
-    /**
-     * @throws Exception
-     */
     public function copyFiles(): void
     {
         $excludeLines = [];
         if (file_exists($this->excludeFile)) {
-            $excludeLines = file($this->excludeFile, FILE_IGNORE_NEW_LINES);
-            if ($excludeLines === false) {
-                throw new Exception('Unable to load Git exclude file');
-            }
+            $excludeLines = PathUtil::loadLines($this->excludeFile, PathUtil::IGNORE_NEW_LINES);
         }
 
         $oldExcludeLines = $excludeLines;
@@ -272,29 +266,22 @@ class FileCopier
 
             // Check if link already exists.
             if (is_link($symlink)) {
-                $actualTarget = readlink($symlink);
-                if ($actualTarget === false) {
-                    throw new Exception(sprintf('Unable to read link %s', $symlink));
-                }
-
                 // Check if link is pointing to the right target.
+                $actualTarget = PathUtil::getLinkTarget($symlink);
                 if ($actualTarget === $target) {
                     continue;
                 }
 
-                unlink($symlink);
+                PathUtil::delete($symlink);
             }
 
             // Check if the destination exists and is a file, then delete it
             if (is_file($symlink)) {
-                unlink($symlink);
+                PathUtil::delete($symlink);
             }
 
             // Create a soft link instead of copying the file
-            if (! symlink($target, $symlink)) {
-                throw new Exception(sprintf('Failed to create symlink %s', $symlink));
-            }
-
+            PathUtil::makeSymlink($target, $symlink);
             printf('Created symlink %s.' . PHP_EOL, $symlink);
         }
 
@@ -307,21 +294,25 @@ class FileCopier
         }
 
         $output = implode(PHP_EOL, $excludeLines) . PHP_EOL;
-        if (file_put_contents($this->excludeFile, $output) === false) {
-            printf('Error updating %s.' . PHP_EOL, $this->excludeFile);
-        } else {
-            printf('%s has been updated.' . PHP_EOL, $this->excludeFile);
-        }
+        PathUtil::saveString($this->excludeFile, $output);
+        printf('%s has been updated.' . PHP_EOL, $this->excludeFile);
     }
 
+    /**
+     * @throws CommandException
+     */
     protected static function hasCodeCoverageDriver(): bool
     {
-        exec('php -m | grep -E "xdebug|pcov"', $output, $returnCode);
+        $command = new Command('php -m');
+        $command->addSubcommand('|', 'grep -E', ['xdebug|pcov']);
+
+        $output = $command->run();
+        $returnCode = $command->getReturnCode();
         if ($returnCode !== 0 && $returnCode !== 1) {
-            throw new Exception('Unable to determine if code coverage driver is available');
+            throw new CommandException('Unable to determine if code coverage driver is available');
         }
 
-        return ! empty($output);
+        return $output !== [];
     }
 
     /**
@@ -330,11 +321,7 @@ class FileCopier
      */
     protected static function loadComposerJson(): array
     {
-        $composerJsonString = file_get_contents('composer.json');
-        if ($composerJsonString === false) {
-            throw new Exception('Unable to read composer.json file');
-        }
-
+        $composerJsonString = PathUtil::loadString('composer.json');
         return json_decode($composerJsonString, true, 16, JSON_THROW_ON_ERROR);
     }
 
@@ -344,8 +331,8 @@ class FileCopier
      */
     protected static function loadGitFiles(): array
     {
-        exec('git ls-files', $output);
-        return $output;
+        $command = new Command('git ls-files');
+        return $command->run();
     }
 
     /**
@@ -359,11 +346,7 @@ class FileCopier
             return null;
         }
 
-        $packageJsonString = file_get_contents('package.json');
-        if ($packageJsonString === false) {
-            return null;
-        }
-
+        $packageJsonString = PathUtil::loadString('package.json');
         return json_decode($packageJsonString, true, 16, JSON_THROW_ON_ERROR);
     }
 
@@ -378,11 +361,7 @@ class FileCopier
             return;
         }
 
-        if (mkdir($dir, 0o777, true)) {
-            return;
-        }
-
-        throw new Exception(sprintf('Unable to make directory %s', $dir));
+        DirUtil::makeRecursive($dir);
     }
 
     /**
@@ -461,7 +440,8 @@ class FileCopier
         $phpVersionConstraint = $this->composerJson['require']['php'];
 
         // Extract the PHP version number
-        if (preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) === 0) {
+        $match = Regex::match('/\d+\.\d+/', (string) $phpVersionConstraint);
+        if ($match === []) {
             throw new Exception('Unable to extract PHP version from composer.json');
         }
 
@@ -495,28 +475,18 @@ class FileCopier
      */
     protected function makeEcs(string $source, string $destination): void
     {
-        $lines = file($source);
-        if ($lines === false) {
-            throw new Exception('Unable to load ECS config');
-        }
-
+        $lines = PathUtil::loadLines($source);
         $newLines = [];
         foreach ($lines as $line) {
             if (str_contains($line, 'line_length')) {
-                $line = preg_replace('/\b100\b/', (string) $this->wrap, $line);
-                if ($line === null) {
-                    throw new Exception('Unable to replace line wrap');
-                }
+                $line = Regex::replace('/\b100\b/', (string) $this->wrap, $line);
             }
 
             $newLines[] = $line;
         }
 
         $newString = implode('', $newLines);
-        $result = file_put_contents($destination, $newString);
-        if ($result === false) {
-            throw new Exception('Unable to save ECS config to var dir');
-        }
+        PathUtil::saveString($destination, $newString);
     }
 
     /**
@@ -528,12 +498,8 @@ class FileCopier
             return;
         }
 
-        $eslintJsonString = file_get_contents($source);
-        if ($eslintJsonString === false) {
-            throw new Exception('Unable to load Eslint config');
-        }
-
         // Decode the JSON string into a PHP array
+        $eslintJsonString = PathUtil::loadString($source);
         $eslintJson = json_decode($eslintJsonString, true, 16, JSON_THROW_ON_ERROR);
 
         $extension = null;
@@ -555,10 +521,7 @@ class FileCopier
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
         );
 
-        $result = file_put_contents($destination, $eslintJsonString);
-        if ($result === false) {
-            throw new Exception('Unable to save Eslint config to var dir');
-        }
+        PathUtil::saveString($destination, $eslintJsonString);
     }
 
     protected function makePhpStan(string $source, string $destination): void
@@ -700,11 +663,7 @@ class FileCopier
         }
 
         // Load .prettierrc.json
-        $prettierJsonString = file_get_contents($source);
-        if ($prettierJsonString === false) {
-            throw new Exception('Unable to read .prettierrc.json file');
-        }
-
+        $prettierJsonString = PathUtil::loadString($source);
         $prettierJson = json_decode($prettierJsonString, true, 16, JSON_THROW_ON_ERROR);
 
         // Update the print width.
@@ -719,7 +678,7 @@ class FileCopier
 
         if ($this->npmPackages !== []) {
             foreach ($this->npmPackages as $npmPackage) {
-                if (preg_match('#prettier[/-]plugin#', $npmPackage)) {
+                if (Regex::hasMatch('#prettier[/-]plugin#', $npmPackage)) {
                     $plugins[] = $npmPackage;
                 }
             }
@@ -732,19 +691,20 @@ class FileCopier
             );
         }
 
-        if (file_put_contents($destination, $prettierJsonString) === false) {
-            throw new Exception('Unable to write Prettier config file to var');
-        }
+        PathUtil::saveString($destination, $prettierJsonString);
     }
 
     protected function updatePhpPaths(): bool
     {
         $pathFile = $this->repoDir . '/php_paths';
-        $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];
+        $oldPaths = file_exists($pathFile) ? PathUtil::loadLines(
+            $pathFile,
+            PathUtil::IGNORE_NEW_LINES
+        ) : [];
 
         // Write the list of directories to php_paths file
         if ($oldPaths !== $this->phpPaths) {
-            file_put_contents($pathFile, implode(PHP_EOL, $this->phpPaths) . PHP_EOL);
+            PathUtil::saveString($pathFile, implode(PHP_EOL, $this->phpPaths) . PHP_EOL);
             echo 'Created php_paths file.' . PHP_EOL;
             return true;
         }
