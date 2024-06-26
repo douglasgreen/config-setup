@@ -26,6 +26,7 @@
 
         <!-- Replaced with PHP Linter -->
         <exclude name="BooleanArgumentFlag" />
+        <exclude name="ErrorControlOperator" />
     </rule>
     <rule ref="rulesets/design.xml">
         <!-- Replaced with PHP Linter -->
