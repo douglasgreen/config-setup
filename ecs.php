@@ -32,6 +32,7 @@ declare(strict_types=1);
 /*
  * The Symplify statements must precede the PhpCsFixer statements or PHPStan reports namespace errors.
  */
+use DouglasGreen\ConfigSetup\ComposerFile;
 use Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 use PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer;
@@ -39,52 +40,13 @@ use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocAnnotationRemoveFixer;
 use PhpCsFixer\Fixer\Phpdoc\PhpdocAlignFixer;
 
-$hasPhpUnit = false;
-$hasSymfony = false;
-$hasDoctrine = false;
-$phpVersion = null;
+require_once __DIR__ . '/vendor/autoload.php';
 
-if (file_exists('composer.json')) {
-    $composerContent = file_get_contents('composer.json');
-    if ($composerContent !== false) {
-        $composerData = json_decode($composerContent, true, 16, JSON_THROW_ON_ERROR);
-
-        // Check for PHPUnit, Symfony, and Doctrine
-        $requires = $composerData['require'] ?? [];
-        $requiresDev = $composerData['require-dev'] ?? [];
-
-        $allDependencies = array_merge($requires, $requiresDev);
-
-        $hasPhpUnit = isset($allDependencies['phpunit/phpunit']);
-        foreach ($allDependencies as $name => $value) {
-            if (preg_match('#^phpunit/#', $name) === 1) {
-                $hasPhpUnit = true;
-            }
-
-            if (preg_match('#^symfony/#', $name) === 1) {
-                $hasSymfony = true;
-            }
-
-            if (preg_match('#^doctrine/#', $name) === 1) {
-                $hasDoctrine = true;
-            }
-
-            if ($name !== 'php') {
-                continue;
-            }
-
-            if (! is_string($value)) {
-                continue;
-            }
-
-            if (preg_match('/\d+\.\d+/', $value, $match) !== 1) {
-                continue;
-            }
-
-            $phpVersion = $match[0];
-        }
-    }
-}
+$composerFile = new ComposerFile();
+$hasPhpUnit = $composerFile->hasPhpUnit();
+$hasSymfony = $composerFile->hasSymfony();
+$hasDoctrine = $composerFile->hasDoctrine();
+$phpVersion = $composerFile->getPhpVersion();
 
 $php81Migration = false;
 $php82Migration = false;
