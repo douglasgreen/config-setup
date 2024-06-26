@@ -9,6 +9,6 @@ if [[ $1 == "rebase" ]]; then
     # Check if composer.json or package.json are in the list
     if echo "$modified_files" | grep -E "composer\.json|package\.json" > /dev/null; then
         echo "composer.json or package.json was modified, running updates"
-        script/update         
+        script/update
     fi
 fi

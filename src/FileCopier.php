@@ -28,7 +28,6 @@ class FileCopier
     protected const COPY_FILES = [
         '.eslintignore' => 'eslint',
         '.eslintrc.json' => 'eslint',
-        '.gitignore' => null,
         '.prettierignore' => 'prettier',
         '.prettierrc.json' => 'prettier',
         '.stylelintignore' => 'stylelint',
