@@ -18,9 +18,9 @@ class FileCopier
 
     public const PRE_PUSH = 2;
 
-    public const USE_WORDPRESS = 4;
+    public const USE_WOOCOMMERCE = 4;
 
-    public const USE_WOOCOMMERCE = 8;
+    public const USE_WORDPRESS = 8;
 
     /**
      * @var array<string, ?string> Names of files to copy if the project is installed
@@ -721,13 +721,6 @@ class FileCopier
             foreach ($this->npmPackages as $npmPackage) {
                 if (preg_match('#prettier[/-]plugin#', $npmPackage)) {
                     $plugins[] = $npmPackage;
-
-                    // Only set phpVersion if PHP plugin is included.
-                    if ($npmPackage === '@prettier/plugin-php') {
-                        // @prettier/plugin-php 0.22 doesn't support PHP 8.3 yet.
-                        // @todo Update this when the new PHP Prettier plugin version arrives.
-                        $prettierJson['phpVersion'] = min($this->phpVersion, '8.2');
-                    }
                 }
             }
 
