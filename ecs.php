@@ -55,7 +55,6 @@ if (file_exists('composer.json')) {
 
         $allDependencies = array_merge($requires, $requiresDev);
 
-        $hasPhpUnit = isset($allDependencies['phpunit/phpunit']);
         foreach ($allDependencies as $name => $value) {
             if (preg_match('#^phpunit/#', $name) === 1) {
                 $hasPhpUnit = true;
