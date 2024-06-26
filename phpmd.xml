@@ -23,6 +23,9 @@
 
         <!-- Calling static functions is necessary sometimes -->
         <exclude name="StaticAccess" />
+
+        <!-- Replaced with PHP Linter -->
+        <exclude name="BooleanArgumentFlag" />
     </rule>
     <rule ref="rulesets/design.xml">
         <!-- Replaced with PHP Linter -->
