@@ -14,11 +14,13 @@ class FileCopier
 {
     public const DEFAULT_WRAP = 100;
 
-    public const NO_PRE_COMMIT = 1;
+    public const PRE_COMMIT = 1;
 
-    public const USE_WORDPRESS = 2;
+    public const PRE_PUSH = 2;
 
-    public const USE_WOOCOMMERCE = 4;
+    public const USE_WORDPRESS = 4;
+
+    public const USE_WOOCOMMERCE = 8;
 
     /**
      * @var array<string, ?string> Names of files to copy if the project is installed
@@ -135,7 +137,9 @@ class FileCopier
 
     protected readonly string $phpVersion;
 
-    protected readonly bool $noPreCommit;
+    protected readonly bool $preCommit;
+
+    protected readonly bool $prePush;
 
     protected readonly bool $useWoocommerce;
 
@@ -149,7 +153,8 @@ class FileCopier
         protected readonly int $flags = 0,
         protected readonly int $wrap = self::DEFAULT_WRAP
     ) {
-        $this->noPreCommit = (bool) ($this->flags & self::NO_PRE_COMMIT);
+        $this->preCommit = (bool) ($this->flags & self::PRE_COMMIT);
+        $this->prePush = (bool) ($this->flags & self::PRE_PUSH);
         $this->useWoocommerce = (bool) ($this->flags & self::USE_WOOCOMMERCE);
         $this->useWordpress = (bool) ($this->flags & self::USE_WORDPRESS);
 
@@ -219,12 +224,6 @@ class FileCopier
                 continue;
             }
 
-            // Skip pre-commit if requested.
-            if ($this->noPreCommit && $fileToCopy === '.husky/pre-commit') {
-                echo 'Skipping .husky/pre-commit as requested.' . PHP_EOL;
-                continue;
-            }
-
             // Skip WordPress if not requested.
             if (! $this->useWordpress && $fileToCopy === 'stubs/wordpress.php') {
                 continue;
@@ -247,6 +246,16 @@ class FileCopier
             } elseif ($fileToCopy === '.prettierrc.json') {
                 // Put Prettier temporary copy with new plugin list in var dir.
                 $this->makePrettierrc($plainFile, $target);
+            } elseif ($fileToCopy === '.husky/pre-commit') {
+                // Install either pre-commit, or pre-push, or none.
+                if ($this->prePush) {
+                    // Pre-push symlink points to pre-commit script.
+                    $target =
+                        $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+                    $fileToCopy = '.husky/pre-push';
+                } elseif (! $this->preCommit) {
+                    continue;
+                }
             } else {
                 // Use original, unmodified source.
                 $target = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;

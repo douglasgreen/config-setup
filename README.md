@@ -56,9 +56,10 @@ hooks to work.
 
 ### File Copy Arguments
 
-When running `config-setup`, there are three possible arguments:
+When running `config-setup`, there are some possible arguments:
 
--   `--no-pre-commit` or `-n`: Don't use the pre-commit for fewer interruptions.
+-   `--pre-commit`: Use the `pre-commit` hook to do linting.
+-   `--pre-push`: Use the `pre-push` hook to do linting.
 -   `--wordpress`: Install the `stubs/wordpress.php` file and WordPress extension for PHPStan to
     use.
 -   `--woocommerce`: Install the WooCommerce extension for PHPStan to use.

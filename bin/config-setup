@@ -19,13 +19,16 @@ if ($currentDir === false) {
 // Run in current dir which is repository root dir.
 require_once $currentDir . '/vendor/autoload.php';
 
-$options = getopt('nw:', ['no-pre-commit', 'woocommerce', 'wordpress', 'wrap:']);
+$options = getopt('w:', ['pre-commit', 'pre-push', 'woocommerce', 'wordpress', 'wrap:']);
 
 $flags = 0;
 
-// Skip pre-commit for fewer interruptions.
-if (isset($options['no-pre-commit']) || isset($options['n'])) {
-    $flags |= FileCopier::NO_PRE_COMMIT;
+// Use pre-commit hook.
+if (isset($options['pre-commit'])) {
+    $flags |= FileCopier::PRE_COMMIT;
+} elseif (isset($options['pre-push'])) {
+    // Use pre-push hook as alternative to pre-commit hook.
+    $flags |= FileCopier::PRE_PUSH;
 }
 
 // Specify a custom line wrap length.
@@ -38,11 +41,11 @@ if ($wrap === 0) {
 // Install the WordPress stubs for PHPStan.
 if (isset($options['wordpress'])) {
     $flags |= FileCopier::USE_WORDPRESS;
-}
 
-// Install the WooCommerce stubs for PHPStan.
-if (isset($options['woocommerce'])) {
-    $flags |= FileCopier::USE_WOOCOMMERCE;
+    // Install the WooCommerce stubs for PHPStan.
+    if (isset($options['woocommerce'])) {
+        $flags |= FileCopier::USE_WOOCOMMERCE;
+    }
 }
 
 $fileCopier = new FileCopier($currentDir, $flags, $wrap);
