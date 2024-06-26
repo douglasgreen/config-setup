@@ -17,7 +17,7 @@
     },
     "scripts": {
         "commitlint": "commitlint --edit",
-        "lint:fix": "prettier --write .",
+        "lint:fix": "prettier --write --cache .",
         "prepare": "husky"
     }
 }
