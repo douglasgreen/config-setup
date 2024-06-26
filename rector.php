@@ -110,7 +110,6 @@ if ($paths === false) {
 $paths = array_map('trim', $paths);
 
 return RectorConfig::configure()
-    ->withFileExtensions(['php', ''])
     ->withoutParallel()
     ->withCache(cacheDirectory: 'var/cache/rector', cacheClass: FileCacheStorage::class)
     ->withPaths($paths)
