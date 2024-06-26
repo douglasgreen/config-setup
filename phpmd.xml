@@ -34,7 +34,9 @@
     <rule ref="rulesets/design.xml">
         <!-- Replaced with PHP Linter -->
         <exclude name="DevelopmentCodeFragment" />
+        <exclude name="EvalExpression" />
         <exclude name="ExitExpression" />
+        <exclude name="GotoStatement" />
     </rule>
     <rule ref="rulesets/unusedcode.xml" />
 </ruleset>
