@@ -33,6 +33,7 @@
     </rule>
     <rule ref="rulesets/design.xml">
         <!-- Replaced with PHP Linter -->
+        <exclude name="CouplingBetweenObjects" />
         <exclude name="DepthOfInheritance" />
         <exclude name="DevelopmentCodeFragment" />
         <exclude name="EvalExpression" />
