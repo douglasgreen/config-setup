@@ -137,9 +137,9 @@ class FileCopier
 
     protected readonly string $phpVersion;
 
-    protected readonly bool $preCommit;
+    protected readonly bool $usePreCommit;
 
-    protected readonly bool $prePush;
+    protected readonly bool $usePrePush;
 
     protected readonly bool $useWoocommerce;
 
@@ -153,8 +153,8 @@ class FileCopier
         protected readonly int $flags = 0,
         protected readonly int $wrap = self::DEFAULT_WRAP
     ) {
-        $this->preCommit = (bool) ($this->flags & self::PRE_COMMIT);
-        $this->prePush = (bool) ($this->flags & self::PRE_PUSH);
+        $this->usePreCommit = (bool) ($this->flags & self::PRE_COMMIT);
+        $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
         $this->useWoocommerce = (bool) ($this->flags & self::USE_WOOCOMMERCE);
         $this->useWordpress = (bool) ($this->flags & self::USE_WORDPRESS);
 
@@ -248,12 +248,12 @@ class FileCopier
                 $this->makePrettierrc($plainFile, $target);
             } elseif ($fileToCopy === '.husky/pre-commit') {
                 // Install either pre-commit, or pre-push, or none.
-                if ($this->prePush) {
+                if ($this->usePrePush) {
                     // Pre-push symlink points to pre-commit script.
                     $target =
-                        $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
+                        $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
                     $fileToCopy = '.husky/pre-push';
-                } elseif (! $this->preCommit) {
+                } elseif (! $this->usePreCommit) {
                     continue;
                 }
             } else {
