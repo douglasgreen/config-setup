@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace DouglasGreen\ConfigSetup;
 
 use DOMDocument;
-use DouglasGreen\Utility\FileSystem\PathUtil;
+use DouglasGreen\Utility\Data\ValueException;
+use DouglasGreen\Utility\Data\XmlException;
 use DouglasGreen\Utility\FileSystem\DirUtil;
+use DouglasGreen\Utility\FileSystem\PathUtil;
 use DouglasGreen\Utility\Program\Command;
 use DouglasGreen\Utility\Program\CommandException;
 use DouglasGreen\Utility\Regex\Regex;
-use Exception;
 use SimpleXMLElement;
 
 class FileCopier
@@ -317,7 +318,6 @@ class FileCopier
 
     /**
      * @return array<string, mixed>
-     * @throws Exception
      */
     protected static function loadComposerJson(): array
     {
@@ -327,7 +327,6 @@ class FileCopier
 
     /**
      * @return list<string>
-     * @throws Exception
      */
     protected static function loadGitFiles(): array
     {
@@ -337,7 +336,6 @@ class FileCopier
 
     /**
      * @return ?array<string, mixed>
-     * @throws Exception
      */
     protected static function loadPackageJson(): ?array
     {
@@ -352,8 +350,6 @@ class FileCopier
 
     /**
      * Make a directory if it doesn't exist.
-     *
-     * @throws Exception
      */
     protected static function makeDir(string $dir): void
     {
@@ -366,7 +362,6 @@ class FileCopier
 
     /**
      * @return ?list<string>
-     * @throws Exception
      */
     protected function getComposerPackages(): ?array
     {
@@ -387,7 +382,6 @@ class FileCopier
 
     /**
      * @return ?list<string>
-     * @throws Exception
      */
     protected function getNpmPackages(): ?array
     {
@@ -430,11 +424,14 @@ class FileCopier
         return $phpPaths;
     }
 
+    /**
+     * @throws ValueException
+     */
     protected function getPhpVersion(): string
     {
         // Find the PHP version in the require section
         if (! isset($this->composerJson['require']['php'])) {
-            throw new Exception('PHP version not specified in composer.json');
+            throw new ValueException('PHP version not specified in composer.json');
         }
 
         $phpVersionConstraint = $this->composerJson['require']['php'];
@@ -442,7 +439,7 @@ class FileCopier
         // Extract the PHP version number
         $match = Regex::match('/\d+\.\d+/', (string) $phpVersionConstraint);
         if ($match === []) {
-            throw new Exception('Unable to extract PHP version from composer.json');
+            throw new ValueException('Unable to extract PHP version from composer.json');
         }
 
         return $match[0];
@@ -470,9 +467,6 @@ class FileCopier
         return $this->npmPackages !== null && in_array($packageName, $this->npmPackages, true);
     }
 
-    /**
-     * @throws Exception
-     */
     protected function makeEcs(string $source, string $destination): void
     {
         $lines = PathUtil::loadLines($source);
@@ -490,7 +484,7 @@ class FileCopier
     }
 
     /**
-     * @throws Exception
+     * @throws XmlException
      */
     protected function makeEslintrc(string $source, string $destination): void
     {
@@ -646,7 +640,7 @@ class FileCopier
         $domDocument->formatOutput = true;
         $xmlOutput = $xml->asXML();
         if ($xmlOutput === false) {
-            throw new Exception('Unable to make PHPUnit XML');
+            throw new XmlException('Unable to make PHPUnit XML');
         }
 
         $domDocument->loadXML($xmlOutput);
@@ -654,7 +648,7 @@ class FileCopier
     }
 
     /**
-     * @throws Exception
+     * @throws ValueException
      */
     protected function makePrettierrc(string $source, string $destination): void
     {
@@ -671,7 +665,7 @@ class FileCopier
 
         // Find the plugins.
         if (! isset($prettierJson['plugins'])) {
-            throw new Exception('Plugins not specified in .prettierrc.json');
+            throw new ValueException('Plugins not specified in .prettierrc.json');
         }
 
         $plugins = [];
