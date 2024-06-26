@@ -51,6 +51,7 @@ class FileCopier
         '.husky/commit-msg' => 'husky',
         '.husky/post-checkout' => 'husky',
         '.husky/post-merge' => 'husky',
+        '.husky/post-rewrite' => 'husky',
         '.husky/pre-commit' => 'husky',
         'script/bootstrap' => null,
         'script/fix' => null,
