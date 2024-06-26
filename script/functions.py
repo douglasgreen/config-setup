@@ -4,9 +4,13 @@ import subprocess
 import sys
 
 def change_to_parent_directory():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    parent_dir = os.path.join(script_dir, '..')
-    os.chdir(parent_dir)
+    try:
+        # Run the Git command to get the root directory of the Git project
+        git_root = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], stderr=subprocess.STDOUT).strip().decode('utf-8')
+        os.chdir(git_root)
+    except subprocess.CalledProcessError as e:
+        print(f"Error: Not inside a Git repository: {e}", file=sys.stderr)
+        sys.exit(1)
 
 def install_composer_dependencies():
     if os.path.isfile("composer.json"):
