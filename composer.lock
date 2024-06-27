@@ -86,12 +86,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/php-linter.git",
-                "reference": "2b5d9a2457e20a4e0668bdfd43cf5298ef923e2b"
+                "reference": "de8ce72aa9584082040f28940b4f6a802ca1c077"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/2b5d9a2457e20a4e0668bdfd43cf5298ef923e2b",
-                "reference": "2b5d9a2457e20a4e0668bdfd43cf5298ef923e2b",
+                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/de8ce72aa9584082040f28940b4f6a802ca1c077",
+                "reference": "de8ce72aa9584082040f28940b4f6a802ca1c077",
                 "shasum": ""
             },
             "require": {
@@ -154,7 +154,7 @@
                 "issues": "https://github.com/douglasgreen/php-linter/issues",
                 "source": "https://github.com/douglasgreen/php-linter/tree/main"
             },
-            "time": "2024-06-26T17:48:51+00:00"
+            "time": "2024-06-27T12:12:38+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -162,12 +162,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "2526ec0a729f35de521008740dd86021673f7b85"
+                "reference": "acaccab619ad1c9ce4a031126220b11117c47413"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/2526ec0a729f35de521008740dd86021673f7b85",
-                "reference": "2526ec0a729f35de521008740dd86021673f7b85",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/acaccab619ad1c9ce4a031126220b11117c47413",
+                "reference": "acaccab619ad1c9ce4a031126220b11117c47413",
                 "shasum": ""
             },
             "require": {
@@ -217,7 +217,7 @@
                 "issues": "https://github.com/douglasgreen/utility/issues",
                 "source": "https://github.com/douglasgreen/utility/tree/main"
             },
-            "time": "2024-06-26T18:09:15+00:00"
+            "time": "2024-06-27T12:09:21+00:00"
         },
         {
             "name": "nette/neon",

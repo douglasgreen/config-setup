@@ -283,7 +283,7 @@ class FileCopier
 
             // Create a soft link instead of copying the file
             PathUtil::makeSymlink($target, $symlink);
-            printf('Created symlink %s.' . PHP_EOL, $symlink);
+            printf('Created symlink %s.' . PHP_EOL, PathUtil::removeBase($this->repoDir, $symlink));
         }
 
         if ($excludeLines === []) {
