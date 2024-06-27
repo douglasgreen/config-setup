@@ -30,6 +30,7 @@
         <!-- Replaced with PHP Linter -->
         <exclude name="BooleanArgumentFlag" />
         <exclude name="ErrorControlOperator" />
+        <exclude name="IfStatementAssignment" />
     </rule>
     <rule ref="rulesets/design.xml">
         <!-- Replaced with PHP Linter -->
