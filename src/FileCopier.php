@@ -296,7 +296,10 @@ class FileCopier
 
         $output = implode(PHP_EOL, $excludeLines) . PHP_EOL;
         PathUtil::saveString($this->excludeFile, $output);
-        printf('%s has been updated.' . PHP_EOL, $this->excludeFile);
+        printf(
+            '%s has been updated.' . PHP_EOL,
+            PathUtil::removeBase($this->repoDir, $this->excludeFile)
+        );
     }
 
     /**
