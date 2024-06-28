@@ -29,6 +29,7 @@
 
         <!-- Replaced with PHP Linter -->
         <exclude name="BooleanArgumentFlag" />
+        <exclude name="DuplicatedArrayKey" />
         <exclude name="ErrorControlOperator" />
         <exclude name="IfStatementAssignment" />
         <exclude name="MissingImport" />
