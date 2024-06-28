@@ -31,6 +31,7 @@
         <exclude name="BooleanArgumentFlag" />
         <exclude name="ErrorControlOperator" />
         <exclude name="IfStatementAssignment" />
+        <exclude name="MissingImport" />
     </rule>
     <rule ref="rulesets/design.xml">
         <!-- Replaced with PHP Linter -->
