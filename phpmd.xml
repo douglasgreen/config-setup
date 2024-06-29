@@ -20,29 +20,6 @@
     <exclude-pattern>var/*</exclude-pattern>
     <exclude-pattern>vendor/*</exclude-pattern>
 
-    <rule ref="rulesets/cleancode.xml">
-        <!-- Avoiding else expresssions does not help -->
-        <exclude name="ElseExpression" />
-
-        <!-- Calling static functions is necessary sometimes -->
-        <exclude name="StaticAccess" />
-
-        <!-- Replaced with PHP Linter -->
-        <exclude name="BooleanArgumentFlag" />
-        <exclude name="DuplicatedArrayKey" />
-        <exclude name="ErrorControlOperator" />
-        <exclude name="IfStatementAssignment" />
-        <exclude name="MissingImport" />
-    </rule>
-    <rule ref="rulesets/design.xml">
-        <!-- Replaced with PHP Linter -->
-        <exclude name="CouplingBetweenObjects" />
-        <exclude name="DepthOfInheritance" />
-        <exclude name="DevelopmentCodeFragment" />
-        <exclude name="EvalExpression" />
-        <exclude name="ExitExpression" />
-        <exclude name="GotoStatement" />
-        <exclude name="NumberOfChildren" />
-    </rule>
+    <rule ref="rulesets/cleancode.xml/UndefinedVariable" />
     <rule ref="rulesets/unusedcode.xml" />
 </ruleset>
