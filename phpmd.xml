@@ -21,5 +21,7 @@
     <exclude-pattern>vendor/*</exclude-pattern>
 
     <rule ref="rulesets/cleancode.xml/UndefinedVariable" />
-    <rule ref="rulesets/unusedcode.xml" />
+    <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable" />
+    <rule ref="rulesets/unusedcode.xml/UnusedPrivateMethod" />
+    <rule ref="rulesets/unusedcode.xml/UnusedFormalParameter" />
 </ruleset>
