@@ -38,7 +38,6 @@ class FileCopier
         '.stylelintrc.json' => 'stylelint',
         'commitlint.config.js' => 'commitlint',
         'ecs.php' => 'ecs',
-        'phpmd.xml' => 'phpmd',
         'phpstan.neon' => 'phpstan',
         'phpunit.xml' => 'phpunit',
         'rector.php' => 'rector',
@@ -75,7 +74,6 @@ class FileCopier
         'var/cache/ecs' => 'ecs',
         'var/cache/eslint' => 'eslint',
         'var/cache/pdepend' => 'pdepend',
-        'var/cache/phpmd' => 'phpmd',
         'var/cache/phpstan' => 'phpstan',
         'var/cache/phpunit' => 'phpunit',
         'var/cache/rector' => 'rector',
@@ -88,7 +86,6 @@ class FileCopier
     protected const PACKAGE_NAMES = [
         'ecs' => 'symplify/easy-coding-standard',
         'pdepend' => 'pdepend/pdepend',
-        'phpmd' => 'phpmd/phpmd',
         'phpstan' => 'phpstan/phpstan',
         'phpunit' => 'phpunit/phpunit',
         'rector' => 'rector/rector',

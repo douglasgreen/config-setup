@@ -127,7 +127,6 @@ For PHP, that is done with `composer.json` like this:
 
 ```
     "require-dev": {
-        "phpmd/phpmd": "^2.15",
         "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^10.5",
         "rector/rector": "^1.0",
@@ -136,8 +135,8 @@ For PHP, that is done with `composer.json` like this:
     "scripts": {
         "lint": [
             "ecs",
+            "php-linter",
             "phpstan analyse",
-            "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
             "rector --dry-run"
         ],
         "lint:fix": [
@@ -150,7 +149,7 @@ For PHP, that is done with `composer.json` like this:
 
 That installs:
 
--   [PHP Mess Detector](https://phpmd.org/) for linting
+-   [PHP Linter](https://github.com/douglasgreen/php-linter) for linting
 -   [PHPStan](https://phpstan.org/) for linting
 -   [PHPUnit](https://phpunit.de/index.html) for unit tests
 -   [Rector](https://github.com/rectorphp/rector) for linting and fixing (reformatting and

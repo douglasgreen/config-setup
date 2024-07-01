@@ -67,51 +67,6 @@ Here is a summary of the configuration options in the `rector.php` file:
 This configuration file sets up various coding standards and rules for PHP projects using the Rector
 tool.
 
-### PHP Mess Detector (PHPMD)
-
-Here is a description of the configuration choices made in the `phpmd.xml` file:
-
--   **Exclusion of Stubs**: Exclude empty classes and functions defined for PHPStan (`stubs/*`).
--   **Exclusion of Unit Test Files**: Exclude all unit test files (`tests/*`).
-
--   **Clean Code Ruleset**:
-
-    -   **Excluded Rules**:
-        -   `ElseExpression`: Avoiding else expressions is not necessary.
-        -   `IfStatementAssignment`: No confusion between `=` and `===`.
-        -   `StaticAccess`: Calling static functions is sometimes necessary.
-
--   **Code Size Ruleset**:
-
-    -   **Excluded Rules**:
-        -   `ExcessiveClassComplexity`: Redundant to simple line counts.
-        -   `NPathComplexity`: Exaggerates some complexity and ingores other complexity.
-        -   `CyclomaticComplexity`: Overcounts case statements.
-        -   `ExcessivePublicCount`: Redundant as it lumps together public properties and methods.
-        -   `TooManyFields`: Protected and private properties are not part of the class API.
-        -   `TooManyMethods`: Lumps together public, protected, and private methods.
-
--   **Controversial Ruleset**: Include the entire controversial ruleset.
--   **Design Ruleset**: Include the entire design ruleset.
--   **Naming Ruleset**: Include the entire naming ruleset.
--   **Unused Code Ruleset**: Include the entire unused code ruleset.
-
--   **Customized Rules**:
-    -   **Excessive Class Length**: Set the minimum class length to 2500 lines, covering 99% of PHP
-        classes.
-    -   **Excessive Method Length**: Set the minimum method length to 150 lines, covering 99% of PHP
-        functions.
-    -   **Excessive Parameter List**: Set the maximum parameter count to 8, covering 99% of PHP
-        functions.
-    -   **Too Many Public Methods**: Set the maximum public methods to 30, excluding getter methods,
-        covering 99% of PHP classes.
-    -   **Long Variables**: Set the maximum length to 25 characters, covering 99% of PHP names.
-    -   **Short Variables**: Allow some short names, including:
-        -   $db = database
-        -   $e = exception
-        -   $i, $j, $k = indexes
-        -   $id = identifier
-
 ### PHPStan
 
 Here is a summary of the `phpstan.neon` file:
