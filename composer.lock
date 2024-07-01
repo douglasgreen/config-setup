@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "bb4aa9f4ec060f5c213945e0a9a6907ab541bb2d"
+                "reference": "05b37f3cbfe47a61cb44a3b3ecabbec3462b354f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/bb4aa9f4ec060f5c213945e0a9a6907ab541bb2d",
-                "reference": "bb4aa9f4ec060f5c213945e0a9a6907ab541bb2d",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/05b37f3cbfe47a61cb44a3b3ecabbec3462b354f",
+                "reference": "05b37f3cbfe47a61cb44a3b3ecabbec3462b354f",
                 "shasum": ""
             },
             "require": {
@@ -77,7 +77,7 @@
                 "issues": "https://github.com/douglasgreen/optparser/issues",
                 "source": "https://github.com/douglasgreen/optparser/tree/main"
             },
-            "time": "2024-07-01T11:58:53+00:00"
+            "time": "2024-07-01T13:49:29+00:00"
         },
         {
             "name": "douglasgreen/php-linter",
@@ -85,12 +85,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/php-linter.git",
-                "reference": "64380cf133a5c3fd7095f9ef89f2b543111c3062"
+                "reference": "85fee4308afdc46124dfafb9e60df1c417b2248f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/64380cf133a5c3fd7095f9ef89f2b543111c3062",
-                "reference": "64380cf133a5c3fd7095f9ef89f2b543111c3062",
+                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/85fee4308afdc46124dfafb9e60df1c417b2248f",
+                "reference": "85fee4308afdc46124dfafb9e60df1c417b2248f",
                 "shasum": ""
             },
             "require": {
@@ -152,7 +152,7 @@
                 "issues": "https://github.com/douglasgreen/php-linter/issues",
                 "source": "https://github.com/douglasgreen/php-linter/tree/main"
             },
-            "time": "2024-07-01T13:48:34+00:00"
+            "time": "2024-07-01T17:40:43+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -160,12 +160,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "341c4eb6359c5a2b6419c42246c7e07b157029b0"
+                "reference": "3e63a75305c8668983523c145250c2bbed8a6167"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/341c4eb6359c5a2b6419c42246c7e07b157029b0",
-                "reference": "341c4eb6359c5a2b6419c42246c7e07b157029b0",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/3e63a75305c8668983523c145250c2bbed8a6167",
+                "reference": "3e63a75305c8668983523c145250c2bbed8a6167",
                 "shasum": ""
             },
             "require": {
@@ -214,7 +214,7 @@
                 "issues": "https://github.com/douglasgreen/utility/issues",
                 "source": "https://github.com/douglasgreen/utility/tree/main"
             },
-            "time": "2024-07-01T12:03:21+00:00"
+            "time": "2024-07-01T13:53:50+00:00"
         },
         {
             "name": "nette/neon",
@@ -1068,16 +1068,16 @@
     "packages-dev": [
         {
             "name": "phpstan/phpstan",
-            "version": "1.11.5",
+            "version": "1.11.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "490f0ae1c92b082f154681d7849aee776a7c1443"
+                "reference": "6ac78f1165346c83b4a753f7e4186d969c6ad0ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/490f0ae1c92b082f154681d7849aee776a7c1443",
-                "reference": "490f0ae1c92b082f154681d7849aee776a7c1443",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/6ac78f1165346c83b4a753f7e4186d969c6ad0ee",
+                "reference": "6ac78f1165346c83b4a753f7e4186d969c6ad0ee",
                 "shasum": ""
             },
             "require": {
@@ -1122,20 +1122,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-06-17T15:10:54+00:00"
+            "time": "2024-07-01T15:33:06+00:00"
         },
         {
             "name": "rector/rector",
-            "version": "1.1.1",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "c930cdb21294f10955ddfc31b720971e8333943d"
+                "reference": "2fa387553db22b6f9bcccf5ff16f2c2c18a52a65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/c930cdb21294f10955ddfc31b720971e8333943d",
-                "reference": "c930cdb21294f10955ddfc31b720971e8333943d",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/2fa387553db22b6f9bcccf5ff16f2c2c18a52a65",
+                "reference": "2fa387553db22b6f9bcccf5ff16f2c2c18a52a65",
                 "shasum": ""
             },
             "require": {
@@ -1173,7 +1173,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/1.1.1"
+                "source": "https://github.com/rectorphp/rector/tree/1.2.0"
             },
             "funding": [
                 {
@@ -1181,7 +1181,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-06-21T07:51:17+00:00"
+            "time": "2024-07-01T14:24:45+00:00"
         },
         {
             "name": "symplify/easy-coding-standard",

@@ -106,7 +106,7 @@ if ($paths === false) {
     exit('PHP paths not found' . PHP_EOL);
 }
 
-$paths = array_map('trim', $paths);
+$paths = array_map(trim(...), $paths);
 
 return RectorConfig::configure()
     ->withoutParallel()

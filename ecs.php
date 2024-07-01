@@ -136,7 +136,7 @@ if ($paths === false) {
     exit('PHP paths not found' . PHP_EOL);
 }
 
-$paths = array_map('trim', $paths);
+$paths = array_map(trim(...), $paths);
 $currentDirectory = getcwd();
 if ($currentDirectory === false) {
     throw new Exception('Unable to determine current directory');
