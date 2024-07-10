@@ -1,0 +1,74 @@
+{
+    "name": "douglasgreen/config-setup",
+    "description": "Preconfigured setup files for linting, fixing, and testing PHP and JavaScript project",
+    "license": "MIT",
+    "type": "library",
+    "homepage": "https://github.com/douglasgreen/utility",
+    "authors": [
+        {
+            "name": "Douglas Green",
+            "email": "douglas@nurd.site",
+            "homepage": "https://nurd.site/",
+            "role": "Developer"
+        }
+    ],
+    "keywords": [
+        "automation",
+        "cli",
+        "cli library",
+        "cli tool",
+        "code quality",
+        "code standards",
+        "code validation",
+        "coding standards",
+        "command-line interface",
+        "config",
+        "console",
+        "fixing",
+        "linter",
+        "linting",
+        "php",
+        "php automation",
+        "php cli",
+        "php command line",
+        "php console application",
+        "php fig",
+        "php scripting",
+        "phpunit",
+        "psr",
+        "syntax check",
+        "terminal"
+    ],
+    "autoload": {
+        "psr-4": {
+            "DouglasGreen\\ConfigSetup\\": "src"
+        }
+    },
+    "bin": [
+        "bin/config-setup"
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "php": ">=8.1",
+        "nette/neon": "^3.4"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.11",
+        "rector/rector": "^1.2",
+        "symplify/easy-coding-standard": "^12.3"
+    },
+    "scripts": {
+        "lint": [
+            "ecs",
+            "php-linter",
+            "phpstan analyse",
+            "rector --dry-run"
+        ],
+        "lint:fix": [
+            "ecs --fix",
+            "rector"
+        ]
+    }
+}

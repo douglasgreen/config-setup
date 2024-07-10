@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+# script/update: Update application to run for its current checkout.
+
+from functions import (
+    change_to_parent_directory,
+    run_bootstrap_script,
+    update_database,
+    setup_environment_variables
+)
+
+def main():
+    change_to_parent_directory()
+    run_bootstrap_script()
+    update_database()
+    setup_environment_variables()
+
+    print("==> Repo is updated and ready to go!")
+
+if __name__ == "__main__":
+    main()
+

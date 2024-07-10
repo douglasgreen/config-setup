@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+
+# script/fix: Run lint:fix scripts.
+
+from functions import (
+    change_to_parent_directory,
+    install_npm_dependencies,
+    run_npm_lint_fix,
+    install_composer_dependencies,
+    run_composer_lint_fix
+)
+
+def main():
+    change_to_parent_directory()
+    install_npm_dependencies()
+    run_npm_lint_fix()
+    install_composer_dependencies()
+    run_composer_lint_fix()
+
+    print("==> Lint:fix scripts have been run successfully.")
+    print("Do not mix manual changes and automated changes in the same changeset.")
+    print("If this changeset consists only of automated changes, then run this command:")
+    print('git commit -a -m"refactor: applying automated changes using lint:fix"')
+
+if __name__ == "__main__":
+    main()

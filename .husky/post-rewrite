@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+. "$(dirname "$0")/_/husky.sh"
+
+# Check if this is a rebase operation
+if [[ $1 == "rebase" ]]; then
+    # Get the list of modified files
+    modified_files=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)
+
+    # Check if composer.json or package.json are in the list
+    if echo "$modified_files" | grep -E "composer\.json|package\.json" > /dev/null; then
+        echo "composer.json or package.json was modified, running updates"
+        script/update
+    fi
+fi

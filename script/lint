@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+# script/lint: Run lint scripts
+
+from functions import (
+    change_to_parent_directory,
+    install_npm_dependencies,
+    run_npm_lint,
+    install_composer_dependencies,
+    run_composer_lint
+)
+
+def main():
+    change_to_parent_directory()
+    install_composer_dependencies()
+    run_composer_lint()
+    install_npm_dependencies()
+    run_npm_lint()
+
+    print("==> Lint scripts have been run successfully.")
+
+if __name__ == "__main__":
+    main()

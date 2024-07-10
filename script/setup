@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+# script/setup: Set up application to initial state.
+
+from functions import (
+    change_to_parent_directory,
+    run_bootstrap_script,
+    setup_database,
+    setup_environment_variables
+)
+
+def main():
+    change_to_parent_directory()
+    run_bootstrap_script()
+    setup_database()
+    setup_environment_variables()
+
+    print("==> Repo is set up and ready to go!")
+
+if __name__ == "__main__":
+    main()

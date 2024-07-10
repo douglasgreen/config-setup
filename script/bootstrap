@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+# script/bootstrap: Resolve all dependencies that the application requires to run.
+
+from functions import change_to_parent_directory, install_composer_dependencies, install_npm_dependencies
+
+def main():
+    change_to_parent_directory()
+    install_composer_dependencies()
+    install_npm_dependencies()
+
+    print("==> All dependencies resolved and the application is ready to run.")
+
+if __name__ == "__main__":
+    main()

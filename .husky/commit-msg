@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+. "$(dirname "$0")/_/husky.sh"
+
+# Check if the npm script "commitlint" exists and run it
+if npm run | grep -q "commitlint"; then
+    echo "==> Running NPM commitlint..."
+    npm run commitlint ${1}
+else
+    echo "==> NPM commitlint script not defined"
+fi
