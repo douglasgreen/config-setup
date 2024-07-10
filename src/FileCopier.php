@@ -267,7 +267,7 @@ class FileCopier
                 // Check if link is pointing to the right target.
                 $actualTarget = readlink($symlink);
                 if ($actualTarget === false) {
-                    throw new Exception('Unable to get target of symbolic link: ', $symlink);
+                    throw new Exception('Unable to get target of symbolic link: ' . $symlink);
                 }
 
                 if ($actualTarget === $target) {
@@ -307,9 +307,7 @@ class FileCopier
         $output = implode(PHP_EOL, $excludeLines) . PHP_EOL;
         if (is_dir(dirname($this->excludeFile))) {
             if (file_put_contents($this->excludeFile, $output) === false) {
-                throw new Exception(
-                    'Unable to save file'
-                );
+                throw new Exception('Unable to save file');
             }
 
             printf(
@@ -442,9 +440,8 @@ class FileCopier
      *
      * @throws Exception
      */
-    protected function getFileType(
-        string $path
-    ): ?string {
+    protected function getFileType(string $path): ?string
+    {
         if (! str_contains($path, '.')) {
             // @todo Use file here instead of this.
             $fileHandle = fopen($path, 'r');
@@ -456,6 +453,7 @@ class FileCopier
             if ($line === false) {
                 return null;
             }
+
             if (preg_match('/^#!.*\b(\w+)$/', $line, $match) === 1) {
                 return $this->getExtensionType($match[1]);
             }
@@ -573,9 +571,7 @@ class FileCopier
 
         $newString = implode('', $newLines);
         if (file_put_contents($destination, $newString) === false) {
-            throw new Exception(
-                'Unable to save file'
-            );
+            throw new Exception('Unable to save file');
         }
     }
 
@@ -616,9 +612,7 @@ class FileCopier
         );
 
         if (file_put_contents($destination, $eslintJsonString) === false) {
-            throw new Exception(
-                'Unable to save file'
-            );
+            throw new Exception('Unable to save file');
         }
     }
 
@@ -794,19 +788,15 @@ class FileCopier
         }
 
         if (file_put_contents($destination, $prettierJsonString) === false) {
-            throw new Exception(
-                'Unable to save file'
-            );
+            throw new Exception('Unable to save file');
         }
     }
 
     /**
      * Remove the base path and get the relative subpath from an absolute path.
      */
-    public function removeBase(
-        string $base,
-        string $absolutePath
-    ): string {
+    public function removeBase(string $base, string $absolutePath): string
+    {
         // Ensure the base path ends with a directory separator
         if (substr($base, -1) !== DIRECTORY_SEPARATOR) {
             $base .= DIRECTORY_SEPARATOR;

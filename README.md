@@ -98,8 +98,7 @@ You can create those files to use for standard project configuration.
 ## Installing Dependencies
 
 Once the config files are linked, you need to install the right project dependencies for each
-project and define a script for it if you want to use those tools with those config files. The
-php-linter script is included in this project.
+project and define a script for it if you want to use those tools with those config files.
 
 ### PHP Dependencies
 
@@ -115,7 +114,6 @@ For PHP, that is done with `composer.json` like this:
     "scripts": {
         "lint": [
             "ecs",
-            "php-linter",
             "phpstan analyse",
             "rector --dry-run"
         ],

@@ -62,7 +62,6 @@
     "scripts": {
         "lint": [
             "ecs",
-            "php-linter",
             "phpstan analyse",
             "rector --dry-run"
         ],

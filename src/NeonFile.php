@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\ConfigSetup;
 
+use Exception;
 use Nette\Neon\Neon;
 
 class NeonFile
