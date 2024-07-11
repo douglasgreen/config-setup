@@ -3,7 +3,7 @@
     "description": "Preconfigured setup files for linting, fixing, and testing PHP and JavaScript project",
     "license": "MIT",
     "type": "library",
-    "homepage": "https://github.com/douglasgreen/utility",
+    "homepage": "https://github.com/douglasgreen/config-setup",
     "authors": [
         {
             "name": "Douglas Green",

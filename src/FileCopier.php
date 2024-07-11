@@ -219,8 +219,8 @@ class FileCopier
                 continue;
             }
 
-            $plainFile = $this->repoDir . '/vendor/douglasgreen/utility/' . $fileToCopy;
-            $target = $this->repoDir . '/vendor/douglasgreen/utility/var/' . $fileToCopy;
+            $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
+            $target = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
             if ($fileToCopy === 'ecs.php') {
                 // Put temporary copy with correct "line_length" value in var dir.
                 $this->makeEcs($plainFile, $target);
@@ -238,7 +238,7 @@ class FileCopier
                 $this->makePrettierrc($plainFile, $target);
             } elseif ($fileToCopy === '.husky/pre-commit') {
                 // Use original pre-commit file as target in either case.
-                $target = $this->repoDir . '/vendor/douglasgreen/utility/' . $fileToCopy;
+                $target = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
 
                 // Install either pre-commit, or pre-push, or none.
                 if ($this->usePrePush) {
@@ -250,7 +250,7 @@ class FileCopier
                 }
             } else {
                 // Use original, unmodified source.
-                $target = $this->repoDir . '/vendor/douglasgreen/utility/' . $fileToCopy;
+                $target = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
             }
 
             $symlink = $this->repoDir . '/' . $fileToCopy;
