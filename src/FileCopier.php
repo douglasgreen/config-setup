@@ -51,7 +51,9 @@ class FileCopier
         'script/bootstrap' => null,
         'script/fix' => null,
         'script/lint' => null,
+        'script/review' => null,
         'script/setup' => null,
+        'script/status' => null,
         'script/test' => null,
         'script/update' => null,
     ];
