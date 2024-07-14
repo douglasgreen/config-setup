@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+import subprocess
+import os
+import sys
+
+def get_staged_files():
+    try:
+        result = subprocess.run(['git', 'diff', '--cached', '--name-only'], capture_output=True, text=True, check=True)
+        return [file for file in result.stdout.strip().split('\n') if file]
+    except subprocess.CalledProcessError:
+        print("Error: Not a git repository or git command failed.")
+        sys.exit(1)
+
+def get_diff_excluding_large_files(files):
+    excluded_files = ['package-lock.json', 'composer.lock', 'yarn.lock']
+    diff = ""
+    total_lines = 0
+
+    for file in files:
+        if file not in excluded_files:
+            try:
+                result = subprocess.run(['git', 'diff', '--cached', file], capture_output=True, text=True, check=True)
+                file_diff = result.stdout
+                diff += f"File: {file}\n{file_diff}\n\n"
+                total_lines += len(file_diff.split('\n'))
+            except subprocess.CalledProcessError:
+                print(f"Error: Unable to get diff for {file}")
+
+    return diff, total_lines
+
+def create_output_file(staged_files, diff, total_lines):
+    with open('commit_review.txt', 'w') as f:
+        f.write("Instructions for ChatGPT:\n")
+        f.write("Please review the contents of the following files and create a semantic commit message header and body. ")
+        f.write("Use an exclamation point for breaking changes and include 'BREAKING CHANGE' in the body of the message if applicable.\n\n")
+
+        f.write("Staged files:\n")
+        for file in staged_files:
+            f.write(f"- {file}\n")
+        f.write("\n")
+
+        f.write("Diff of changed files (excluding large files):\n")
+        f.write(diff)
+
+def main():
+    if not os.path.exists('.git'):
+        print("Error: Not a git repository.")
+        sys.exit(1)
+
+    staged_files = get_staged_files()
+    if not staged_files:
+        print("Error: No files are staged. Please stage some changes before running this script.")
+        sys.exit(1)
+
+    diff, total_lines = get_diff_excluding_large_files(staged_files)
+
+    if total_lines > 1000:
+        print("Error: More than 1000 lines changed. Too large to review at one time.")
+    elif total_lines > 500:
+        print("Warning: More than 500 lines changed.")
+
+    create_output_file(staged_files, diff, total_lines)
+    print(f"Output file 'commit_review.txt' created with {total_lines} lines of diff.")
+
+if __name__ == "__main__":
+    main()
