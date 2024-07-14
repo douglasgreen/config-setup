@@ -12,6 +12,7 @@ def get_staged_files():
                 parts = line.split('\t')
                 status = parts[0]
                 if status.startswith('R'):
+                    # @todo Figure out how to support renames so they appear as diff not a new file
                     print("Error: Renames are not supported and should be committed in a separate changeset.")
                     print(f"Renamed file detected: {parts[1]} -> {parts[2]}")
                     sys.exit(1)
