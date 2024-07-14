@@ -4,16 +4,25 @@ Preconfigured setup files for linting, fixing, and testing PHP and JavaScript pr
 
 ## Initial Setup
 
+Add the repository to `composer.json` because it's not available through Packagist:
+
+```
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/douglasgreen/config-setup"
+        }
+    ],
+```
+
 Add this script to `composer.json` to make links to the config files in your project when you run
 `composer install` or `composer update`:
 
 ```
-{
     "scripts": {
         "post-install-cmd": "config-setup",
         "post-update-cmd": "config-setup"
     }
-}
 ```
 
 The config files will be linked every time you run `composer update` or `composer install`. The link
