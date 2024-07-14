@@ -31,8 +31,9 @@ def get_diff_excluding_large_files(files):
 def create_output_file(staged_files, diff, total_lines):
     with open('commit_review.txt', 'w') as f:
         f.write("Instructions for ChatGPT:\n")
-        f.write("Please review the contents of the following files and create a semantic commit message header and body. ")
-        f.write("Use an exclamation point for breaking changes and include 'BREAKING CHANGE' in the body of the message if applicable.\n\n")
+        f.write("Please review the contents of the following files and create a conventional commit message header and body. ")
+        f.write("Conventional commits have a type (one of build, chore, ci, docs, feat, fix, perf, refactor, revert, style, or test), a scope, and a description in the header.")
+        f.write("A major change to the API that is not backward compatible is a breaking change. If a breaking change occurs, mark the type with a ! include BREAKING CHANGE in the body of the message.\n\n")
 
         f.write("Staged files:\n")
         for file in staged_files:
@@ -64,3 +65,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    test
