@@ -10,7 +10,7 @@ import os
 def get_git_status():
     try:
         result = subprocess.run(['git', 'status', '--porcelain'], capture_output=True, text=True, check=True)
-        return result.stdout.strip().split('\n')
+        return result.stdout.rstrip().split('\n')
     except subprocess.CalledProcessError:
         print("Error: Not a git repository or git command failed.")
         return []
@@ -24,9 +24,12 @@ def classify_files(files):
         'code': []
     }
 
+    file_statuses = {}
+
     for file in files:
         if file:
             status, path = file[:2], file[3:]
+            file_statuses[path] = status.strip()
             if any(build_file in path.lower() for build_file in ['composer', 'gulp', 'bower', 'npm', 'package.json', 'yarn.lock']):
                 categories['build'].append(path)
             elif '.gitlab-ci.yml' in path.lower():
@@ -38,14 +41,15 @@ def classify_files(files):
             else:
                 categories['code'].append(path)
 
-    return categories
+    return categories, file_statuses
 
-def print_categories(categories):
+def print_categories(categories, file_statuses):
     for category, files in categories.items():
         if files:
             print(f"\n{category.capitalize()} changes:")
             for file in files:
-                print(f"  - {file}")
+                status = file_statuses.get(file, '')
+                print(f"  - {file} ({status})")
 
 def main():
     if not os.path.exists('.git'):
@@ -57,8 +61,8 @@ def main():
         print("No changes detected.")
         return
 
-    categories = classify_files(status_output)
-    print_categories(categories)
+    categories, file_statuses = classify_files(status_output)
+    print_categories(categories, file_statuses)
 
 if __name__ == "__main__":
     main()
