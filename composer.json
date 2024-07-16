@@ -1,6 +1,6 @@
 {
     "name": "douglasgreen/config-setup",
-    "description": "Preconfigured setup files for linting, fixing, and testing PHP and JavaScript project",
+    "description": "Preconfigured setup files for linting, fixing, and testing PHP and JavaScript projects",
     "license": "MIT",
     "type": "library",
     "homepage": "https://github.com/douglasgreen/config-setup",
