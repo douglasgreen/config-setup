@@ -14,30 +14,15 @@
     ],
     "keywords": [
         "automation",
-        "cli",
-        "cli library",
-        "cli tool",
         "code quality",
         "code standards",
         "code validation",
-        "coding standards",
-        "command-line interface",
         "config",
-        "console",
         "fixing",
         "linter",
         "linting",
         "php",
-        "php automation",
-        "php cli",
-        "php command line",
-        "php console application",
-        "php fig",
-        "php scripting",
-        "phpunit",
-        "psr",
-        "syntax check",
-        "terminal"
+        "phpunit"
     ],
     "autoload": {
         "psr-4": {
