@@ -85,7 +85,7 @@ Several scripts are customized during the linking process.
 ## Setup Scripts
 
 This project uses the
-[GitLab script system](https://github.blog/2015-06-30-scripts-to-rule-them-all/).
+[GitHub script system](https://github.blog/2015-06-30-scripts-to-rule-them-all/).
 
 -   To install project dependencies, run `script/bootstrap`.
 -   To set up the project, run `script/setup`.
@@ -103,6 +103,15 @@ The setup and update scripts attempt to do more by:
 -   Doing `source .env` to set up or update environment variables if the `.env` file exists.
 
 You can create those files to use for standard project configuration.
+
+There are two extra scripts used for making
+[conventional commit messages](https://www.conventionalcommits.org/en/v1.0.0/) using chatbots.
+
+1. To list the currently modified files and their status, run `script/status`.
+2. Stage a group of files with a single purpose.
+3. To save a file with commit instructions and a file diff, run `script/review`.
+4. Edit the file and add any custom text about the purpose of your changes.
+5. Copy and paste the contents of the file into a chatbot such as ChatGPT.
 
 ## Installing Dependencies
 
