@@ -46,7 +46,8 @@ def create_output_file(staged_files, diff, total_lines):
     with open('commit_review.txt', 'w') as f:
         # Print instructions for ChatGPT
         f.write("Please review the contents of the following files and create a conventional commit message header and body. ")
-        f.write("Conventional commits have a type of build, chore, ci, docs, feat, fix, perf, refactor, revert, style, or test.\n\n")
+        f.write("Conventional commits have a type of build, chore, ci, docs, feat, fix, perf, refactor, revert, style, or test. ")
+        f.write("Focus on the meaning and purpose of the changes and not just the names of files and code mechanics.\n\n")
 
         f.write("Staged files:\n")
         for file, status in staged_files.items():
