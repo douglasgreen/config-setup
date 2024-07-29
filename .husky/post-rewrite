@@ -1,6 +1,3 @@
-#!/usr/bin/env bash
-. "$(dirname "$0")/_/husky.sh"
-
 # Check if this is a rebase operation
 if [[ $1 == "rebase" ]]; then
     # Get the list of modified files
