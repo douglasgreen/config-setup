@@ -1,17 +1,7 @@
 {
     "name": "douglasgreen/config-setup",
     "description": "Preconfigured setup files for linting, fixing, and testing PHP and JavaScript projects",
-    "license": "MIT",
     "type": "library",
-    "homepage": "https://github.com/douglasgreen/config-setup",
-    "authors": [
-        {
-            "name": "Douglas Green",
-            "email": "douglas@nurd.site",
-            "homepage": "https://nurd.site/",
-            "role": "Developer"
-        }
-    ],
     "keywords": [
         "automation",
         "code quality",
@@ -24,17 +14,16 @@
         "php",
         "phpunit"
     ],
-    "autoload": {
-        "psr-4": {
-            "DouglasGreen\\ConfigSetup\\": "src"
+    "homepage": "https://github.com/douglasgreen/config-setup",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Douglas Green",
+            "email": "douglas@nurd.site",
+            "homepage": "https://nurd.site/",
+            "role": "Developer"
         }
-    },
-    "bin": [
-        "bin/config-setup"
     ],
-    "config": {
-        "sort-packages": true
-    },
     "require": {
         "php": ">=8.1",
         "nette/neon": "^3.4"
@@ -44,6 +33,14 @@
         "rector/rector": "^1.2",
         "symplify/easy-coding-standard": "^12.3"
     },
+    "autoload": {
+        "psr-4": {
+            "DouglasGreen\\ConfigSetup\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
     "scripts": {
         "lint": [
             "ecs",
@@ -52,7 +49,12 @@
         ],
         "lint:fix": [
             "ecs --fix",
-            "rector"
+            "rector",
+            "sort-composer-json"
         ]
-    }
+    },
+    "bin": [
+        "bin/config-setup",
+        "bin/sort-composer-json"
+    ]
 }
