@@ -27,6 +27,7 @@ use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
+use Rector\Naming\Rector\Assign\RenameVariableToMatchMethodCallReturnTypeRector;
 use Rector\Naming\Rector\ClassMethod\RenameVariableToMatchNewTypeRector;
 use Rector\Naming\Rector\Foreach_\RenameForeachValueVariableToMatchExprVariableRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
@@ -140,5 +141,6 @@ return RectorConfig::configure()
     ->withSkip([
         LocallyCalledStaticMethodToNonStaticRector::class,
         RenameForeachValueVariableToMatchExprVariableRector::class,
+        RenameVariableToMatchMethodCallReturnTypeRector::class,
         RenameVariableToMatchNewTypeRector::class,
     ]);
