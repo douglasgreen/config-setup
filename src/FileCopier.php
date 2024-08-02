@@ -12,13 +12,9 @@ class FileCopier
 {
     public const DEFAULT_WRAP = 100;
 
-    public const PRE_COMMIT = 1;
+    public const USE_WOOCOMMERCE = 1;
 
-    public const PRE_PUSH = 2;
-
-    public const USE_WOOCOMMERCE = 4;
-
-    public const USE_WORDPRESS = 8;
+    public const USE_WORDPRESS = 2;
 
     /**
      * @var array<string, ?string> Names of files to copy if the project is installed
@@ -132,10 +128,6 @@ class FileCopier
 
     protected readonly string $phpVersion;
 
-    protected readonly bool $usePreCommit;
-
-    protected readonly bool $usePrePush;
-
     protected readonly bool $useWoocommerce;
 
     protected readonly bool $useWordpress;
@@ -145,8 +137,6 @@ class FileCopier
         protected readonly int $flags = 0,
         protected readonly int $wrap = self::DEFAULT_WRAP
     ) {
-        $this->usePreCommit = (bool) ($this->flags & self::PRE_COMMIT);
-        $this->usePrePush = (bool) ($this->flags & self::PRE_PUSH);
         $this->useWoocommerce = (bool) ($this->flags & self::USE_WOOCOMMERCE);
         $this->useWordpress = (bool) ($this->flags & self::USE_WORDPRESS);
 
@@ -238,18 +228,6 @@ class FileCopier
             } elseif ($fileToCopy === '.prettierrc.json') {
                 // Put Prettier temporary copy with new plugin list in var dir.
                 $this->makePrettierrc($plainFile, $target);
-            } elseif ($fileToCopy === '.husky/pre-commit') {
-                // Use original pre-commit file as target in either case.
-                $target = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
-
-                // Install either pre-commit, or pre-push, or none.
-                if ($this->usePrePush) {
-                    // Pre-push symlink points to pre-commit script.
-                    $fileToCopy = '.husky/pre-push';
-                } elseif (! $this->usePreCommit) {
-                    // No symlink was requested.
-                    continue;
-                }
             } else {
                 // Use original, unmodified source.
                 $target = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;

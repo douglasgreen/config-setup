@@ -47,8 +47,6 @@ hooks to work.
 
 When running `config-setup`, there are some possible arguments:
 
--   `--pre-commit`: Use the `pre-commit` hook to do linting.
--   `--pre-push`: Use the `pre-push` hook to do linting.
 -   `--wordpress`: Install the `stubs/wordpress.php` file and WordPress extension for PHPStan to
     use.
 -   `--woocommerce`: Install the WooCommerce extension for PHPStan to use.
@@ -235,8 +233,8 @@ Automatic scripts include:
 
 ## Husky Hooks
 
-Linting and testing are automatically run by `.husky/pre-commit` (or `.husky/pre-push`). Fix any
-errors or use `--no-verify` to bypass the check.
+Linting and testing are automatically run by `.husky/pre-commit`. Fix any errors or use
+`--no-verify` to bypass the check.
 
 Project setup is automatically run by `.husky/post-checkout` and `.husky/post-merge`. That updates
 your Composer and NPM dependencies in case your dependencies were changed by incoming code.

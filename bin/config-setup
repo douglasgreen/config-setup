@@ -17,17 +17,9 @@ if ($currentDir === false) {
 // Run in current dir which is repository root dir.
 require_once $currentDir . '/vendor/autoload.php';
 
-$options = getopt('w:', ['pre-commit', 'pre-push', 'woocommerce', 'wordpress', 'wrap:']);
+$options = getopt('w:', ['woocommerce', 'wordpress', 'wrap:']);
 
 $flags = 0;
-
-// Use pre-commit hook.
-if (isset($options['pre-commit'])) {
-    $flags |= FileCopier::PRE_COMMIT;
-} elseif (isset($options['pre-push'])) {
-    // Use pre-push hook as alternative to pre-commit hook.
-    $flags |= FileCopier::PRE_PUSH;
-}
 
 // Specify a custom line wrap length.
 $wrapArg = $options['wrap'] ?? ($options['w'] ?? FileCopier::DEFAULT_WRAP);
