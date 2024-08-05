@@ -1,3 +1,4 @@
+bin/check-composer-usage
 bin/config-setup
 ecs.php
 rector.php
