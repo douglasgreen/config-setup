@@ -54,6 +54,7 @@
         ]
     },
     "bin": [
+        "bin/check-composer-usage",
         "bin/config-setup",
         "bin/sort-composer-json"
     ]
