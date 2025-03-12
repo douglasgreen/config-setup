@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
+use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Naming\Rector\Assign\RenameVariableToMatchMethodCallReturnTypeRector;
@@ -138,6 +139,7 @@ return RectorConfig::configure()
         typeDeclarations: true
     )
     ->withSkip([
+        ExplicitBoolCompareRector::class,
         LocallyCalledStaticMethodToNonStaticRector::class,
         RenameForeachValueVariableToMatchExprVariableRector::class,
         RenameVariableToMatchMethodCallReturnTypeRector::class,
