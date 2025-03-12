@@ -505,7 +505,7 @@ class FileCopier
             throw new Exception('Unable to extract PHP version from composer.json');
         }
 
-        return $match[0];
+        return $match[0] ?? '';
     }
 
     /**
@@ -716,6 +716,7 @@ class FileCopier
         $domDocument = new DOMDocument('1.0');
         $domDocument->preserveWhiteSpace = false;
         $domDocument->formatOutput = true;
+
         $xmlOutput = $xml->asXML();
         if ($xmlOutput === false) {
             throw new Exception('Unable to make PHPUnit XML');
