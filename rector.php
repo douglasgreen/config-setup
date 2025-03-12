@@ -135,7 +135,6 @@ return RectorConfig::configure()
         instanceOf: true,
         naming: true,
         privatization: true,
-        strictBooleans: true,
         typeDeclarations: true
     )
     ->withSkip([
