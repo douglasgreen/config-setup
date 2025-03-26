@@ -1,8 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-declare(strict_types=1);
-
 // Define the desired order of keys
 // @see https://getcomposer.org/doc/04-schema.md
 $keyOrders = [

@@ -21,8 +21,6 @@
  * For more information on configuring Rector, see https://getrector.com/
  */
 
-declare(strict_types=1);
-
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
 use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;

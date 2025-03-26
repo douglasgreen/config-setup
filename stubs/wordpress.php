@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * These functions are to handle third-party WordPress code not covered by available extensions.
  *

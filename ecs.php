@@ -27,8 +27,6 @@
  * https://github.com/easy-coding-standard/easy-coding-standard.
  */
 
-declare(strict_types=1);
-
 /*
  * The Symplify statements must precede the PhpCsFixer statements or PHPStan reports namespace errors.
  */
@@ -38,6 +36,7 @@ use PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer;
 use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocAnnotationRemoveFixer;
 use PhpCsFixer\Fixer\Phpdoc\PhpdocAlignFixer;
+use PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer;
 
 $hasPhpUnit = false;
 $hasSymfony = false;
@@ -252,6 +251,7 @@ return ECSConfig::configure()
         ]
     )
     ->withSkip([
+        DeclareStrictTypesFixer::class,
         GlobalNamespaceImportFixer::class,
         OrderedImportsFixer::class => __DIR__ . '/ecs.php',
         PhpdocAlignFixer::class,

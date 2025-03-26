@@ -1,8 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-declare(strict_types=1);
-
 // Define the path to the composer.json file
 $composerJsonPath = 'composer.json';
 
