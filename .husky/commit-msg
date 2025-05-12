@@ -1,3 +1,4 @@
+#!/bin/bash
 # Check if the npm script "commitlint" exists and run it
 if npm run | grep -q "commitlint"; then
     echo "==> Running NPM commitlint..."

@@ -1,3 +1,4 @@
+#!/bin/bash
 # Check if this is a rebase operation
 if [[ $1 == "rebase" ]]; then
     # Get the list of modified files
