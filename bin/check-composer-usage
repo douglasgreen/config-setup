@@ -78,7 +78,7 @@ foreach ($fileList as $file) {
         $phpFiles[] = $file;
     } else {
         $firstLine = fgets(fopen($file, 'r'));
-        if (strpos($firstLine, 'php') !== false) {
+        if (str_contains($firstLine, 'php')) {
             $phpFiles[] = $file;
         }
     }
@@ -95,28 +95,26 @@ foreach ($phpFiles as $file) {
 
     // Match use statements
     preg_match_all('/^use\s+([^;]+);/m', $content, $matches);
-    if (! empty($matches[1])) {
-        foreach ($matches[1] as $match) {
-            $match = trim($match);
+    foreach ($matches[1] as $match) {
+        $match = trim($match);
 
-            // Skip global names.
-            if (preg_match('/^\w+$/', $match)) {
-                continue;
-            }
-
-            $match = preg_replace('/^function\s+/', '', $match);
-            $match = preg_replace('#^\\\\#', '', $match);
-            $match = preg_replace('#\\\\$#', '', $match);
-            $match = preg_replace('#\\\\+#', '\\', $match);
-
-            // Store all possible base paths.
-            do {
-                $newMatch = preg_replace('#\\\\\w+$#', '', $match);
-                $useStatements[$newMatch . '\\'] = true;
-                $modified = $match !== $newMatch;
-                $match = $newMatch;
-            } while ($modified);
+        // Skip global names.
+        if (preg_match('/^\w+$/', $match)) {
+            continue;
         }
+
+        $match = preg_replace('/^function\s+/', '', $match);
+        $match = preg_replace('#^\\\\#', '', (string) $match);
+        $match = preg_replace('#\\\\$#', '', (string) $match);
+        $match = preg_replace('#\\\\+#', '\\', (string) $match);
+
+        // Store all possible base paths.
+        do {
+            $newMatch = preg_replace('#\\\\\w+$#', '', (string) $match);
+            $useStatements[$newMatch . '\\'] = true;
+            $modified = $match !== $newMatch;
+            $match = $newMatch;
+        } while ($modified);
     }
 }
 
