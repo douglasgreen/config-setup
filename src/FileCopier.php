@@ -74,6 +74,7 @@ class FileCopier
      * @var array<string, string> Project name and its actual package name
      */
     protected const PACKAGE_NAMES = [
+        'detect-collisions' => 'shipmonk/name-collision-detector',
         'ecs' => 'symplify/easy-coding-standard',
         'pdepend' => 'pdepend/pdepend',
         'phpstan' => 'phpstan/phpstan',
@@ -796,7 +797,7 @@ class FileCopier
      */
     protected function updateCollisionDetector(): void
     {
-        if (! $this->hasPackage('shipmonk/name-collision-detector')) {
+        if (! $this->hasPackage('detect-collisions')) {
             return;
         }
 
