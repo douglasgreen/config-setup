@@ -50,12 +50,12 @@
         "lint:fix": [
             "ecs --fix",
             "rector",
-            "sort-composer-json"
+            "sort_composer_json.php"
         ]
     },
     "bin": [
-        "bin/check-composer-usage",
-        "bin/config-setup",
-        "bin/sort-composer-json"
+        "bin/check_composer_usage.php",
+        "bin/config_setup.php",
+        "bin/sort_composer_json.php"
     ]
 }

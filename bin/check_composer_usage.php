@@ -11,6 +11,9 @@ if (! file_exists($composerJsonPath)) {
 
 // Read the content of the composer.json file
 $composerJsonContent = file_get_contents($composerJsonPath);
+if ($composerJsonContent === false) {
+    die("Unable to read composer.json file: {$composerJsonPath}\n");
+}
 
 // Decode the JSON content into a PHP array
 $composerData = json_decode($composerJsonContent, true);
@@ -48,6 +51,9 @@ $projectNamespaces = [];
 foreach ($composerPaths as $composerJsonPath) {
     // Read the content of the composer.json file
     $composerJsonContent = file_get_contents($composerJsonPath);
+    if ($composerJsonContent === false) {
+        die("Unable to read composer.json file: {$composerJsonPath}\n");
+    }
 
     // Decode the JSON content into a PHP array
     $composerData = json_decode($composerJsonContent, true);
@@ -68,7 +74,10 @@ foreach ($composerPaths as $composerJsonPath) {
 
 // Run the git ls-files command
 $files = shell_exec('git ls-files');
-$fileList = explode("\n", trim($files));
+$fileList = [];
+if ($files) {
+    $fileList = explode("\n", trim($files));
+}
 
 $phpFiles = [];
 
@@ -77,7 +86,16 @@ foreach ($fileList as $file) {
     if (preg_match('/\.php$/', $file)) {
         $phpFiles[] = $file;
     } else {
-        $firstLine = fgets(fopen($file, 'r'));
+        $handle = fopen($file, 'r');
+        if (! $handle) {
+            die("Unable to open file: {$file}\n");
+        }
+
+        $firstLine = fgets($handle);
+        if ($firstLine === false) {
+            continue;
+        }
+
         if (str_contains($firstLine, 'php')) {
             $phpFiles[] = $file;
         }
