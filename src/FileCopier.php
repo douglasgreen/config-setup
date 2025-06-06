@@ -187,6 +187,10 @@ class FileCopier
 
         if ($this->updatePhpPaths()) {
             $excludeLines[] = 'php_paths';
+
+            if ($this->updateCollisionDetector()) {
+                $excludeLines[] = 'collision-detector.json';
+            }
         }
 
         if ($this->wrap !== self::DEFAULT_WRAP) {
@@ -795,10 +799,10 @@ class FileCopier
     /**
      * @throws Exception
      */
-    protected function updateCollisionDetector(): void
+    protected function updateCollisionDetector(): bool
     {
         if (! $this->hasPackage('detect-collisions')) {
-            return;
+            return false;
         }
 
         $pathFile = $this->repoDir . '/collision-detector.json';
@@ -819,6 +823,8 @@ class FileCopier
         }
 
         echo 'Created collision-detector.json file.' . PHP_EOL;
+
+        return true;
     }
 
     /**
@@ -842,7 +848,6 @@ class FileCopier
             }
 
             echo 'Created php_paths file.' . PHP_EOL;
-            $this->updateCollisionDetector();
             return true;
         }
 
