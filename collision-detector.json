@@ -1,0 +1,13 @@
+{
+    "scanPaths": [
+        "bin",
+        "ecs.php",
+        "rector.php",
+        "src",
+        "stubs"
+    ],
+    "fileExtensions": [
+        "php"
+    ],
+    "ignoreParseFailures": true
+}
