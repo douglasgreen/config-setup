@@ -794,6 +794,35 @@ class FileCopier
     /**
      * @throws Exception
      */
+    protected function updateCollisionDetector(): void
+    {
+        if (! $this->hasPackage('shipmonk/name-collision-detector')) {
+            return;
+        }
+
+        $pathFile = $this->repoDir . '/collision-detector.json';
+
+        $config = [
+            'scanPaths' => $this->phpPaths,
+            'fileExtensions' => ['php'],
+            'ignoreParseFailures' => true,
+        ];
+
+        $json = json_encode(
+            $config,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES |  JSON_THROW_ON_ERROR
+        );
+
+        if (file_put_contents($pathFile, $json) === false) {
+            throw new Exception('Unable to save file');
+        }
+
+        echo 'Created collision-detector.json file.' . PHP_EOL;
+    }
+
+    /**
+     * @throws Exception
+     */
     protected function updatePhpPaths(): bool
     {
         $pathFile = $this->repoDir . '/php_paths';
@@ -812,6 +841,7 @@ class FileCopier
             }
 
             echo 'Created php_paths file.' . PHP_EOL;
+            $this->updateCollisionDetector();
             return true;
         }
 
