@@ -36,6 +36,7 @@ use PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer;
 use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocAnnotationRemoveFixer;
 use PhpCsFixer\Fixer\Phpdoc\PhpdocAlignFixer;
+use PhpCsFixer\Fixer\Phpdoc\PhpdocLineSpanFixer;
 use PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer;
 
 $hasPhpUnit = false;
@@ -159,6 +160,10 @@ return ECSConfig::configure()
     )
     ->withConfiguredRule(LineLengthFixer::class, [
         'line_length' => 100,
+    ])
+    ->withConfiguredRule(PhpdocLineSpanFixer::class, [
+        'const' => 'single',
+        'property' => 'single',
     ])
     ->withConfiguredRule(
         // Be careful about this part of the config. ECS removes the tag and its
