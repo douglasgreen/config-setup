@@ -14,9 +14,7 @@ class FileCopier
 
     public const USE_WORDPRESS = 2;
 
-    /**
-     * @var array<string, ?string> Names of files to copy if the project is installed
-     */
+    /** @var array<string, ?string> Names of files to copy if the project is installed */
     protected const COPY_FILES = [
         '.eslintignore' => 'eslint',
         '.eslintrc.json' => 'eslint',
@@ -33,9 +31,7 @@ class FileCopier
         'stubs/wordpress.php' => null,
     ];
 
-    /**
-     * @var array<string, ?string> Names of scripts to copy if the project is installed
-     */
+    /** @var array<string, ?string> Names of scripts to copy if the project is installed */
     protected const COPY_SCRIPTS = [
         '.husky/commit-msg' => 'husky',
         '.husky/post-checkout' => 'husky',
@@ -70,9 +66,7 @@ class FileCopier
         'var/report/phpunit' => 'phpunit',
     ];
 
-    /**
-     * @var array<string, string> Project name and its actual package name
-     */
+    /** @var array<string, string> Project name and its actual package name */
     protected const PACKAGE_NAMES = [
         'detect-collisions' => 'shipmonk/name-collision-detector',
         'ecs' => 'symplify/easy-coding-standard',
@@ -88,39 +82,25 @@ class FileCopier
         'stylelint' => 'stylelint',
     ];
 
-    /**
-     * @var array<string, mixed>
-     */
+    /** @var array<string, mixed> */
     protected readonly array $composerJson;
 
-    /**
-     * @var ?list<string>
-     */
+    /** @var ?list<string> */
     protected readonly ?array $composerPackages;
 
-    /**
-     * @var array<string, ?string>
-     */
+    /** @var array<string, ?string> */
     protected readonly array $filesToCopy;
 
-    /**
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected readonly array $gitFiles;
 
-    /**
-     * @var ?list<string>
-     */
+    /** @var ?list<string> */
     protected readonly ?array $npmPackages;
 
-    /**
-     * @var ?array<string, mixed>
-     */
+    /** @var ?array<string, mixed> */
     protected readonly ?array $packageJson;
 
-    /**
-     * @var list<string>
-     */
+    /** @var list<string> */
     protected readonly array $phpPaths;
 
     protected readonly string $excludeFile;
