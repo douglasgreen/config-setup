@@ -1,3 +1,6 @@
+includes:
+    - vendor/shipmonk/dead-code-detector/rules.neon
+
 parameters:
     # Don't use level 9 because PHP functions return mixed everywhere
     level: 8

@@ -602,7 +602,7 @@ class FileCopier
 
         if ($this->useWordpress) {
             // Include WordPress extensions without needing the PHPStan extension installer.
-            $phpStanConfig['includes'] = ['vendor/szepeviktor/phpstan-wordpress/extension.neon'];
+            $phpStanConfig['includes'][] = ['vendor/szepeviktor/phpstan-wordpress/extension.neon'];
             if ($this->useWoocommerce) {
                 $bootstrapFiles[] = 'vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php';
             }
