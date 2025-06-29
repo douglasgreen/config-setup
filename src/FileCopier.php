@@ -68,6 +68,7 @@ class FileCopier
 
     /** @var array<string, string> Project name and its actual package name */
     protected const PACKAGE_NAMES = [
+        'dead-code-detector' => 'shipmonk/dead-code-detector',
         'detect-collisions' => 'shipmonk/name-collision-detector',
         'ecs' => 'symplify/easy-coding-standard',
         'pdepend' => 'pdepend/pdepend',
