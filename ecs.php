@@ -32,6 +32,7 @@
  */
 use Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
+use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 use PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer;
 use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocAnnotationRemoveFixer;
@@ -39,138 +40,105 @@ use PhpCsFixer\Fixer\Phpdoc\PhpdocAlignFixer;
 use PhpCsFixer\Fixer\Phpdoc\PhpdocLineSpanFixer;
 use PhpCsFixer\Fixer\Strict\DeclareStrictTypesFixer;
 
-$hasPhpUnit = false;
-$hasSymfony = false;
-$hasDoctrine = false;
-$phpVersion = null;
+return function (ECSConfig $ecsConfig): void {
+    // Dynamically determine paths from php_paths file
+    $paths = file('php_paths', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($paths === false) {
+        exit('PHP paths not found' . PHP_EOL);
+    }
+    $ecsConfig->paths($paths);
 
-if (file_exists('composer.json')) {
-    $composerContent = file_get_contents('composer.json');
-    if ($composerContent !== false) {
-        $composerData = json_decode($composerContent, true, 16, JSON_THROW_ON_ERROR);
+    // Get composer dependencies
+    $composerJsonPath = getcwd() . '/composer.json';
+    $hasPhpUnit = false;
+    $hasSymfony = false;
+    $hasDoctrine = false;
+    $phpVersion = null;
 
-        // Check for PHPUnit, Symfony, and Doctrine
-        $requires = $composerData['require'] ?? [];
-        $requiresDev = $composerData['require-dev'] ?? [];
+    if (file_exists($composerJsonPath)) {
+        $composerContent = file_get_contents($composerJsonPath);
+        if ($composerContent) {
+            $composerData = json_decode($composerContent, true);
+            $dependencies = array_merge(
+                $composerData['require'] ?? [],
+                $composerData['require-dev'] ?? []
+            );
 
-        $allDependencies = array_merge($requires, $requiresDev);
-
-        foreach ($allDependencies as $name => $value) {
-            if (preg_match('#^phpunit/#', $name) === 1) {
-                $hasPhpUnit = true;
+            $hasPhpUnit = isset($dependencies['phpunit/phpunit']);
+            $hasSymfony = isset($dependencies['symfony/framework-bundle']);
+            $hasDoctrine = isset($dependencies['doctrine/orm']);
+            if (isset($dependencies['php']) && is_string($dependencies['php'])) {
+                preg_match('/(?:\d+\.\d+)/', $dependencies['php'], $matches);
+                if (isset($matches[0])) {
+                    $phpVersion = (float) $matches[0];
+                }
             }
-
-            if (preg_match('#^symfony/#', $name) === 1) {
-                $hasSymfony = true;
-            }
-
-            if (preg_match('#^doctrine/#', $name) === 1) {
-                $hasDoctrine = true;
-            }
-
-            if ($name !== 'php') {
-                continue;
-            }
-
-            if (! is_string($value)) {
-                continue;
-            }
-
-            if (preg_match('/\d+\.\d+/', $value, $match) !== 1) {
-                continue;
-            }
-
-            $phpVersion = $match[0];
         }
     }
-}
 
-$php81Migration = false;
-$php82Migration = false;
-$php83Migration = false;
-switch ($phpVersion) {
-    case '8.2':
-        $php82Migration = true;
-        break;
-    case '8.3':
-        $php83Migration = true;
-        break;
-    default:
-        $php81Migration = true;
-        break;
-}
+    // Enable risky rules via environment variable
+    $isRisky = (bool) getenv('ECS_RISKY');
 
-$sets = [
-    'doctrineAnnotation' => $hasDoctrine,
-    'perCS' => true,
-    'perCSRisky' => false,
-    'php80MigrationRisky' => false,
-    'php81Migration' => $php81Migration,
-    'php82Migration' => $php82Migration,
-    'php83Migration' => $php83Migration,
-    'phpCsFixer' => true,
-    'phpCsFixerRisky' => false,
-    'phpunit100MigrationRisky' => false,
-    'symfony' => $hasSymfony,
-    'symfonyRisky' => false,
-];
+    // --- SECTIONS FOR RULE SETS ---
+    $ecsConfig->sets([
+        SetList::COMMON,
+        SetList::PSR_12,
+        SetList::STRICT,
+        SetList::SYMPLIFY,
+    ]);
 
-// To do risky changes, set ECS_RISKY to true in the environment.
-$useRisky = (bool) getenv('ECS_RISKY');
-if ($useRisky) {
-    foreach (array_keys($sets) as $set) {
-        if (preg_match('/^phpunit/', $set) === 1) {
-            $sets[$set] = $hasPhpUnit;
-        } elseif (preg_match('/^symfony/', $set) === 1) {
-            $sets[$set] = $hasSymfony;
-        } elseif (preg_match('/^doctrine/', $set) === 1) {
-            $sets[$set] = $hasDoctrine;
-        } else {
-            $sets[$set] = true;
+    if ($hasDoctrine) {
+        $ecsConfig->dynamicSets(['@DoctrineAnnotation']);
+    }
+
+    if ($hasSymfony) {
+        $ecsConfig->dynamicSets(['@Symfony']);
+        if ($isRisky) {
+            $ecsConfig->dynamicSets(['@Symfony:risky']);
         }
     }
-}
 
-$paths = file('php_paths');
-if ($paths === false) {
-    exit('PHP paths not found' . PHP_EOL);
-}
+    // --- PHP MIGRATION SETS ---
+    if ($phpVersion) {
+        if ($phpVersion >= 8.3) {
+            $ecsConfig->dynamicSets(['@PHP83Migration']);
+            if ($isRisky) {
+                $ecsConfig->dynamicSets(['@PHP83Migration:risky']);
+            }
+        } elseif ($phpVersion >= 8.2) {
+            $ecsConfig->dynamicSets(['@PHP82Migration']);
+            if ($isRisky) {
+                $ecsConfig->dynamicSets(['@PHP82Migration:risky']);
+            }
+        } elseif ($phpVersion >= 8.1) {
+            $ecsConfig->dynamicSets(['@PHP81Migration']);
+            if ($isRisky) {
+                $ecsConfig->dynamicSets(['@PHP81Migration:risky']);
+            }
+        }
 
-$paths = array_map(trim(...), $paths);
-$currentDirectory = getcwd();
-if ($currentDirectory === false) {
-    throw new Exception('Unable to determine current directory');
-}
+        if ($isRisky) {
+             if ($hasPhpUnit) {
+                $ecsConfig->dynamicSets(['@PHPUnit100Migration:risky']);
+            }
+        }
+    }
 
-return ECSConfig::configure()
-    ->withCache(directory: 'var/cache/ecs', namespace: $currentDirectory)
-    ->withPaths($paths)
-    ->withPreparedSets(cleanCode: true, common: true, psr12: true, strict: true, symplify: true)
-    ->withPhpCsFixerSets(
-        doctrineAnnotation: $sets['doctrineAnnotation'],
-        perCS: $sets['perCS'],
-        perCSRisky: $sets['perCSRisky'],
-        php80MigrationRisky: $sets['php80MigrationRisky'],
-        php81Migration: $sets['php81Migration'],
-        php82Migration: $sets['php82Migration'],
-        php83Migration: $sets['php83Migration'],
-        phpunit100MigrationRisky: $sets['phpunit100MigrationRisky'],
-        symfony: $sets['symfony'],
-        symfonyRisky: $sets['symfonyRisky']
-    )
-    ->withConfiguredRule(LineLengthFixer::class, [
+
+    // --- CONFIGURE INDIVIDUAL RULES ---
+    $ecsConfig->ruleWithConfiguration(LineLengthFixer::class, [
         'line_length' => 100,
-    ])
-    ->withConfiguredRule(PhpdocLineSpanFixer::class, [
+    ]);
+
+    $ecsConfig->ruleWithConfiguration(PhpdocLineSpanFixer::class, [
         'const' => 'single',
         'property' => 'single',
-    ])
-    ->withConfiguredRule(
-        // Be careful about this part of the config. ECS removes the tag and its
-        // contents when what you often want to do is remove or modify the tag
-        // only and not its contents.
-        GeneralPhpdocAnnotationRemoveFixer::class,
-        [
+    ]);
+
+    // Be careful about this part of the config. ECS removes the tag and its
+    // contents when what you often want to do is remove or modify the tag
+    // only and not its contents.
+    $ecsConfig->ruleWithConfiguration(GeneralPhpdocAnnotationRemoveFixer::class, [
             'annotations' => [
                 // Use abstract keyword instead
                 'abstract',
@@ -249,15 +217,21 @@ return ECSConfig::configure()
 
                 // Use version history instead
                 'updated',
-
+ 
                 // Use @uses on the other code instead
                 'usedby',
-            ],
-        ]
-    )
-    ->withSkip([
+         ],
+    ]);
+
+    // --- SKIP RULES ---
+    $ecsConfig->skip([
         DeclareStrictTypesFixer::class,
         GlobalNamespaceImportFixer::class,
-        OrderedImportsFixer::class => __DIR__ . '/ecs.php',
+        OrderedImportsFixer::class => [__DIR__ . '/ecs.php'],
         PhpdocAlignFixer::class,
     ]);
+
+    // --- CACHE AND PARALLELIZATION ---
+    $ecsConfig->cacheDirectory('var/cache/ecs');
+    $ecsConfig->parallel();
+};
