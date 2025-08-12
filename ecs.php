@@ -46,6 +46,7 @@ return function (ECSConfig $ecsConfig): void {
     if ($paths === false) {
         exit('PHP paths not found' . PHP_EOL);
     }
+
     $ecsConfig->paths($paths);
 
     // Get composer dependencies
@@ -80,12 +81,7 @@ return function (ECSConfig $ecsConfig): void {
     $isRisky = (bool) getenv('ECS_RISKY');
 
     // --- SECTIONS FOR RULE SETS ---
-    $ecsConfig->sets([
-        SetList::COMMON,
-        SetList::PSR_12,
-        SetList::STRICT,
-        SetList::SYMPLIFY,
-    ]);
+    $ecsConfig->sets([SetList::COMMON, SetList::PSR_12, SetList::STRICT, SetList::SYMPLIFY]);
 
     if ($hasDoctrine) {
         $ecsConfig->dynamicSets(['@DoctrineAnnotation']);
@@ -117,10 +113,8 @@ return function (ECSConfig $ecsConfig): void {
             }
         }
 
-        if ($isRisky) {
-             if ($hasPhpUnit) {
-                $ecsConfig->dynamicSets(['@PHPUnit100Migration:risky']);
-            }
+        if ($isRisky && $hasPhpUnit) {
+            $ecsConfig->dynamicSets(['@PHPUnit100Migration:risky']);
         }
     }
 
@@ -139,88 +133,88 @@ return function (ECSConfig $ecsConfig): void {
     // contents when what you often want to do is remove or modify the tag
     // only and not its contents.
     $ecsConfig->ruleWithConfiguration(GeneralPhpdocAnnotationRemoveFixer::class, [
-            'annotations' => [
-                // Use abstract keyword instead
-                'abstract',
+        'annotations' => [
+            // Use abstract keyword instead
+            'abstract',
 
-                // Use public, protected, or private keyword instead
-                'access',
+            // Use public, protected, or private keyword instead
+            'access',
 
-                // Use version history instead
-                'author',
+            // Use version history instead
+            'author',
 
-                // Use namespaces instead
-                'category',
+            // Use namespaces instead
+            'category',
 
-                // Use class keyword instead
-                'class',
+            // Use class keyword instead
+            'class',
 
-                // Use @var tag or const keyword instead
-                'const',
+            // Use @var tag or const keyword instead
+            'const',
 
-                // Use constructor keyword instead
-                'constructor',
+            // Use constructor keyword instead
+            'constructor',
 
-                // Use license file instead
-                'copyright',
+            // Use license file instead
+            'copyright',
 
-                // First comment is automatically file comment
-                'file',
+            // First comment is automatically file comment
+            'file',
 
-                // Use final keyword instead
-                'final',
+            // Use final keyword instead
+            'final',
 
-                // Use dependency injection instead of globals
-                'global',
+            // Use dependency injection instead of globals
+            'global',
 
-                // Use @inheritdoc instead
-                'inherit',
+            // Use @inheritdoc instead
+            'inherit',
 
-                // Use license file instead
-                'license',
+            // Use license file instead
+            'license',
 
-                // Use never return type instead
-                'noreturn',
+            // Use never return type instead
+            'noreturn',
 
-                // Use namespaces instead
-                'package',
+            // Use namespaces instead
+            'package',
 
-                // Use @param instead
-                'parm',
+            // Use @param instead
+            'parm',
 
-                // Use private keyword instead
-                'private',
+            // Use private keyword instead
+            'private',
 
-                // Use protected keyword instead
-                'protected',
+            // Use protected keyword instead
+            'protected',
 
-                // Use public keyword instead
-                'public',
+            // Use public keyword instead
+            'public',
 
-                // Use readonly keyword instead
-                'readonly',
+            // Use readonly keyword instead
+            'readonly',
 
-                // Use @uses tag instead
-                'requires',
+            // Use @uses tag instead
+            'requires',
 
-                // Use static keyword instead
-                'static',
+            // Use static keyword instead
+            'static',
 
-                // Use namespaces instead
-                'subpackage',
+            // Use namespaces instead
+            'subpackage',
 
-                // Use type declaration or @var tag instead.
-                'type',
+            // Use type declaration or @var tag instead.
+            'type',
 
-                // Use type declaration or @var tag instead.
-                'typedef',
+            // Use type declaration or @var tag instead.
+            'typedef',
 
-                // Use version history instead
-                'updated',
- 
-                // Use @uses on the other code instead
-                'usedby',
-         ],
+            // Use version history instead
+            'updated',
+
+            // Use @uses on the other code instead
+            'usedby',
+        ],
     ]);
 
     // --- SKIP RULES ---

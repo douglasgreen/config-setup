@@ -22,20 +22,18 @@
  */
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
-use Rector\Config\RectorConfig;
-// Rector set lists
-use Rector\Doctrine\Set\DoctrineSetList;
-use Rector\PHPUnit\Set\PHPUnitSetList;
-use Rector\Set\ValueObject\LevelSetList;
-use Rector\Symfony\Set\SymfonySetList;
-// Rector rules
 use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
 use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
 use Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector;
+use Rector\Config\RectorConfig;
+use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Naming\Rector\Assign\RenameVariableToMatchMethodCallReturnTypeRector;
 use Rector\Naming\Rector\ClassMethod\RenameVariableToMatchNewTypeRector;
 use Rector\Naming\Rector\Foreach_\RenameForeachValueVariableToMatchExprVariableRector;
+use Rector\PHPUnit\Set\PHPUnitSetList;
+use Rector\Set\ValueObject\LevelSetList;
 use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
+use Rector\Symfony\Set\SymfonySetList;
 
 $hasPhpUnit = false;
 $hasSymfony = false;
@@ -121,24 +119,24 @@ return RectorConfig::configure()
     ->withPhpSets()
     ->withSets($baseSets)
     ->withAttributesSets(
+        symfony: $hasSymfony,
         doctrine: $hasDoctrine,
-        fosRest: $hasSymfony,
-        gedmo: $hasDoctrine,
-        jms: $hasDoctrine,
         mongoDb: $hasDoctrine,
+        gedmo: $hasDoctrine,
         phpunit: $hasPhpUnit,
-        sensiolabs: $hasSymfony,
-        symfony: $hasSymfony
+        fosRest: $hasSymfony,
+        jms: $hasDoctrine,
+        sensiolabs: $hasSymfony
     )
     ->withPreparedSets(
+        deadCode: true,
         codeQuality: true,
         codingStyle: true,
-        deadCode: true,
-        earlyReturn: true,
-        instanceOf: true,
-        naming: true,
+        typeDeclarations: true,
         privatization: true,
-        typeDeclarations: true
+        naming: true,
+        instanceOf: true,
+        earlyReturn: true
     )
     ->withSkip([
         DisallowedEmptyRuleFixerRector::class,

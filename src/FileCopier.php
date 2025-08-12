@@ -282,6 +282,26 @@ class FileCopier
     }
 
     /**
+     * Remove the base path and get the relative subpath from an absolute path.
+     */
+    public function removeBase(string $base, string $absolutePath): string
+    {
+        // Ensure the base path ends with a directory separator
+        if (substr($base, -1) !== DIRECTORY_SEPARATOR) {
+            $base .= DIRECTORY_SEPARATOR;
+        }
+
+        // Check if the absolute path starts with the base path
+        if (str_starts_with($absolutePath, $base)) {
+            // Remove the base path from the absolute path to get the relative subpath
+            return substr($absolutePath, strlen($base));
+        }
+
+        // If the absolute path does not contain the base path, return it instead
+        return $absolutePath;
+    }
+
+    /**
      * @throws Exception
      */
     protected static function hasCodeCoverageDriver(): bool
@@ -758,26 +778,6 @@ class FileCopier
     }
 
     /**
-     * Remove the base path and get the relative subpath from an absolute path.
-     */
-    public function removeBase(string $base, string $absolutePath): string
-    {
-        // Ensure the base path ends with a directory separator
-        if (substr($base, -1) !== DIRECTORY_SEPARATOR) {
-            $base .= DIRECTORY_SEPARATOR;
-        }
-
-        // Check if the absolute path starts with the base path
-        if (str_starts_with($absolutePath, $base)) {
-            // Remove the base path from the absolute path to get the relative subpath
-            return substr($absolutePath, strlen($base));
-        }
-
-        // If the absolute path does not contain the base path, return it instead
-        return $absolutePath;
-    }
-
-    /**
      * @throws Exception
      */
     protected function updateCollisionDetector(): bool
@@ -796,7 +796,7 @@ class FileCopier
 
         $json = json_encode(
             $config,
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES |  JSON_THROW_ON_ERROR
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
         );
 
         if (file_put_contents($pathFile, $json) === false) {

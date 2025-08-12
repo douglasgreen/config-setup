@@ -9,7 +9,8 @@ class NeonFile
 {
     public function __construct(
         protected readonly string $filename
-    ) {}
+    ) {
+    }
 
     /**
      * @return array<string, mixed>
