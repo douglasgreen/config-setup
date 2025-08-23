@@ -50,29 +50,44 @@ return function (ECSConfig $ecsConfig): void {
     $ecsConfig->paths($paths);
 
     // Get composer dependencies
-    $composerJsonPath = getcwd() . '/composer.json';
     $hasPhpUnit = false;
     $hasSymfony = false;
     $hasDoctrine = false;
     $phpVersion = null;
 
-    if (file_exists($composerJsonPath)) {
-        $composerContent = file_get_contents($composerJsonPath);
-        if ($composerContent) {
-            $composerData = json_decode($composerContent, true);
-            $dependencies = array_merge(
-                $composerData['require'] ?? [],
-                $composerData['require-dev'] ?? []
-            );
+    if (file_exists('composer.json')) {
+        $composerContent = file_get_contents('composer.json');
+        if ($composerContent !== false) {
+            $composerData = json_decode($composerContent, true, 16, JSON_THROW_ON_ERROR);
 
-            $hasPhpUnit = isset($dependencies['phpunit/phpunit']);
-            $hasSymfony = isset($dependencies['symfony/framework-bundle']);
-            $hasDoctrine = isset($dependencies['doctrine/orm']);
-            if (isset($dependencies['php']) && is_string($dependencies['php'])) {
-                preg_match('/(?:\d+\.\d+)/', $dependencies['php'], $matches);
-                if (isset($matches[0])) {
-                    $phpVersion = (float) $matches[0];
+            // Check for PHPUnit, Symfony, and Doctrine
+            $requires = $composerData['require'] ?? [];
+            $requiresDev = $composerData['require-dev'] ?? [];
+
+            $allDependencies = array_merge($requires, $requiresDev);
+
+            foreach ($allDependencies as $name => $value) {
+                if (preg_match('#^phpunit/#', $name)) {
+                    $hasPhpUnit = true;
                 }
+
+                if (preg_match('#^symfony/#', $name)) {
+                    $hasSymfony = true;
+                }
+
+                if (preg_match('#^doctrine/#', $name)) {
+                    $hasDoctrine = true;
+                }
+
+                if ($name !== 'php') {
+                    continue;
+                }
+
+                if (! preg_match('/\d+\.\d+/', (string) $value, $match)) {
+                    continue;
+                }
+
+                $phpVersion = $match[0];
             }
         }
     }
@@ -219,9 +234,16 @@ return function (ECSConfig $ecsConfig): void {
 
     // --- SKIP RULES ---
     $ecsConfig->skip([
+        // Do not enforce the declaration of strict types (`declare(strict_types=1);`).
         DeclareStrictTypesFixer::class,
+
+        // Do not automatically import global classes, functions, or constants with `use` statements.
         GlobalNamespaceImportFixer::class,
+
+        // Do not enforce a specific order for `use` statements in the ecs.php file itself.
         OrderedImportsFixer::class => [__DIR__ . '/ecs.php'],
+
+        // Do not enforce vertical alignment of annotations in PHPDoc blocks.
         PhpdocAlignFixer::class,
     ]);
 
