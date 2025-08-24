@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<ruleset name="ConfigSetup">
+    <description>
+        PHPCS rules focusing on PHP compatibility and code analysis. Style/formatting rules (PSR-12,
+        whitespace, docblocks, imports, etc.) are intentionally omitted, as they are handled by ECS.
+    </description>
+
+    <!-- Where to scan -->
+    <file>src</file>
+    <file>bin</file>
+
+    <!-- CLI args -->
+    <arg name="colors"/>
+    <arg name="extensions" value="php,inc"/>
+    <arg name="report-width" value="120"/>
+
+    <!-- PHPCompatibility configuration (run as PHPCS standard) -->
+    <!-- Matches composer.json "php": ">=8.2" -->
+    <config name="testVersion" value="8.2-"/>
+
+    <!-- Standards and individual sniffs -->
+
+    <!-- 1) PHPCompatibility: portability across PHP versions -->
+    <rule ref="PHPCompatibility"/>
+
+    <!-- 2) Generic code analysis (logic smells; no formatting) -->
+    <rule ref="Generic.CodeAnalysis"/>
+
+    <!-- 3) Risky language constructs (not covered by ECS) -->
+    <rule ref="Generic.PHP.NoSilencedErrors"/>        <!-- Discourage @ error suppression -->
+    <rule ref="Squiz.PHP.Eval"/>                      <!-- Forbid eval() -->
+    <rule ref="Squiz.PHP.CommentedOutCode"/>         <!-- Discourage commented-out code -->
+</ruleset>

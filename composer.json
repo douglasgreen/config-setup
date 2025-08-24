@@ -29,10 +29,13 @@
         "nette/neon": "^3.4"
     },
     "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
+        "phpcompatibility/php-compatibility": "^9.3",
         "phpstan/phpstan": "^2.1",
         "rector/rector": "^2.1",
         "shipmonk/dead-code-detector": "^0.13",
         "shipmonk/name-collision-detector": "^2.1",
+        "squizlabs/php_codesniffer": "^3.13",
         "symplify/easy-coding-standard": "^12.5"
     },
     "autoload": {
@@ -41,17 +44,22 @@
         }
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "scripts": {
         "lint": [
             "detect-collisions",
             "ecs",
+            "phpcs",
             "phpstan analyse",
             "rector --dry-run"
         ],
         "lint:fix": [
             "ecs --fix",
+            "phpcbf",
             "rector",
             "sort_composer_json.php"
         ]
