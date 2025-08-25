@@ -14,20 +14,55 @@
     <arg name="extensions" value="php,inc"/>
     <arg name="report-width" value="120"/>
 
+    <!-- Set the default report type -->
+    <arg name="report" value="full"/>
+
     <!-- PHPCompatibility configuration (run as PHPCS standard) -->
     <!-- Matches composer.json "php": ">=8.2" -->
     <config name="testVersion" value="8.2-"/>
 
-    <!-- Standards and individual sniffs -->
-
-    <!-- 1) PHPCompatibility: portability across PHP versions -->
+    <!-- List of all applicable, non-deprecated standards -->
+    <rule ref="PEAR"/>
     <rule ref="PHPCompatibility"/>
-
-    <!-- 2) Generic code analysis (logic smells; no formatting) -->
-    <rule ref="Generic.CodeAnalysis"/>
-
-    <!-- 3) Risky language constructs (not covered by ECS) -->
-    <rule ref="Generic.PHP.NoSilencedErrors"/>        <!-- Discourage @ error suppression -->
-    <rule ref="Squiz.PHP.Eval"/>                      <!-- Forbid eval() -->
-    <rule ref="Squiz.PHP.CommentedOutCode"/>         <!-- Discourage commented-out code -->
+    <rule ref="PSR1"/>
+    <rule ref="PSR2"/>
+    <rule ref="PSR12"/>
+    <rule ref="Squiz">
+        <exclude name="Generic.Debug.ClosureLinter"/>
+        <exclude name="Squiz.Classes.DuplicateProperty"/>
+        <exclude name="Squiz.Commenting.FileComment.SpacingAfterOpen"/>
+        <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing"/>
+        <exclude name="Squiz.CSS.ClassDefinitionClosingBraceSpace"/>
+        <exclude name="Squiz.CSS.ClassDefinitionNameSpacing"/>
+        <exclude name="Squiz.CSS.ClassDefinitionOpeningBraceSpace"/>
+        <exclude name="Squiz.CSS.ColonSpacing"/>
+        <exclude name="Squiz.CSS.ColourDefinition"/>
+        <exclude name="Squiz.CSS.DisallowMultipleStyleDefinitions"/>
+        <exclude name="Squiz.CSS.DuplicateClassDefinition"/>
+        <exclude name="Squiz.CSS.DuplicateStyleDefinition"/>
+        <exclude name="Squiz.CSS.EmptyClassDefinition"/>
+        <exclude name="Squiz.CSS.EmptyStyleDefinition"/>
+        <exclude name="Squiz.CSS.ForbiddenStyles"/>
+        <exclude name="Squiz.CSS.Indentation"/>
+        <exclude name="Squiz.CSS.LowercaseStyleDefinition"/>
+        <exclude name="Squiz.CSS.MissingColon"/>
+        <exclude name="Squiz.CSS.NamedColours"/>
+        <exclude name="Squiz.CSS.Opacity"/>
+        <exclude name="Squiz.CSS.SemicolonSpacing"/>
+        <exclude name="Squiz.CSS.ShorthandSize"/>
+        <exclude name="Squiz.Debug.JavaScriptLint"/>
+        <exclude name="Squiz.Debug.JSLint"/>
+        <exclude name="Squiz.Objects.DisallowObjectStringIndex"/>
+        <exclude name="Squiz.Objects.ObjectMemberComma"/>
+        <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue"/>
+        <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue)"/>
+        <exclude name="Squiz.Operators.ComparisonOperatorUsage.NotAllowed)"/>
+        <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
+        <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing"/>
+        <exclude name="Squiz.WhiteSpace.PropertyLabelSpacing"/>
+        <exclude name="Zend.Debug.CodeAnalyzer"/>
+    </rule>
+    <rule ref="Zend">
+        <exclude name="Zend.Debug.CodeAnalyzer"/>
+    </rule>
 </ruleset>

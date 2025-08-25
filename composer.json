@@ -53,7 +53,7 @@
         "lint": [
             "detect-collisions",
             "ecs",
-            "phpcs",
+            "phpcs -s",
             "phpstan analyse",
             "rector --dry-run"
         ],

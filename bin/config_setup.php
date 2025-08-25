@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-/*
+/**
  * This script exists to copy the config file to your repo as a composer post-install-cmd.
  */
 

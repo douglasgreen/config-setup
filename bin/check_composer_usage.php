@@ -1,6 +1,10 @@
 #!/usr/bin/env php
 <?php
 
+/**
+ * Check Composer usage.
+ */
+
 // Define the path to the composer.json file
 $composerJsonPath = 'composer.json';
 

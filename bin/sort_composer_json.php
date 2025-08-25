@@ -1,6 +1,10 @@
 #!/usr/bin/env php
 <?php
 
+/**
+ * Sort composer.json sections into conventional order.
+ */
+
 // Define the desired order of keys
 // @see https://getcomposer.org/doc/04-schema.md
 $keyOrders = [

@@ -150,6 +150,9 @@ That installs:
     refactoring)
 -   [Easy Coding Standard](https://github.com/easy-coding-standard/easy-coding-standard) (ECS) for
     linting and fixing
+-   [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage), which
+    isn't well-supported by ECS. For example, its PHPCompatbility rules aren't supported, so it's
+    installed separately.
 
 Each of the commands is configured to use the list of files in `php_paths`. This file is generated
 automatically by this project's file linker, which makes a list of the directories and PHP files in
