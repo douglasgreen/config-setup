@@ -30,6 +30,7 @@
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
+        "friendsofphp/php-cs-fixer": "^3.86",
         "phpcompatibility/php-compatibility": "^9.3",
         "phpstan/phpstan": "^2.1",
         "rector/rector": "^2.1",
