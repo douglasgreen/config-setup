@@ -58,7 +58,6 @@ return (new Config())
         'return_type_declaration' => ['space_before' => 'none'],
 
         // PHPDoc polish (style-only)
-        'phpdoc_align' => ['align' => 'left'],
         'phpdoc_order' => true,
         'phpdoc_summary' => true,
     ])
