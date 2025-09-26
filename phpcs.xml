@@ -41,11 +41,14 @@
     <rule ref="PSR2"/>
     <rule ref="PSR12"/>
     <rule ref="Squiz">
+        <exclude name="Generic.Commenting.DocComment.ContentAfterOpen"/>
+        <exclude name="Generic.Commenting.DocComment.ContentBeforeClose"/>
         <exclude name="Generic.Commenting.DocComment.NonParamGroup"/>
         <exclude name="Generic.Commenting.DocComment.TagValueIndent"/>
         <exclude name="Generic.Debug.ClosureLinter"/>
         <exclude name="Generic.Files.LineLength.TooLong"/>
         <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSame"/>
+        <exclude name="Generic.Functions.OpeningFunctionBraceBsdAllman.BraceOnSameLine"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/>
         <exclude name="Squiz.Classes.DuplicateProperty"/>
@@ -58,6 +61,7 @@
         <exclude name="Squiz.Commenting.FunctionComment.ThrowsNotCapital"/>
         <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
         <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing"/>
+        <exclude name="Squiz.ControlStructures.ElseIfDeclaration.NotAllowed"/>
         <exclude name="Squiz.CSS.ClassDefinitionClosingBraceSpace"/>
         <exclude name="Squiz.CSS.ClassDefinitionNameSpacing"/>
         <exclude name="Squiz.CSS.ClassDefinitionOpeningBraceSpace"/>
@@ -84,11 +88,15 @@
         <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue"/>
         <exclude name="Squiz.Operators.ComparisonOperatorUsage.NotAllowed"/>
         <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedComparison"/>
+        <exclude name="Squiz.PHP.DisallowInlineIf.Found"/>
         <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
         <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar"/>
         <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose"/>
+        <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.AfterLast"/>
+        <exclude name="Squiz.WhiteSpace.FunctionSpacing.BeforeFirst"/>
         <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing"/>
+        <exclude name="Squiz.WhiteSpace.ObjectOperatorSpacing.Before"/>
         <exclude name="Squiz.WhiteSpace.PropertyLabelSpacing"/>
         <exclude name="Zend.Debug.CodeAnalyzer"/>
     </rule>

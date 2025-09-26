@@ -14,6 +14,11 @@ use Nette\Neon\Neon;
  */
 class NeonFile
 {
+    /**
+     * Set object properties.
+     *
+     * @param string $filename File name to save and load
+     */
     public function __construct(
         protected readonly string $filename
     ) {

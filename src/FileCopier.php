@@ -1,11 +1,18 @@
 <?php
 
+/**
+ * This file defines the FileCopier class.
+ */
+
 namespace DouglasGreen\ConfigSetup;
 
 use DOMDocument;
 use Exception;
 use SimpleXMLElement;
 
+/**
+ * This class does the creation, configuration, and copying of relevant files.
+ */
 class FileCopier
 {
     public const DEFAULT_WRAP = 100;
@@ -112,6 +119,9 @@ class FileCopier
 
     protected readonly bool $useWordpress;
 
+    /**
+     * Do all required setup.
+     */
     public function __construct(
         protected readonly string $repoDir,
         protected readonly int $flags = 0,
@@ -152,7 +162,9 @@ class FileCopier
     }
 
     /**
-     * @throws Exception
+     * Copy the config files to the target location.
+     *
+     * @throws Exception for various file issues
      */
     public function copyFiles(): void
     {
@@ -302,6 +314,8 @@ class FileCopier
     }
 
     /**
+     * Determine if a code coverage driver is available.
+     *
      * @throws Exception
      */
     protected static function hasCodeCoverageDriver(): bool
@@ -316,6 +330,8 @@ class FileCopier
     }
 
     /**
+     * Load and decode the composer.json file.
+     *
      * @return array<string, mixed>
      * @throws Exception
      */
@@ -330,6 +346,8 @@ class FileCopier
     }
 
     /**
+     * Get the list of files committed to the Git repository.
+     *
      * @return list<string>
      * @throws Exception
      */
@@ -344,6 +362,8 @@ class FileCopier
     }
 
     /**
+     * Load and decode the package.json file.
+     *
      * @return ?array<string, mixed>
      * @throws Exception
      */
@@ -364,6 +384,7 @@ class FileCopier
 
     /**
      * Make a directory if it doesn't exist.
+     *
      * @throws Exception
      */
     protected static function makeDir(string $dir): void
@@ -378,6 +399,8 @@ class FileCopier
     }
 
     /**
+     * Get the list of composer packages in the require-dev section.
+     *
      * @return ?list<string>
      */
     protected function getComposerPackages(): ?array
@@ -397,6 +420,9 @@ class FileCopier
         return $packageList;
     }
 
+    /**
+     * Get the type of a file extension from its value.
+     */
     protected function getExtensionType(string $extension): ?string
     {
         return match ($extension) {
@@ -449,6 +475,8 @@ class FileCopier
     }
 
     /**
+     * Get the list of NPM packages from the devDependencies section.
+     *
      * @return ?list<string>
      */
     protected function getNpmPackages(): ?array
@@ -469,6 +497,8 @@ class FileCopier
     }
 
     /**
+     * Get the list of PHP files in the Git repository.
+     *
      * @return list<string>
      */
     protected function getPhpPaths(): array
@@ -493,6 +523,8 @@ class FileCopier
     }
 
     /**
+     * Get the required PHP version from the composer.json file.
+     *
      * @throws Exception
      */
     protected function getPhpVersion(): string
@@ -535,7 +567,9 @@ class FileCopier
     }
 
     /**
-     * @throws Exception
+     * Copy the ECS file from the source to the destination.
+     *
+     * @throws Exception if unable to load or save file.
      */
     protected function makeEcs(string $source, string $destination): void
     {
@@ -560,7 +594,9 @@ class FileCopier
     }
 
     /**
-     * @throws Exception
+     * Copy the ESLint config file from the source to the destination.
+     *
+     * @throws Exception if unable to load or save file.
      */
     protected function makeEslintrc(string $source, string $destination): void
     {
@@ -600,6 +636,9 @@ class FileCopier
         }
     }
 
+    /**
+     * Copy the PHPStan file from the source to the destination.
+     */
     protected function makePhpStan(string $source, string $destination): void
     {
         [$major, $minor] = explode('.', $this->phpVersion);
@@ -644,6 +683,9 @@ class FileCopier
         $destFile->save($phpStanConfig);
     }
 
+    /**
+     * Create the PHPUnit XML config file from a template then configure it and save it.
+     */
     protected function makePhpUnit(string $destination): void
     {
         // Initialize the XML structure with the necessary attributes because SimpleXML doesn't
@@ -731,7 +773,9 @@ class FileCopier
     }
 
     /**
-     * @throws Exception
+     * Copy the Prettier config file from the source to the destination.
+     *
+     * @throws Exception if unable to load or save file
      */
     protected function makePrettierrc(string $source, string $destination): void
     {
@@ -778,7 +822,9 @@ class FileCopier
     }
 
     /**
-     * @throws Exception
+     * Update the list of PHP paths in the collision-detector.json file.
+     *
+     * @throws Exception if unable to save the file.
      */
     protected function updateCollisionDetector(): bool
     {
@@ -809,7 +855,9 @@ class FileCopier
     }
 
     /**
-     * @throws Exception
+     * Update the PHP paths in the php_paths file used by several programs.
+     *
+     * @throws Exception if unable to load or save file.
      */
     protected function updatePhpPaths(): bool
     {
