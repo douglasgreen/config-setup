@@ -20,7 +20,7 @@ $options = getopt('w:', ['woocommerce', 'wordpress', 'wrap:']);
 $flags = 0;
 
 // Specify a custom line wrap length.
-$wrapArg = $options['wrap'] ?? ($options['w'] ?? FileCopier::DEFAULT_WRAP);
+$wrapArg = ($options['wrap'] ?? ($options['w'] ?? FileCopier::DEFAULT_WRAP));
 $wrap = (int) $wrapArg;
 if ($wrap === 0) {
     throw new Exception('Invalid wrap argument');

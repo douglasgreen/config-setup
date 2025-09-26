@@ -84,7 +84,7 @@ return function (ECSConfig $ecsConfig): void {
                     continue;
                 }
 
-                if (! preg_match('/\d+\.\d+/', (string) $value, $match)) {
+                if (!preg_match('/\d+\.\d+/', (string) $value, $match)) {
                     continue;
                 }
 

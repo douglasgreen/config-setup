@@ -138,12 +138,12 @@ class FileCopier
 
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
             // Don't make directories if their package isn't installed.
-            if (! $this->hasPackage($requiredPackage)) {
+            if (!$this->hasPackage($requiredPackage)) {
                 continue;
             }
 
             // Check if the stubs are needed.
-            if ($dir === 'stubs' && ! $this->useWordpress) {
+            if ($dir === 'stubs' && !$this->useWordpress) {
                 continue;
             }
 
@@ -186,12 +186,12 @@ class FileCopier
             }
 
             // Don't copy files if their package isn't installed.
-            if (! $this->hasPackage($requiredPackage)) {
+            if (!$this->hasPackage($requiredPackage)) {
                 continue;
             }
 
             // Skip WordPress if not requested.
-            if (! $this->useWordpress && $fileToCopy === 'stubs/wordpress.php') {
+            if (!$this->useWordpress && $fileToCopy === 'stubs/wordpress.php') {
                 continue;
             }
 
@@ -222,7 +222,7 @@ class FileCopier
             $symlinkDir = dirname($symlink);
             self::makeDir($symlinkDir);
 
-            if (! in_array($fileToCopy, $excludeLines, true)) {
+            if (!in_array($fileToCopy, $excludeLines, true)) {
                 $excludeLines[] = $fileToCopy;
             }
 
@@ -349,7 +349,7 @@ class FileCopier
      */
     protected static function loadPackageJson(): ?array
     {
-        if (! file_exists('package.json')) {
+        if (!file_exists('package.json')) {
             echo 'File package.json not found.' . PHP_EOL;
             return null;
         }
@@ -383,7 +383,7 @@ class FileCopier
     protected function getComposerPackages(): ?array
     {
         // Find the plugins.
-        if (! isset($this->composerJson['require-dev'])) {
+        if (!isset($this->composerJson['require-dev'])) {
             return null;
         }
 
@@ -426,7 +426,7 @@ class FileCopier
      */
     protected function getFileType(string $path): ?string
     {
-        if (! str_contains($path, '.')) {
+        if (!str_contains($path, '.')) {
             // @todo Use file here instead of this.
             $fileHandle = fopen($path, 'r');
             if ($fileHandle === false) {
@@ -454,7 +454,7 @@ class FileCopier
     protected function getNpmPackages(): ?array
     {
         // Find the plugins.
-        if (! isset($this->packageJson['devDependencies'])) {
+        if (!isset($this->packageJson['devDependencies'])) {
             return null;
         }
 
@@ -498,7 +498,7 @@ class FileCopier
     protected function getPhpVersion(): string
     {
         // Find the PHP version in the require section
-        if (! isset($this->composerJson['require']['php'])) {
+        if (!isset($this->composerJson['require']['php'])) {
             throw new Exception('PHP version not specified in composer.json');
         }
 
@@ -629,7 +629,7 @@ class FileCopier
             }
 
             // Add the stubs directory if we are installing the WordPress stub.
-            if (! in_array('stubs', $phpPaths, true)) {
+            if (!in_array('stubs', $phpPaths, true)) {
                 $phpPaths[] = 'stubs';
             }
         }
@@ -751,7 +751,7 @@ class FileCopier
         $prettierJson['printWidth'] = $this->wrap;
 
         // Find the plugins.
-        if (! isset($prettierJson['plugins'])) {
+        if (!isset($prettierJson['plugins'])) {
             throw new Exception('Plugins not specified in .prettierrc.json');
         }
 
@@ -782,7 +782,7 @@ class FileCopier
      */
     protected function updateCollisionDetector(): bool
     {
-        if (! $this->hasPackage('detect-collisions')) {
+        if (!$this->hasPackage('detect-collisions')) {
             return false;
         }
 

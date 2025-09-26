@@ -18,7 +18,7 @@ class NeonFile
      */
     public function load(): array
     {
-        if (! file_exists($this->filename)) {
+        if (!file_exists($this->filename)) {
             throw new Exception('File not found: ' . $this->filename);
         }
 

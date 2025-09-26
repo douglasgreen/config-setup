@@ -9,7 +9,7 @@
 $composerJsonPath = 'composer.json';
 
 // Check if the file exists
-if (! file_exists($composerJsonPath)) {
+if (!file_exists($composerJsonPath)) {
     die('Error: composer.json file not found.');
 }
 
@@ -35,13 +35,13 @@ $packagesRequired = [];
 if (isset($composerData['require']) && is_array($composerData['require'])) {
     $requirements = array_keys($composerData['require']);
     foreach ($requirements as $requirement) {
-        if (! in_array($requirement, $envPackages, true)) {
+        if (!in_array($requirement, $envPackages, true)) {
             $packagesRequired[] = $requirement;
         }
     }
 }
 
-if (! $packagesRequired) {
+if (!$packagesRequired) {
     die('No package requirements found');
 }
 
@@ -91,7 +91,7 @@ foreach ($fileList as $file) {
         $phpFiles[] = $file;
     } else {
         $handle = fopen($file, 'r');
-        if (! $handle) {
+        if (!$handle) {
             die("Unable to open file: {$file}\n");
         }
 
@@ -143,7 +143,7 @@ foreach ($phpFiles as $file) {
 ksort($projectNamespaces);
 $allFound = true;
 foreach ($projectNamespaces as $projectName => $namespaces) {
-    if (! in_array($projectName, $packagesRequired, true)) {
+    if (!in_array($projectName, $packagesRequired, true)) {
         continue;
     }
 
@@ -155,7 +155,7 @@ foreach ($projectNamespaces as $projectName => $namespaces) {
         }
     }
 
-    if (! $found) {
+    if (!$found) {
         echo 'Composer namespaces are not used: ' . $projectName . PHP_EOL;
         $allFound = false;
     }
