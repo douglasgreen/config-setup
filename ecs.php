@@ -35,6 +35,7 @@ use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 use PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer;
 use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
+use PhpCsFixer\Fixer\Operator\NotOperatorWithSuccessorSpaceFixer;
 use PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocAnnotationRemoveFixer;
 use PhpCsFixer\Fixer\Phpdoc\PhpdocAlignFixer;
 use PhpCsFixer\Fixer\Phpdoc\PhpdocLineSpanFixer;
@@ -239,6 +240,9 @@ return function (ECSConfig $ecsConfig): void {
 
         // Do not automatically import global classes, functions, or constants with `use` statements.
         GlobalNamespaceImportFixer::class,
+
+        // Do not add space after not operator.
+        NotOperatorWithSuccessorSpaceFixer::class,
 
         // Do not enforce a specific order for `use` statements in the ecs.php file itself.
         OrderedImportsFixer::class => [__DIR__ . '/ecs.php'],
