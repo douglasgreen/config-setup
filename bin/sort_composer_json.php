@@ -78,7 +78,7 @@ foreach ($composerData as $key => $value) {
 // Encode the sorted array back to JSON
 $sortedComposerJsonContent = json_encode(
     $sortedComposerData,
-    (JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+    (JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
 );
 
 if ($sortedComposerJsonContent === false) {

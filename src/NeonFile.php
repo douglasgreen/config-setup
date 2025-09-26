@@ -20,15 +20,15 @@ class NeonFile
      * @param string $filename File name to save and load
      */
     public function __construct(
-        protected readonly string $filename
+        protected readonly string $filename,
     ) {
     }
 
     /**
      * Load the Neon data from the file.
      *
-     * @return array<string, mixed>
      * @throws Exception if file not found
+     * @return array<string, mixed>
      */
     public function load(): array
     {

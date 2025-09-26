@@ -75,21 +75,30 @@ class FileCopier
         'var/report/phpunit' => 'phpunit',
     ];
 
-    /** @var array<string, string> Project name and its actual package name */
-    protected const PACKAGE_NAMES = [
+    /** @var array<string, string> Composer project name and its actual package name */
+    protected const COMPOSER_PACKAGES = [
         'dead-code-detector' => 'shipmonk/dead-code-detector',
         'detect-collisions' => 'shipmonk/name-collision-detector',
         'ecs' => 'symplify/easy-coding-standard',
         'pdepend' => 'pdepend/pdepend',
         'phpcs' => 'squizlabs/php_codesniffer',
+        'phpcs-compatibility-sniffs' => 'phpcompatibility/php-compatibility',
+        'phpcs-composer-installer' => 'dealerdirect/phpcodesniffer-composer-installer',
         'phpstan' => 'phpstan/phpstan',
         'phpunit' => 'phpunit/phpunit',
         'rector' => 'rector/rector',
+    ];
 
+    /** @var array<string, string> NPM project name and its actual package name */
+    protected const NODE_PACKAGES = [
         'commitlint' => '@commitlint/cli',
+        'commitlint-config-conventional' => '@commitlint/config-conventional',
         'eslint' => 'eslint',
         'husky' => 'husky',
         'prettier' => 'prettier',
+        'prettier-plugin-xml' => '@prettier/plugin-xml',
+        'prettier-plugin-sh' => 'prettier-plugin-sh',
+        'sort-package-json' => 'sort-package-json',
         'stylelint' => 'stylelint',
     ];
 
@@ -106,7 +115,7 @@ class FileCopier
     protected readonly array $gitFiles;
 
     /** @var ?list<string> */
-    protected readonly ?array $npmPackages;
+    protected readonly ?array $nodePackages;
 
     /** @var ?array<string, mixed> */
     protected readonly ?array $packageJson;
@@ -136,7 +145,7 @@ class FileCopier
     public function __construct(
         protected readonly string $repoDir,
         protected readonly int $flags = 0,
-        protected readonly int $wrap = self::DEFAULT_WRAP
+        protected readonly int $wrap = self::DEFAULT_WRAP,
     ) {
         $this->useWooCommerce = (bool) ($this->flags & self::USE_WOOCOMMERCE);
         $this->useWordPress = (bool) ($this->flags & self::USE_WORDPRESS);
@@ -154,13 +163,21 @@ class FileCopier
         $this->excludeFile = $this->repoDir . '/.git/info/exclude';
 
         $this->composerPackages = $this->getComposerPackages();
-        $this->npmPackages = $this->getNpmPackages();
+        $this->nodePackages = $this->getNodePackages();
         $this->phpVersion = $this->getPhpVersion();
 
-        echo "Installed packages:\n";
-        foreach (array_keys(self::PACKAGE_NAMES) as $package) {
-            echo "* {$package}: " . ($this->hasPackage($package) ? 'yes' : 'no') . "\n";
+        echo "Installed Composer packages:\n";
+        foreach (array_keys(self::COMPOSER_PACKAGES) as $package) {
+            echo "* {$package}: " . ($this->hasComposerPackage($package) ? 'yes' : 'no') . "\n";
         }
+
+        echo "\n";
+        echo "Installed Node packages:\n";
+        foreach (array_keys(self::NODE_PACKAGES) as $package) {
+            echo "* {$package}: " . ($this->hasNodePackage($package) ? 'yes' : 'no') . "\n";
+        }
+
+        echo "\n";
 
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
             // Don't make directories if their package isn't installed.
@@ -279,7 +296,7 @@ class FileCopier
             // Create a soft link instead of copying the file
             if (symlink($target, $symlink) === false) {
                 throw new Exception(
-                    sprintf('Unable to make symlink %s to file %s', $symlink, $target)
+                    sprintf('Unable to make symlink %s to file %s', $symlink, $target),
                 );
             }
 
@@ -302,7 +319,7 @@ class FileCopier
 
             printf(
                 '%s has been updated.' . PHP_EOL,
-                $this->removeBase($this->repoDir, $this->excludeFile)
+                $this->removeBase($this->repoDir, $this->excludeFile),
             );
         }
     }
@@ -349,9 +366,8 @@ class FileCopier
     /**
      * Load and decode the composer.json file.
      *
-     * @return array<string, mixed>
-     *
      * @throws Exception if unable to load file
+     * @return array<string, mixed>
      */
     protected static function loadComposerJson(): array
     {
@@ -366,9 +382,8 @@ class FileCopier
     /**
      * Get the list of files committed to the Git repository.
      *
-     * @return list<string>
-     *
      * @throws Exception if unable to get list of Git files
+     * @return list<string>
      */
     protected static function loadGitFiles(): array
     {
@@ -383,14 +398,14 @@ class FileCopier
     /**
      * Load and decode the package.json file.
      *
-     * @return ?array<string, mixed>
-     *
      * @throws Exception if unable to load file
+     * @return ?array<string, mixed>
      */
     protected static function loadPackageJson(): ?array
     {
         if (!file_exists('package.json')) {
             echo 'File package.json not found.' . PHP_EOL;
+
             return null;
         }
 
@@ -470,11 +485,10 @@ class FileCopier
      *
      * @param string $path Path of file to check
      *
+     * @throws Exception if unable to open file
      * @todo Use the return type of "file" command if available.
      * Example: file -b bin/task.php
      * a /usr/bin/env php script, ASCII text executable
-     *
-     * @throws Exception if unable to open file
      */
     protected function getFileType(string $path): ?string
     {
@@ -505,7 +519,7 @@ class FileCopier
      *
      * @return ?list<string>
      */
-    protected function getNpmPackages(): ?array
+    protected function getNodePackages(): ?array
     {
         // Find the plugins.
         if (!isset($this->packageJson['devDependencies'])) {
@@ -545,6 +559,7 @@ class FileCopier
 
         $phpPaths = array_keys($phpPaths);
         sort($phpPaths);
+
         return $phpPaths;
     }
 
@@ -571,33 +586,50 @@ class FileCopier
     }
 
     /**
+     * Check if the Composer package is installed.
+     *
+     * @param string $package The package to check
+     */
+    protected function hasComposerPackage(string $package): bool
+    {
+        $packageName = self::COMPOSER_PACKAGES[$package] ?? null;
+
+        return $packageName
+        && $this->composerPackages !== null
+        && in_array($packageName, $this->composerPackages, true);
+    }
+
+    /**
+     * Check if the Node package is installed.
+     *
+     * @param string $package The package to check
+     */
+    protected function hasNodePackage(string $package): bool
+    {
+        $packageName = self::NODE_PACKAGES[$package] ?? null;
+
+        return $packageName
+        && $this->nodePackages !== null
+        && in_array($packageName, $this->nodePackages, true);
+    }
+
+    /**
      * Check if the repository has the required package, either in Composer or NPM.
      *
-     * @param string $requiredPackage The package to check
-     *
-     * @throws Exception if package not supported
+     * @param string $package The package to check
      */
-    protected function hasPackage(?string $requiredPackage): bool
+    protected function hasPackage(?string $package): bool
     {
         // If there are no requirements, it can't fail.
-        if ($requiredPackage === null) {
+        if ($package === null) {
             return true;
         }
 
-        if (!isset(self::PACKAGE_NAMES[$requiredPackage])) {
-            throw new Exception('Unsupported package: ' . $requiredPackage);
-        }
-
-        $packageName = self::PACKAGE_NAMES[$requiredPackage];
-
-        if (
-            $this->composerPackages !== null
-            && in_array($packageName, $this->composerPackages, true)
-        ) {
+        if ($this->hasComposerPackage($package)) {
             return true;
         }
 
-        return $this->npmPackages !== null && in_array($packageName, $this->npmPackages, true);
+        return $this->hasNodePackage($package);
     }
 
     /**
@@ -640,7 +672,7 @@ class FileCopier
      */
     protected function makeEslintrc(string $source, string $destination): void
     {
-        if ($this->npmPackages === null) {
+        if ($this->nodePackages === null) {
             return;
         }
 
@@ -654,9 +686,9 @@ class FileCopier
 
         $extension = null;
 
-        if (in_array('eslint-config-airbnb-base', $this->npmPackages, true)) {
+        if (in_array('eslint-config-airbnb-base', $this->nodePackages, true)) {
             $extension = 'airbnb-base';
-        } elseif (in_array('eslint-config-standard', $this->npmPackages, true)) {
+        } elseif (in_array('eslint-config-standard', $this->nodePackages, true)) {
             $extension = 'standard';
         }
 
@@ -668,7 +700,7 @@ class FileCopier
         // Encode the array back to a JSON string
         $eslintJsonString = json_encode(
             $eslintJson,
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
         );
 
         if (file_put_contents($destination, $eslintJsonString) === false) {
@@ -790,7 +822,7 @@ class FileCopier
             $coverage = $xml->addChild('coverage');
             $coverage->addAttribute(
                 'cacheDirectory',
-                $this->repoDir . '/var/report/phpunit/cache/'
+                $this->repoDir . '/var/report/phpunit/cache/',
             );
 
             $report = $coverage->addChild('report');
@@ -829,7 +861,7 @@ class FileCopier
      */
     protected function makePrettierrc(string $source, string $destination): void
     {
-        if ($this->npmPackages === null) {
+        if ($this->nodePackages === null) {
             return;
         }
 
@@ -851,10 +883,10 @@ class FileCopier
 
         $plugins = [];
 
-        if ($this->npmPackages !== []) {
-            foreach ($this->npmPackages as $npmPackage) {
-                if (preg_match('#prettier[/-]plugin#', $npmPackage) === 1) {
-                    $plugins[] = $npmPackage;
+        if ($this->nodePackages !== []) {
+            foreach ($this->nodePackages as $nodePackage) {
+                if (preg_match('#prettier[/-]plugin#', $nodePackage) === 1) {
+                    $plugins[] = $nodePackage;
                 }
             }
 
@@ -862,7 +894,7 @@ class FileCopier
             // Encode the array back to a JSON string
             $prettierJsonString = json_encode(
                 $prettierJson,
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
             );
         }
 
@@ -892,7 +924,7 @@ class FileCopier
 
         $json = json_encode(
             $config,
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
         );
 
         if (file_put_contents($pathFile, $json) === false) {
@@ -925,6 +957,7 @@ class FileCopier
             }
 
             echo 'Created php_paths file.' . PHP_EOL;
+
             return true;
         }
 
