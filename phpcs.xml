@@ -22,15 +22,41 @@
     <config name="testVersion" value="8.2-"/>
 
     <!-- List of all applicable, non-deprecated standards -->
-    <rule ref="PEAR"/>
+    <rule ref="PEAR">
+        <exclude name="PEAR.Commenting.ClassComment.MissingAuthorTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingCategoryTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingLicenseTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingLinkTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingPackageTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingAuthorTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingCategoryTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingLicenseTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingLinkTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingPackageTag"/>
+        <exclude name="PEAR.Commenting.FileComment.MissingVersion"/>
+        <exclude name="PEAR.Commenting.FunctionComment.MissingReturn"/>
+    </rule>
     <rule ref="PHPCompatibility"/>
     <rule ref="PSR1"/>
     <rule ref="PSR2"/>
     <rule ref="PSR12"/>
     <rule ref="Squiz">
+        <exclude name="Generic.Commenting.DocComment.NonParamGroup"/>
+        <exclude name="Generic.Commenting.DocComment.TagValueIndent"/>
         <exclude name="Generic.Debug.ClosureLinter"/>
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+        <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSame"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/>
+        <exclude name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/>
         <exclude name="Squiz.Classes.DuplicateProperty"/>
+        <exclude name="Squiz.Commenting.ClosingDeclarationComment.Missing"/>
+        <exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
         <exclude name="Squiz.Commenting.FileComment.SpacingAfterOpen"/>
+        <exclude name="Squiz.Commenting.FunctionComment.MissingReturn"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ThrowsNoFullStop"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ThrowsNotCapital"/>
+        <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
         <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing"/>
         <exclude name="Squiz.CSS.ClassDefinitionClosingBraceSpace"/>
         <exclude name="Squiz.CSS.ClassDefinitionNameSpacing"/>
@@ -52,12 +78,16 @@
         <exclude name="Squiz.CSS.ShorthandSize"/>
         <exclude name="Squiz.Debug.JavaScriptLint"/>
         <exclude name="Squiz.Debug.JSLint"/>
+        <exclude name="Squiz.Files.FileExtension.ClassFound"/>
         <exclude name="Squiz.Objects.DisallowObjectStringIndex"/>
         <exclude name="Squiz.Objects.ObjectMemberComma"/>
         <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue"/>
-        <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue)"/>
-        <exclude name="Squiz.Operators.ComparisonOperatorUsage.NotAllowed)"/>
+        <exclude name="Squiz.Operators.ComparisonOperatorUsage.NotAllowed"/>
+        <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedComparison"/>
         <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
+        <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar"/>
+        <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose"/>
+        <exclude name="Squiz.WhiteSpace.FunctionSpacing.AfterLast"/>
         <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing"/>
         <exclude name="Squiz.WhiteSpace.PropertyLabelSpacing"/>
         <exclude name="Zend.Debug.CodeAnalyzer"/>

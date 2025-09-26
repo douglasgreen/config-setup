@@ -1,10 +1,17 @@
 <?php
 
+/**
+ * This file defines class NeonFile.
+ */
+
 namespace DouglasGreen\ConfigSetup;
 
 use Exception;
 use Nette\Neon\Neon;
 
+/**
+ * This class saves and loads data in Neon format.
+ */
 class NeonFile
 {
     public function __construct(
@@ -13,8 +20,10 @@ class NeonFile
     }
 
     /**
+     * Load the Neon data from the file.
+     *
      * @return array<string, mixed>
-     * @throws Exception
+     * @throws Exception if file not found
      */
     public function load(): array
     {
@@ -26,8 +35,10 @@ class NeonFile
     }
 
     /**
-     * @param array<string, mixed> $data
-     * @throws Exception
+     * Save the data to the file in Neon format.
+     *
+     * @param array<string, mixed> $data Data to save
+     * @throws Exception if unable to save file
      */
     public function save(array $data): void
     {
