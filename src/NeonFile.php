@@ -43,6 +43,7 @@ class NeonFile
      * Save the data to the file in Neon format.
      *
      * @param array<string, mixed> $data Data to save
+     *
      * @throws Exception if unable to save file
      */
     public function save(array $data): void

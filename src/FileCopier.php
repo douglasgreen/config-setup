@@ -111,24 +111,32 @@ class FileCopier
     /** @var list<string> */
     protected readonly array $phpPaths;
 
+    /** @var string Path to the Git exclude file */
     protected readonly string $excludeFile;
 
+    /** @var string PHP version derived from composer.json */
     protected readonly string $phpVersion;
 
-    protected readonly bool $useWoocommerce;
+    /** @var boolean Whether to use WooCommerce stubs */
+    protected readonly bool $useWooCommerce;
 
-    protected readonly bool $useWordpress;
+    /** @var boolean Whether to use WordPress stubs */
+    protected readonly bool $useWordPress;
 
     /**
      * Do all required setup.
+     *
+     * @param string $repoDir Repository directory
+     * @param integer $flags Bitwise flags to enable or disable features
+     * @param integer $wrap Line wrap length
      */
     public function __construct(
         protected readonly string $repoDir,
         protected readonly int $flags = 0,
         protected readonly int $wrap = self::DEFAULT_WRAP
     ) {
-        $this->useWoocommerce = (bool) ($this->flags & self::USE_WOOCOMMERCE);
-        $this->useWordpress = (bool) ($this->flags & self::USE_WORDPRESS);
+        $this->useWooCommerce = (bool) ($this->flags & self::USE_WOOCOMMERCE);
+        $this->useWordPress = (bool) ($this->flags & self::USE_WORDPRESS);
 
         $this->gitFiles = self::loadGitFiles();
         $this->composerJson = self::loadComposerJson();
@@ -153,7 +161,7 @@ class FileCopier
             }
 
             // Check if the stubs are needed.
-            if ($dir === 'stubs' && !$this->useWordpress) {
+            if ($dir === 'stubs' && !$this->useWordPress) {
                 continue;
             }
 
@@ -203,7 +211,7 @@ class FileCopier
             }
 
             // Skip WordPress if not requested.
-            if (!$this->useWordpress && $fileToCopy === 'stubs/wordpress.php') {
+            if (!$this->useWordPress && $fileToCopy === 'stubs/wordpress.php') {
                 continue;
             }
 
@@ -262,11 +270,9 @@ class FileCopier
 
             // Create a soft link instead of copying the file
             if (symlink($target, $symlink) === false) {
-                throw new Exception(sprintf(
-                    'Unable to make symlink %s to file %s',
-                    $symlink,
-                    $target
-                ));
+                throw new Exception(
+                    sprintf('Unable to make symlink %s to file %s', $symlink, $target)
+                );
             }
 
             printf('Created symlink %s.' . PHP_EOL, $this->removeBase($this->repoDir, $symlink));
@@ -295,6 +301,9 @@ class FileCopier
 
     /**
      * Remove the base path and get the relative subpath from an absolute path.
+     *
+     * @param string $base Base to remove
+     * @param string $absolutePath Absolute path to remove base from
      */
     public function removeBase(string $base, string $absolutePath): string
     {
@@ -316,7 +325,7 @@ class FileCopier
     /**
      * Determine if a code coverage driver is available.
      *
-     * @throws Exception
+     * @throws Exception if unable to determine if code coverage driver is available.
      */
     protected static function hasCodeCoverageDriver(): bool
     {
@@ -333,7 +342,8 @@ class FileCopier
      * Load and decode the composer.json file.
      *
      * @return array<string, mixed>
-     * @throws Exception
+     *
+     * @throws Exception if unable to load file
      */
     protected static function loadComposerJson(): array
     {
@@ -349,7 +359,8 @@ class FileCopier
      * Get the list of files committed to the Git repository.
      *
      * @return list<string>
-     * @throws Exception
+     *
+     * @throws Exception if unable to get list of Git files
      */
     protected static function loadGitFiles(): array
     {
@@ -365,7 +376,8 @@ class FileCopier
      * Load and decode the package.json file.
      *
      * @return ?array<string, mixed>
-     * @throws Exception
+     *
+     * @throws Exception if unable to load file
      */
     protected static function loadPackageJson(): ?array
     {
@@ -385,7 +397,9 @@ class FileCopier
     /**
      * Make a directory if it doesn't exist.
      *
-     * @throws Exception
+     * @param string $dir Directory to make
+     *
+     * @throws Exception if unable to make directory
      */
     protected static function makeDir(string $dir): void
     {
@@ -422,6 +436,8 @@ class FileCopier
 
     /**
      * Get the type of a file extension from its value.
+     *
+     * @param string $extension Extension to classify
      */
     protected function getExtensionType(string $extension): ?string
     {
@@ -444,11 +460,13 @@ class FileCopier
     /**
      * Get the type of a file based on its extension or other info.
      *
+     * @param string $path Path of file to check
+     *
      * @todo Use the return type of "file" command if available.
      * Example: file -b bin/task.php
      * a /usr/bin/env php script, ASCII text executable
      *
-     * @throws Exception
+     * @throws Exception if unable to open file
      */
     protected function getFileType(string $path): ?string
     {
@@ -525,7 +543,7 @@ class FileCopier
     /**
      * Get the required PHP version from the composer.json file.
      *
-     * @throws Exception
+     * @throws Exception if unable to find or extract PHP version
      */
     protected function getPhpVersion(): string
     {
@@ -546,6 +564,8 @@ class FileCopier
 
     /**
      * Check if the repository has the required package, either in Composer or NPM.
+     *
+     * @param string $requiredPackage The package to check
      */
     protected function hasPackage(?string $requiredPackage): bool
     {
@@ -557,8 +577,8 @@ class FileCopier
         $packageName = self::PACKAGE_NAMES[$requiredPackage];
 
         if (
-            $this->composerPackages !== null &&
-            in_array($packageName, $this->composerPackages, true)
+            $this->composerPackages !== null
+            && in_array($packageName, $this->composerPackages, true)
         ) {
             return true;
         }
@@ -568,6 +588,9 @@ class FileCopier
 
     /**
      * Copy the ECS file from the source to the destination.
+     *
+     * @param string $source Source file
+     * @param string $destination Destination file
      *
      * @throws Exception if unable to load or save file.
      */
@@ -595,6 +618,9 @@ class FileCopier
 
     /**
      * Copy the ESLint config file from the source to the destination.
+     *
+     * @param string $source Source file
+     * @param string $destination Destination file
      *
      * @throws Exception if unable to load or save file.
      */
@@ -638,6 +664,9 @@ class FileCopier
 
     /**
      * Copy the PHPStan file from the source to the destination.
+     *
+     * @param string $source Source file
+     * @param string $destination Destination file
      */
     protected function makePhpStan(string $source, string $destination): void
     {
@@ -660,10 +689,10 @@ class FileCopier
         // Add the PHP paths to process.
         $phpPaths = $this->phpPaths;
 
-        if ($this->useWordpress) {
+        if ($this->useWordPress) {
             // Include WordPress extensions without needing the PHPStan extension installer.
             $phpStanConfig['includes'][] = ['vendor/szepeviktor/phpstan-wordpress/extension.neon'];
-            if ($this->useWoocommerce) {
+            if ($this->useWooCommerce) {
                 $bootstrapFiles[] = 'vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php';
             }
 
@@ -685,6 +714,10 @@ class FileCopier
 
     /**
      * Create the PHPUnit XML config file from a template then configure it and save it.
+     *
+     * @param string $destination Destination file
+     *
+     * @throws Exception if unable to make PHPUnit XML
      */
     protected function makePhpUnit(string $destination): void
     {
@@ -774,6 +807,9 @@ class FileCopier
 
     /**
      * Copy the Prettier config file from the source to the destination.
+     *
+     * @param string $source Source file
+     * @param string $destination Destination file
      *
      * @throws Exception if unable to load or save file
      */
@@ -869,10 +905,8 @@ class FileCopier
 
         // Write the list of directories to php_paths file
         if ($oldPaths !== $this->phpPaths) {
-            if (file_put_contents(
-                $pathFile,
-                implode(PHP_EOL, $this->phpPaths) . PHP_EOL
-            ) === false) {
+            $result = file_put_contents($pathFile, implode(PHP_EOL, $this->phpPaths) . PHP_EOL);
+            if ($result === false) {
                 throw new Exception('Unable to save file');
             }
 
