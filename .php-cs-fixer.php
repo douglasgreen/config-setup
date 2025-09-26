@@ -20,8 +20,11 @@ return (new Config())
     ->setCacheFile(__DIR__ . '/var/cache/php-cs-fixer/.php-cs-fixer.cache')
     ->setRiskyAllowed(false)
     ->setRules([
-        '@PSR12' => true,
-        '@PHP82Migration' => true,
+        //'@PER-CS' => true,
+        //'@PSR12' => true,
+        //'@Symfony' => true,
+        //'@auto' => true,
+        //'@autoPHPMigration' => true,
 
         // put operators at line start
         'operator_linebreak' => ['position' => 'beginning'],
