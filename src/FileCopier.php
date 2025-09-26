@@ -158,8 +158,8 @@ class FileCopier
         $this->phpVersion = $this->getPhpVersion();
 
         echo "Installed packages:\n";
-        foreach (self::PACKAGE_NAMES as $name => $package) {
-            echo "* {$name}: " . ($this->hasPackage($package) ? 'yes' : 'no') . "\n";
+        foreach (array_keys(self::PACKAGE_NAMES) as $package) {
+            echo "* {$package}: " . ($this->hasPackage($package) ? 'yes' : 'no') . "\n";
         }
 
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
@@ -574,12 +574,18 @@ class FileCopier
      * Check if the repository has the required package, either in Composer or NPM.
      *
      * @param string $requiredPackage The package to check
+     *
+     * @throws Exception if package not supported
      */
     protected function hasPackage(?string $requiredPackage): bool
     {
         // If there are no requirements, it can't fail.
         if ($requiredPackage === null) {
             return true;
+        }
+
+        if (!isset(self::PACKAGE_NAMES[$requiredPackage])) {
+            throw new Exception('Unsupported package: ' . $requiredPackage);
         }
 
         $packageName = self::PACKAGE_NAMES[$requiredPackage];
