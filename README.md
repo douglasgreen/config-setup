@@ -118,30 +118,10 @@ project and define a script for it if you want to use those tools with those con
 
 ### PHP Dependencies
 
-For PHP, that is done with `composer.json` like this:
+For PHP, you can see the "require-dev" and "scripts" sections of the `composer.json` file in this
+project for examples.
 
-```
-    "require-dev": {
-        "phpstan/phpstan": "^1.11",
-        "phpunit/phpunit": "^10.5",
-        "rector/rector": "^1.2",
-        "symplify/easy-coding-standard": "^12.3"
-    },
-    "scripts": {
-        "lint": [
-            "ecs",
-            "phpstan analyse",
-            "rector --dry-run"
-        ],
-        "lint:fix": [
-            "ecs --fix",
-            "rector"
-        ],
-        "test": "phpunit"
-    }
-```
-
-That installs:
+Projects include:
 
 -   [PHP Linter](php_linter.md) for code metrics and linting
 -   [PHPStan](https://phpstan.org/) for linting
@@ -159,33 +139,10 @@ automatically by this project's file linker, which makes a list of the directori
 the top level of your project. That enables all of the tools to automatically lint and fix the right
 set of files.
 
-For JavaScript/NPM, that is done with `package.json` like this:
+For JavaScript/NPM, you can see the `devDependencies` and `scripts` sections of the `package.json`
+file in this project for examples.
 
-```
-    "devDependencies": {
-        "@commitlint/cli": "^19.3",
-        "@commitlint/config-conventional": "^19.2",
-
-        "husky": "^9.0",
-
-        "prettier": "^3.3",
-        "prettier-plugin-sh": "^0.14",
-        "@prettier/plugin-xml": "^3.4",
-
-        'standard' => '^17.1',
-
-        "stylelint": "^16.6",
-        "stylelint-config-standard": "^36.0"
-    },
-    "scripts": {
-        "commitlint": "commitlint --edit",
-        "lint": "standard . && stylelint '**/*.css'",
-        "lint:fix": "prettier --write . && standard --fix .",
-        "prepare": "husky"
-    }
-```
-
-That installs:
+Projects include:
 
 -   [Commitlint](https://commitlint.js.org/) for linting commit messages and
     [@commitlint/config-conventional](https://www.npmjs.com/package/@commitlint/config-conventional)

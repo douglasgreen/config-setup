@@ -16,6 +16,9 @@
     <!-- Set the default report type -->
     <arg name="report" value="full"/>
 
+    <!-- Set the cache directory -->
+    <arg name="cache" value="var/cache/phpcs/phpcs.cache"/>
+
     <!-- PHPCompatibility configuration (run as PHPCS standard) -->
     <!-- Matches composer.json "php": ">=8.2" -->
     <config name="testVersion" value="8.2-"/>
