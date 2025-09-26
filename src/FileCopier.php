@@ -25,6 +25,7 @@ class FileCopier
     protected const COPY_FILES = [
         '.eslintignore' => 'eslint',
         '.eslintrc.json' => 'eslint',
+        '.php-cs-fixer.php' => 'php-cs-fixer',
         '.prettierignore' => 'prettier',
         '.prettierrc.json' => 'prettier',
         '.stylelintignore' => 'stylelint',
@@ -68,6 +69,7 @@ class FileCopier
         'var/cache/ecs' => 'ecs',
         'var/cache/eslint' => 'eslint',
         'var/cache/pdepend' => 'pdepend',
+        'var/cache/php-cs-fixer' => 'php-cs-fixer',
         'var/cache/phpcs' => 'phpcs',
         'var/cache/phpstan' => 'phpstan',
         'var/cache/phpunit' => 'phpunit',
@@ -82,6 +84,7 @@ class FileCopier
         'ecs' => 'symplify/easy-coding-standard',
         'pdepend' => 'pdepend/pdepend',
         'phpcs' => 'squizlabs/php_codesniffer',
+        'php-cs-fixer' => 'friendsofphp/php-cs-fixer',
         'phpcs-compatibility-sniffs' => 'phpcompatibility/php-compatibility',
         'phpcs-composer-installer' => 'dealerdirect/phpcodesniffer-composer-installer',
         'phpstan' => 'phpstan/phpstan',
