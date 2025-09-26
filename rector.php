@@ -53,15 +53,15 @@ if (file_exists('composer.json')) {
         $allDependencies = array_merge($requires, $requiresDev);
 
         foreach ($allDependencies as $name => $value) {
-            if (preg_match('#^phpunit/#', $name)) {
+            if (preg_match('#^phpunit/#', (string) $name)) {
                 $hasPhpUnit = true;
             }
 
-            if (preg_match('#^symfony/#', $name)) {
+            if (preg_match('#^symfony/#', (string) $name)) {
                 $hasSymfony = true;
             }
 
-            if (preg_match('#^doctrine/#', $name)) {
+            if (preg_match('#^doctrine/#', (string) $name)) {
                 $hasDoctrine = true;
             }
 

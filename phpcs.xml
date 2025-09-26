@@ -45,6 +45,7 @@
         <exclude name="PEAR.ControlStructures.MultiLineCondition.StartWithBoolean"/>
     </rule>
     <rule ref="PHPCompatibility"/>
+    <rule ref="PHPCSUtils"/>
     <rule ref="PSR1"/>
     <rule ref="PSR2">
         <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace"/>
@@ -55,13 +56,11 @@
         <exclude name="Generic.Commenting.DocComment.ContentBeforeClose"/>
         <exclude name="Generic.Commenting.DocComment.MissingShort"/>
         <exclude name="Generic.Commenting.DocComment.TagValueIndent"/>
-        <exclude name="Generic.Debug.ClosureLinter"/>
         <exclude name="Generic.Files.LineLength.TooLong"/>
         <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSame"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceBsdAllman.BraceOnSameLine"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/>
         <exclude name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/>
-        <exclude name="Squiz.Classes.DuplicateProperty"/>
         <exclude name="Squiz.Commenting.ClosingDeclarationComment.Missing"/>
         <exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
         <exclude name="Squiz.Commenting.FileComment.SpacingAfterOpen"/>
@@ -74,35 +73,14 @@
         <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
         <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing"/>
         <exclude name="Squiz.ControlStructures.ElseIfDeclaration.NotAllowed"/>
-        <exclude name="Squiz.CSS.ClassDefinitionClosingBraceSpace"/>
-        <exclude name="Squiz.CSS.ClassDefinitionNameSpacing"/>
-        <exclude name="Squiz.CSS.ClassDefinitionOpeningBraceSpace"/>
-        <exclude name="Squiz.CSS.ColonSpacing"/>
-        <exclude name="Squiz.CSS.ColourDefinition"/>
-        <exclude name="Squiz.CSS.DisallowMultipleStyleDefinitions"/>
-        <exclude name="Squiz.CSS.DuplicateClassDefinition"/>
-        <exclude name="Squiz.CSS.DuplicateStyleDefinition"/>
-        <exclude name="Squiz.CSS.EmptyClassDefinition"/>
-        <exclude name="Squiz.CSS.EmptyStyleDefinition"/>
-        <exclude name="Squiz.CSS.ForbiddenStyles"/>
-        <exclude name="Squiz.CSS.Indentation"/>
-        <exclude name="Squiz.CSS.LowercaseStyleDefinition"/>
-        <exclude name="Squiz.CSS.MissingColon"/>
-        <exclude name="Squiz.CSS.NamedColours"/>
-        <exclude name="Squiz.CSS.Opacity"/>
-        <exclude name="Squiz.CSS.SemicolonSpacing"/>
-        <exclude name="Squiz.CSS.ShorthandSize"/>
-        <exclude name="Squiz.Debug.JavaScriptLint"/>
-        <exclude name="Squiz.Debug.JSLint"/>
         <exclude name="Squiz.Files.FileExtension.ClassFound"/>
         <exclude name="Squiz.Formatting.OperatorBracket.MissingBrackets"/>
-        <exclude name="Squiz.Objects.DisallowObjectStringIndex"/>
-        <exclude name="Squiz.Objects.ObjectMemberComma"/>
         <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue"/>
         <exclude name="Squiz.Operators.ComparisonOperatorUsage.NotAllowed"/>
         <exclude name="Squiz.PHP.DisallowBooleanStatement.Found"/>
         <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedComparison"/>
         <exclude name="Squiz.PHP.DisallowInlineIf.Found"/>
+        <exclude name="Squiz.PHP.Heredoc.HeredocNotAllowed"/>
         <exclude name="Squiz.PHP.Heredoc.NotAllowed"/>
         <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
         <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar"/>
@@ -111,13 +89,9 @@
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.AfterLast"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.Before"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.BeforeFirst"/>
-        <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing"/>
         <exclude name="Squiz.WhiteSpace.ObjectOperatorSpacing.Before"/>
-        <exclude name="Squiz.WhiteSpace.PropertyLabelSpacing"/>
-        <exclude name="Zend.Debug.CodeAnalyzer"/>
     </rule>
     <rule ref="Zend">
-        <exclude name="Zend.Debug.CodeAnalyzer"/>
         <exclude name="Zend.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
     </rule>
 </ruleset>
