@@ -157,6 +157,11 @@ class FileCopier
         $this->npmPackages = $this->getNpmPackages();
         $this->phpVersion = $this->getPhpVersion();
 
+        echo "Installed packages:\n";
+        foreach (self::PACKAGE_NAMES as $name => $package) {
+            echo "* {$name}: " . ($this->hasPackage($package) ? 'yes' : 'no') . "\n";
+        }
+
         foreach (self::MAKE_DIRS as $dir => $requiredPackage) {
             // Don't make directories if their package isn't installed.
             if (!$this->hasPackage($requiredPackage)) {
