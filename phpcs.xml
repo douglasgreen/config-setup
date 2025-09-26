@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <ruleset name="ConfigSetup">
     <description>
-        PHPCS rules focusing on PHP compatibility and code analysis. Style/formatting rules (PSR-12,
-        whitespace, docblocks, imports, etc.) are intentionally omitted, as they are handled by ECS.
+        PHPCS rules focusing on PHP compatibility and code analysis.
     </description>
 
     <!-- Where to scan -->
