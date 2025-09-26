@@ -21,6 +21,9 @@
     <!-- Matches composer.json "php": ">=8.2" -->
     <config name="testVersion" value="8.2-"/>
 
+    <!-- Print warnings but don't halt linting because of them. -->
+    <config name="ignore_warnings_on_exit" value="1"/>
+
     <!-- List of all applicable, non-deprecated standards -->
     <rule ref="PEAR">
         <exclude name="PEAR.Commenting.ClassComment.MissingAuthorTag"/>
@@ -38,10 +41,14 @@
         <exclude name="PEAR.Commenting.FunctionComment.MissingReturn"/>
         <exclude name="PEAR.Commenting.FunctionComment.SpacingAfterParamName"/>
         <exclude name="PEAR.Commenting.FunctionComment.SpacingAfterParamType"/>
+        <exclude name="PEAR.ControlStructures.MultiLineCondition.SpacingAfterOpenBrace"/>
+        <exclude name="PEAR.ControlStructures.MultiLineCondition.StartWithBoolean"/>
     </rule>
     <rule ref="PHPCompatibility"/>
     <rule ref="PSR1"/>
-    <rule ref="PSR2"/>
+    <rule ref="PSR2">
+        <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace"/>
+    </rule>
     <rule ref="PSR12"/>
     <rule ref="Squiz">
         <exclude name="Generic.Commenting.DocComment.ContentAfterOpen"/>
@@ -88,6 +95,7 @@
         <exclude name="Squiz.Debug.JavaScriptLint"/>
         <exclude name="Squiz.Debug.JSLint"/>
         <exclude name="Squiz.Files.FileExtension.ClassFound"/>
+        <exclude name="Squiz.Formatting.OperatorBracket.MissingBrackets"/>
         <exclude name="Squiz.Objects.DisallowObjectStringIndex"/>
         <exclude name="Squiz.Objects.ObjectMemberComma"/>
         <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue"/>
