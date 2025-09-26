@@ -170,14 +170,14 @@ class FileCopier
         $this->phpVersion = $this->getPhpVersion();
 
         echo "Installed Composer packages:\n";
-        foreach (array_keys(self::COMPOSER_PACKAGES) as $package) {
-            echo "* {$package}: " . ($this->hasComposerPackage($package) ? 'yes' : 'no') . "\n";
+        foreach (self::COMPOSER_PACKAGES as $name => $package) {
+            echo "* {$package}: " . ($this->hasComposerPackage($name) ? 'yes' : 'no') . "\n";
         }
 
         echo "\n";
         echo "Installed Node packages:\n";
-        foreach (array_keys(self::NODE_PACKAGES) as $package) {
-            echo "* {$package}: " . ($this->hasNodePackage($package) ? 'yes' : 'no') . "\n";
+        foreach (self::NODE_PACKAGES as $name => $package) {
+            echo "* {$package}: " . ($this->hasNodePackage($name) ? 'yes' : 'no') . "\n";
         }
 
         echo "\n";
