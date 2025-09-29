@@ -17,6 +17,20 @@ class FileCopier
 
     public const USE_WORDPRESS = 2;
 
+    /** @var array<string, string> Composer project name and its actual package name */
+    protected const COMPOSER_PACKAGES = [
+        'dead-code-detector' => 'shipmonk/dead-code-detector',
+        'detect-collisions' => 'shipmonk/name-collision-detector',
+        'pdepend' => 'pdepend/pdepend',
+        'phpcs' => 'squizlabs/php_codesniffer',
+        'php-cs-fixer' => 'friendsofphp/php-cs-fixer',
+        'phpcs-compatibility-sniffs' => 'phpcompatibility/php-compatibility',
+        'phpcs-composer-installer' => 'dealerdirect/phpcodesniffer-composer-installer',
+        'phpstan' => 'phpstan/phpstan',
+        'phpunit' => 'phpunit/phpunit',
+        'rector' => 'rector/rector',
+    ];
+
     /** @var array<string, ?string> Names of files to copy if the project is installed */
     protected const COPY_FILES = [
         '.eslintignore' => 'eslint',
@@ -71,20 +85,6 @@ class FileCopier
         'var/report/phpunit' => 'phpunit',
     ];
 
-    /** @var array<string, string> Composer project name and its actual package name */
-    protected const COMPOSER_PACKAGES = [
-        'dead-code-detector' => 'shipmonk/dead-code-detector',
-        'detect-collisions' => 'shipmonk/name-collision-detector',
-        'pdepend' => 'pdepend/pdepend',
-        'phpcs' => 'squizlabs/php_codesniffer',
-        'php-cs-fixer' => 'friendsofphp/php-cs-fixer',
-        'phpcs-compatibility-sniffs' => 'phpcompatibility/php-compatibility',
-        'phpcs-composer-installer' => 'dealerdirect/phpcodesniffer-composer-installer',
-        'phpstan' => 'phpstan/phpstan',
-        'phpunit' => 'phpunit/phpunit',
-        'rector' => 'rector/rector',
-    ];
-
     /** @var array<string, string> NPM project name and its actual package name */
     protected const NODE_PACKAGES = [
         'commitlint' => '@commitlint/cli',
@@ -104,6 +104,9 @@ class FileCopier
     /** @var ?list<string> */
     protected readonly ?array $composerPackages;
 
+    /** @var string Path to the Git exclude file */
+    protected readonly string $excludeFile;
+
     /** @var array<string, ?string> */
     protected readonly array $filesToCopy;
 
@@ -118,9 +121,6 @@ class FileCopier
 
     /** @var list<string> */
     protected readonly array $phpPaths;
-
-    /** @var string Path to the Git exclude file */
-    protected readonly string $excludeFile;
 
     /** @var string PHP version derived from composer.json */
     protected readonly string $phpVersion;
@@ -187,6 +187,97 @@ class FileCopier
             }
 
             self::makeDir($dir);
+        }
+    }
+
+    /**
+     * Determine if a code coverage driver is available.
+     *
+     * @throws \Exception if unable to determine if code coverage driver is available
+     */
+    protected static function hasCodeCoverageDriver(): bool
+    {
+        $command = "php -m | grep -E 'xdebug|pcov'";
+        exec($command, $output, $returnCode);
+        if ($returnCode !== 0 && $returnCode !== 1) {
+            throw new \Exception('Unable to determine if code coverage driver is available');
+        }
+
+        return $output !== [];
+    }
+
+    /**
+     * Load and decode the composer.json file.
+     *
+     * @throws \Exception if unable to load file
+     *
+     * @return array<string, mixed>
+     */
+    protected static function loadComposerJson(): array
+    {
+        $composerJsonString = file_get_contents('composer.json');
+        if ($composerJsonString === false) {
+            throw new \Exception('Unable to load file');
+        }
+
+        return json_decode($composerJsonString, true, 16, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * Get the list of files committed to the Git repository.
+     *
+     * @throws \Exception if unable to get list of Git files
+     *
+     * @return list<string>
+     */
+    protected static function loadGitFiles(): array
+    {
+        exec('git ls-files', $output, $returnCode);
+        if ($returnCode !== 0) {
+            throw new \Exception('Unable to get list of Git files');
+        }
+
+        return $output;
+    }
+
+    /**
+     * Load and decode the package.json file.
+     *
+     * @throws \Exception if unable to load file
+     *
+     * @return ?array<string, mixed>
+     */
+    protected static function loadPackageJson(): ?array
+    {
+        if (!file_exists('package.json')) {
+            echo 'File package.json not found.' . PHP_EOL;
+
+            return null;
+        }
+
+        $packageJsonString = file_get_contents('package.json');
+        if ($packageJsonString === false) {
+            throw new \Exception('Unable to load file');
+        }
+
+        return json_decode($packageJsonString, true, 16, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * Make a directory if it doesn't exist.
+     *
+     * @param string $dir Directory to make
+     *
+     * @throws \Exception if unable to make directory
+     */
+    protected static function makeDir(string $dir): void
+    {
+        if (is_dir($dir)) {
+            return;
+        }
+
+        if (mkdir($dir, 0o777, true) === false) {
+            throw new \Exception('Unable to make directory');
         }
     }
 
@@ -342,97 +433,6 @@ class FileCopier
 
         // If the absolute path does not contain the base path, return it instead
         return $absolutePath;
-    }
-
-    /**
-     * Determine if a code coverage driver is available.
-     *
-     * @throws \Exception if unable to determine if code coverage driver is available
-     */
-    protected static function hasCodeCoverageDriver(): bool
-    {
-        $command = "php -m | grep -E 'xdebug|pcov'";
-        exec($command, $output, $returnCode);
-        if ($returnCode !== 0 && $returnCode !== 1) {
-            throw new \Exception('Unable to determine if code coverage driver is available');
-        }
-
-        return $output !== [];
-    }
-
-    /**
-     * Load and decode the composer.json file.
-     *
-     * @throws \Exception if unable to load file
-     *
-     * @return array<string, mixed>
-     */
-    protected static function loadComposerJson(): array
-    {
-        $composerJsonString = file_get_contents('composer.json');
-        if ($composerJsonString === false) {
-            throw new \Exception('Unable to load file');
-        }
-
-        return json_decode($composerJsonString, true, 16, JSON_THROW_ON_ERROR);
-    }
-
-    /**
-     * Get the list of files committed to the Git repository.
-     *
-     * @throws \Exception if unable to get list of Git files
-     *
-     * @return list<string>
-     */
-    protected static function loadGitFiles(): array
-    {
-        exec('git ls-files', $output, $returnCode);
-        if ($returnCode !== 0) {
-            throw new \Exception('Unable to get list of Git files');
-        }
-
-        return $output;
-    }
-
-    /**
-     * Load and decode the package.json file.
-     *
-     * @throws \Exception if unable to load file
-     *
-     * @return ?array<string, mixed>
-     */
-    protected static function loadPackageJson(): ?array
-    {
-        if (!file_exists('package.json')) {
-            echo 'File package.json not found.' . PHP_EOL;
-
-            return null;
-        }
-
-        $packageJsonString = file_get_contents('package.json');
-        if ($packageJsonString === false) {
-            throw new \Exception('Unable to load file');
-        }
-
-        return json_decode($packageJsonString, true, 16, JSON_THROW_ON_ERROR);
-    }
-
-    /**
-     * Make a directory if it doesn't exist.
-     *
-     * @param string $dir Directory to make
-     *
-     * @throws \Exception if unable to make directory
-     */
-    protected static function makeDir(string $dir): void
-    {
-        if (is_dir($dir)) {
-            return;
-        }
-
-        if (mkdir($dir, 0o777, true) === false) {
-            throw new \Exception('Unable to make directory');
-        }
     }
 
     /**

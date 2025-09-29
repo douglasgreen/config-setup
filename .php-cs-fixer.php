@@ -111,10 +111,6 @@ $rules = [
     'not_operator_with_successor_space' => false,
     'multiline_whitespace_before_semicolons' => false,
 
-    // arrays and lists
-    'array_syntax' => ['syntax' => 'short'],
-    'list_syntax' => ['syntax' => 'short'],
-
     // imports
     'no_unused_imports' => true,
     'global_namespace_import' => [
@@ -127,12 +123,65 @@ $rules = [
         'sort_algorithm' => 'alpha',
     ],
 
+    // attributes
+    'attribute_empty_parentheses' => [
+        'use_parentheses' => false
+    ],
+    'ordered_attributes' => [
+        'sort_algorithm' => 'alpha'
+    ],
+
+    // arrays and lists
+    'array_syntax' => ['syntax' => 'short'],
+    'list_syntax' => ['syntax' => 'short'],
+
     // strings and concatenation
     'single_quote' => true,
     'concat_space' => ['spacing' => 'one'],
 
+    // integers
+    'numeric_literal_separator' => [
+        'strategy' => 'use_separator',
+    ],
+
     // types
     'return_type_declaration' => ['space_before' => 'none'],
+    'return_to_yield_from' => true,
+
+    // element order
+    'ordered_class_elements' => [
+        'sort_algorithm' => 'alpha',
+        'order' => [
+            'use_trait',
+            'case',
+            'constant_public',
+            'constant_protected',
+            'constant_private',
+            'property_public_static',
+            'property_protected_static',
+            'property_private_static',
+            'property_public_readonly',
+            'property_protected_readonly',
+            'property_private_readonly',
+            'property_public',
+            'property_protected',
+            'property_private',
+            'construct',
+            'destruct',
+            'magic',
+            'phpunit',
+            'method_public_abstract_static',
+            'method_protected_abstract_static',
+            'method_public_static',
+            'method_protected_static',
+            'method_private_static',
+            'method_public_abstract',
+            'method_protected_abstract',
+            'method_public',
+            'method_protected',
+            'method_private',
+        ],
+    ],
 
     // PHPDoc
     'phpdoc_param_order' => true,
