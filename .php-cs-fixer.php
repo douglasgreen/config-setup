@@ -148,6 +148,8 @@ $rules = [
     // types
     'return_type_declaration' => ['space_before' => 'none'],
     'return_to_yield_from' => true,
+    'simplified_null_return' => true,
+    'simplified_if_return' => true,
 
     // element order
     'ordered_class_elements' => [
