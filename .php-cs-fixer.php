@@ -77,8 +77,13 @@ if ($hasSymfony) {
 
 $rules = [
     // operators
-    'operator_linebreak' => ['position' => 'beginning'],
-    'yoda_style' => ['equal' => false, 'identical' => false],
+    'operator_linebreak' => [
+        'position' => 'beginning',
+    ],
+    'yoda_style' => [
+        'equal' => false,
+        'identical' => false,
+    ],
 
     // braces
     'braces_position' => [
@@ -94,7 +99,9 @@ $rules = [
     // spacing and line-break hygiene
     'binary_operator_spaces' => [
         'default' => 'single_space',
-        'operators' => ['=>' => 'single_space'], // avoid alignment; PSR-12 friendly
+        'operators' => [
+            '=>' => 'single_space',
+        ],
     ],
     'method_argument_space' => [
         'on_multiline' => 'ensure_fully_multiline',
@@ -109,7 +116,9 @@ $rules = [
     'no_trailing_whitespace' => true,
     'no_whitespace_in_blank_line' => true,
     'not_operator_with_successor_space' => false,
-    'multiline_promoted_properties' => ['keep_blank_lines' => true],
+    'multiline_promoted_properties' => [
+        'keep_blank_lines' => true,
+    ],
     'multiline_whitespace_before_semicolons' => false,
 
     // imports
@@ -117,7 +126,7 @@ $rules = [
     'global_namespace_import' => [
         'import_classes' => false,
         'import_constants' => false,
-        'import_functions' => false
+        'import_functions' => false,
     ],
     'ordered_imports' => [
         'imports_order' => ['class', 'function', 'const'],
@@ -126,19 +135,25 @@ $rules = [
 
     // attributes
     'attribute_empty_parentheses' => [
-        'use_parentheses' => false
+        'use_parentheses' => false,
     ],
     'ordered_attributes' => [
-        'sort_algorithm' => 'alpha'
+        'sort_algorithm' => 'alpha',
     ],
 
     // arrays and lists
-    'array_syntax' => ['syntax' => 'short'],
-    'list_syntax' => ['syntax' => 'short'],
+    'array_syntax' => [
+        'syntax' => 'short',
+    ],
+    'list_syntax' => [
+        'syntax' => 'short',
+    ],
 
     // strings and concatenation
     'single_quote' => true,
-    'concat_space' => ['spacing' => 'one'],
+    'concat_space' => [
+        'spacing' => 'one',
+    ],
 
     // integers
     'numeric_literal_separator' => [
@@ -146,7 +161,9 @@ $rules = [
     ],
 
     // types
-    'return_type_declaration' => ['space_before' => 'none'],
+    'return_type_declaration' => [
+        'space_before' => 'none',
+    ],
     'return_to_yield_from' => true,
     'simplified_null_return' => true,
     'simplified_if_return' => true,
@@ -194,7 +211,9 @@ $rules = [
         'method' => 'multi',
         'property' => 'multi',
     ],
-    'phpdoc_align' => ['align' => 'left'],
+    'phpdoc_align' => [
+        'align' => 'left',
+    ],
     'phpdoc_order' => [
         // Use recommended order of PHPDoc tags.
         'order' => [
@@ -247,7 +266,7 @@ $rules = [
         // Be careful about this part of the config; it removes the tag and its contents when
         // what you often want to do is remove or modify the tag only and not its contents.
         'annotations' => [
-        // Use abstract keyword instead
+            // Use abstract keyword instead
             'abstract',
 
             // Use public, protected, or private keyword instead

@@ -72,6 +72,7 @@ risky tests.
 
 Several scripts are customized during the linking process.
 
+-   `ecs.php` sets the value of `line_length` to the value specified in the `--wrap` parameter.
 -   `.eslintrc.json` adds an "extends" field if the Standard (eslint-config-standard) or Airbnb
     (eslint-config-airbnb-base) NPM packages are installed.
 -   `phpstan.neon` updates the phpVersion field to the "require" php version in `composer.json`.
