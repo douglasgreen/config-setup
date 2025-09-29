@@ -109,6 +109,7 @@ $rules = [
     'no_trailing_whitespace' => true,
     'no_whitespace_in_blank_line' => true,
     'not_operator_with_successor_space' => false,
+    'multiline_promoted_properties' => ['keep_blank_lines' => true],
     'multiline_whitespace_before_semicolons' => false,
 
     // imports
