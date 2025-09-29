@@ -17,7 +17,9 @@ class FileCopier
 
     public const USE_WORDPRESS = 2;
 
-    /** @var array<string, string> Composer project name and its actual package name */
+    /**
+     * @var array<string, string> Composer project name and its actual package name
+     */
     protected const COMPOSER_PACKAGES = [
         'dead-code-detector' => 'shipmonk/dead-code-detector',
         'detect-collisions' => 'shipmonk/name-collision-detector',
@@ -31,7 +33,9 @@ class FileCopier
         'rector' => 'rector/rector',
     ];
 
-    /** @var array<string, ?string> Names of files to copy if the project is installed */
+    /**
+     * @var array<string, ?string> Names of files to copy if the project is installed
+     */
     protected const COPY_FILES = [
         '.eslintignore' => 'eslint',
         '.eslintrc.json' => 'eslint',
@@ -49,7 +53,9 @@ class FileCopier
         'stubs/wordpress.php' => null,
     ];
 
-    /** @var array<string, ?string> Names of scripts to copy if the project is installed */
+    /**
+     * @var array<string, ?string> Names of scripts to copy if the project is installed
+     */
     protected const COPY_SCRIPTS = [
         '.husky/commit-msg' => 'husky',
         '.husky/post-checkout' => 'husky',
@@ -85,7 +91,9 @@ class FileCopier
         'var/report/phpunit' => 'phpunit',
     ];
 
-    /** @var array<string, string> NPM project name and its actual package name */
+    /**
+     * @var array<string, string> NPM project name and its actual package name
+     */
     protected const NODE_PACKAGES = [
         'commitlint' => '@commitlint/cli',
         'commitlint-config-conventional' => '@commitlint/config-conventional',
@@ -98,37 +106,59 @@ class FileCopier
         'stylelint' => 'stylelint',
     ];
 
-    /** @var array<string, mixed> */
+    /**
+     * @var array<string, mixed>
+     */
     protected readonly array $composerJson;
 
-    /** @var ?list<string> */
+    /**
+     * @var ?list<string>
+     */
     protected readonly ?array $composerPackages;
 
-    /** @var string Path to the Git exclude file */
+    /**
+     * @var string Path to the Git exclude file
+     */
     protected readonly string $excludeFile;
 
-    /** @var array<string, ?string> */
+    /**
+     * @var array<string, ?string>
+     */
     protected readonly array $filesToCopy;
 
-    /** @var list<string> */
+    /**
+     * @var list<string>
+     */
     protected readonly array $gitFiles;
 
-    /** @var ?list<string> */
+    /**
+     * @var ?list<string>
+     */
     protected readonly ?array $nodePackages;
 
-    /** @var ?array<string, mixed> */
+    /**
+     * @var ?array<string, mixed>
+     */
     protected readonly ?array $packageJson;
 
-    /** @var list<string> */
+    /**
+     * @var list<string>
+     */
     protected readonly array $phpPaths;
 
-    /** @var string PHP version derived from composer.json */
+    /**
+     * @var string PHP version derived from composer.json
+     */
     protected readonly string $phpVersion;
 
-    /** @var bool Whether to use WooCommerce stubs */
+    /**
+     * @var bool Whether to use WooCommerce stubs
+     */
     protected readonly bool $useWooCommerce;
 
-    /** @var bool Whether to use WordPress stubs */
+    /**
+     * @var bool Whether to use WordPress stubs
+     */
     protected readonly bool $useWordPress;
 
     /**

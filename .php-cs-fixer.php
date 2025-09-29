@@ -186,6 +186,11 @@ $rules = [
     // PHPDoc
     'phpdoc_param_order' => true,
     'phpdoc_summary' => true,
+    'phpdoc_line_span' => [
+        'const' => 'multi',
+        'method' => 'multi',
+        'property' => 'multi',
+    ],
     'phpdoc_align' => ['align' => 'left'],
     'phpdoc_order' => [
         // Use recommended order of PHPDoc tags.
