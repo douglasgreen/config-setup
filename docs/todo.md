@@ -8,6 +8,11 @@ Pay attention to ordering rules.
 
 Use https://github.com/xojs/xo instead of Standard for JS formatting
 
+# Symplify
+
+Consider adding back ECS for https://github.com/symplify/coding-standard, which includes line length
+and other formatters.
+
 # PHPCS
 
 I used PHPCS as a standlone instead of within ECS because ECS doesn't support PHPCompatibility
