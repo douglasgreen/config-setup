@@ -78,6 +78,8 @@ class FileCopier
      * There is no cache for rector because it was having too many errors.
      *
      * @var array<string, ?string> Names of directories to make if the project is installed
+     *
+     * @todo Configure phpcs.xml to set a relative path that works when deployed
      */
     protected const MAKE_DIRS = [
         '.husky' => 'husky',
