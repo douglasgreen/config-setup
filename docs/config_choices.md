@@ -4,44 +4,9 @@ Here are notes on the configuration choices made for each project.
 
 ## PHP
 
-### Easy Coding Standard (ECS)
+### PHP Coding Standards
 
-Here is a summary of the configuration options in the `ecs.php` file:
-
--   **Risky Changes**: Enable by setting the environment variable `ECS_RISKY` to true.
--   **PHP Version Detection**: Sets PHP version based on the version specified in `composer.json`.
--   **Package Detection**: Enables or disables relevant ECS rule sets based on the presence of
-    PHPUnit, Symfony, or Doctrine in `composer.json`.
--   **Annotation Removal**: Configures the list of annotations to remove using
-    `GeneralPhpdocAnnotationRemoveFixer`.
--   **Line Length Fixer**: Uses `Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer` to
-    enforce line length rules.
--   **Good Coverage**: Utilizes a comprehensive set of standard rulesets to ensure high code quality
-    and consistency. These include:
-    -   **PhpCsFixer Rulesets**:
-        -   **PSR-12**: Enforces the PHP Standard Recommendations (PSR-12) for code style.
-        -   **Symfony**: Applies Symfony coding standards for projects using the Symfony framework.
-        -   **Doctrine**: Ensures best practices and standards for projects using Doctrine.
-    -   **Symplify Rulesets**:
-        -   **Coding Standard**: A set of rules to maintain a consistent coding style across PHP
-            projects.
-        -   **Coding Style**: Focuses on the aesthetics of the code, such as spacing, indentation,
-            and line breaks.
-    -   **Other Notable Rulesets**:
-        -   **Clean Code**: Ensures that the codebase adheres to clean code principles, making it
-            more readable and maintainable.
-        -   **PHPUnit**: Applies coding standards and best practices specific to writing PHPUnit
-            tests.
-        -   **PHPStan**: Integrates static analysis checks to catch potential errors and improve
-            code reliability.
-        -   **Custom Fixers**: Allows for the inclusion of custom fixers to address specific coding
-            standards not covered by existing rulesets.
-
-These rulesets collectively ensure that the codebase adheres to industry standards, follows best
-practices, and maintains a high level of code quality.
-
-The file is customized when copied to your project depending on the value of the `--wrap` parameter,
-which sets the line length.
+@todo Document this.
 
 ### Rector
 

@@ -19,7 +19,7 @@ function infinite_get_option(string $option, ?string $key = null, ?string $defau
     return '';
 }
 
-function infinite_get_post_option(int|false $post_id, string $key = 'gdlr-core-page-option'): mixed
+function infinite_get_post_option(false|int $post_id, string $key = 'gdlr-core-page-option'): mixed
 {
     return '';
 }

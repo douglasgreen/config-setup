@@ -65,13 +65,13 @@ phpstan.neon so you don't need to use the PHPStan extension installer.
 
 ### Environment Variables
 
-The ECS file `ecs.php` checks if `ECS_RISKY` is true before running risky tests.
+The PHP CS Fixer file `.php-cs-fixer.php` checks if `PHP_CS_FIXER_RISKY` is true before running
+risky tests.
 
 ### File Customization
 
 Several scripts are customized during the linking process.
 
--   `ecs.php` sets the value of `line_length` to the value specified in the `--wrap` parameter.
 -   `.eslintrc.json` adds an "extends" field if the Standard (eslint-config-standard) or Airbnb
     (eslint-config-airbnb-base) NPM packages are installed.
 -   `phpstan.neon` updates the phpVersion field to the "require" php version in `composer.json`.

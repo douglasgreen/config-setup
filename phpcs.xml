@@ -45,6 +45,7 @@
         <exclude name="PEAR.Commenting.FunctionComment.SpacingAfterParamType"/>
         <exclude name="PEAR.ControlStructures.MultiLineCondition.SpacingAfterOpenBrace"/>
         <exclude name="PEAR.ControlStructures.MultiLineCondition.StartWithBoolean"/>
+        <exclude name="PEAR.WhiteSpace.ScopeClosingBrace.Line"/>
     </rule>
     <rule ref="PHPCompatibility"/>
     <rule ref="PHPCSUtils"/>
@@ -66,6 +67,7 @@
         <exclude name="Squiz.Commenting.ClosingDeclarationComment.Missing"/>
         <exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
         <exclude name="Squiz.Commenting.FileComment.SpacingAfterOpen"/>
+        <exclude name="Squiz.Commenting.FunctionComment.IncorrectParamVarName"/>
         <exclude name="Squiz.Commenting.FunctionComment.MissingReturn"/>
         <exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
         <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamName"/>
@@ -74,6 +76,7 @@
         <exclude name="Squiz.Commenting.FunctionComment.ThrowsNotCapital"/>
         <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
         <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing"/>
+        <exclude name="Squiz.Commenting.VariableComment.IncorrectVarType"/>
         <exclude name="Squiz.ControlStructures.ElseIfDeclaration.NotAllowed"/>
         <exclude name="Squiz.Files.FileExtension.ClassFound"/>
         <exclude name="Squiz.Formatting.OperatorBracket.MissingBrackets"/>
@@ -92,6 +95,7 @@
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.Before"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.BeforeFirst"/>
         <exclude name="Squiz.WhiteSpace.ObjectOperatorSpacing.Before"/>
+        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore"/>
     </rule>
     <rule ref="Zend">
         <exclude name="Zend.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>

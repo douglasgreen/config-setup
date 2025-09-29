@@ -8,7 +8,7 @@ parameters:
     phpVersion: 80100
     paths:
         - bin
-        - ecs.php
+        - .php-cs-fixer.php
         - rector.php
         - src
         - stubs/wordpress.php

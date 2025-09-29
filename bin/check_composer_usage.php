@@ -10,13 +10,13 @@ $composerJsonPath = 'composer.json';
 
 // Check if the file exists
 if (!file_exists($composerJsonPath)) {
-    die('Error: composer.json file not found.');
+    exit('Error: composer.json file not found.');
 }
 
 // Read the content of the composer.json file
 $composerJsonContent = file_get_contents($composerJsonPath);
 if ($composerJsonContent === false) {
-    die("Unable to read composer.json file: {$composerJsonPath}\n");
+    exit("Unable to read composer.json file: {$composerJsonPath}\n");
 }
 
 // Decode the JSON content into a PHP array
@@ -24,7 +24,7 @@ $composerData = json_decode($composerJsonContent, true);
 
 // Check if the JSON decoding was successful
 if (json_last_error() !== JSON_ERROR_NONE) {
-    die('Error: Failed to decode JSON. ' . json_last_error_msg());
+    exit('Error: Failed to decode JSON. ' . json_last_error_msg());
 }
 
 $projectName = $composerData['name'];
@@ -42,13 +42,13 @@ if (isset($composerData['require']) && is_array($composerData['require'])) {
 }
 
 if (!$packagesRequired) {
-    die('No package requirements found');
+    exit('No package requirements found');
 }
 
 $composerPaths = [];
 exec('find vendor/ -maxdepth 3 -name composer.json -print', $composerPaths);
 if ($composerPaths === []) {
-    die('Vendor files not found' . PHP_EOL);
+    exit('Vendor files not found' . PHP_EOL);
 }
 
 $projectNamespaces = [];
@@ -56,7 +56,7 @@ foreach ($composerPaths as $composerJsonPath) {
     // Read the content of the composer.json file
     $composerJsonContent = file_get_contents($composerJsonPath);
     if ($composerJsonContent === false) {
-        die("Unable to read composer.json file: {$composerJsonPath}\n");
+        exit("Unable to read composer.json file: {$composerJsonPath}\n");
     }
 
     // Decode the JSON content into a PHP array
@@ -64,7 +64,7 @@ foreach ($composerPaths as $composerJsonPath) {
 
     // Check if the JSON decoding was successful
     if (json_last_error() !== JSON_ERROR_NONE) {
-        die('Error: Failed to decode JSON. ' . json_last_error_msg());
+        exit('Error: Failed to decode JSON. ' . json_last_error_msg());
     }
 
     // Check if the autoload and psr-4 keys exist
@@ -92,7 +92,7 @@ foreach ($fileList as $file) {
     } else {
         $handle = fopen($file, 'r');
         if (!$handle) {
-            die("Unable to open file: {$file}\n");
+            exit("Unable to open file: {$file}\n");
         }
 
         $firstLine = fgets($handle);
@@ -126,9 +126,9 @@ foreach ($phpFiles as $file) {
         }
 
         $match = preg_replace('/^function\s+/', '', $match);
-        $match = preg_replace('#^\\\\#', '', (string) $match);
-        $match = preg_replace('#\\\\$#', '', (string) $match);
-        $match = preg_replace('#\\\\+#', '\\', (string) $match);
+        $match = preg_replace('#^\\\#', '', (string) $match);
+        $match = preg_replace('#\\\$#', '', (string) $match);
+        $match = preg_replace('#\\\+#', '\\', (string) $match);
 
         // Store all possible base paths.
         do {

@@ -6,10 +6,6 @@
 
 namespace DouglasGreen\ConfigSetup;
 
-use DOMDocument;
-use Exception;
-use SimpleXMLElement;
-
 /**
  * This class does the creation, configuration, and copying of relevant files.
  */
@@ -31,7 +27,6 @@ class FileCopier
         '.stylelintignore' => 'stylelint',
         '.stylelintrc.json' => 'stylelint',
         'commitlint.config.js' => 'commitlint',
-        'ecs.php' => 'ecs',
         'phpcs.xml' => 'phpcs',
         'phpstan.neon' => 'phpstan',
         'phpunit.xml' => 'phpunit',
@@ -66,7 +61,6 @@ class FileCopier
         '.husky' => 'husky',
         'script' => null,
         'stubs' => null,
-        'var/cache/ecs' => 'ecs',
         'var/cache/eslint' => 'eslint',
         'var/cache/pdepend' => 'pdepend',
         'var/cache/php-cs-fixer' => 'php-cs-fixer',
@@ -81,7 +75,6 @@ class FileCopier
     protected const COMPOSER_PACKAGES = [
         'dead-code-detector' => 'shipmonk/dead-code-detector',
         'detect-collisions' => 'shipmonk/name-collision-detector',
-        'ecs' => 'symplify/easy-coding-standard',
         'pdepend' => 'pdepend/pdepend',
         'phpcs' => 'squizlabs/php_codesniffer',
         'php-cs-fixer' => 'friendsofphp/php-cs-fixer',
@@ -132,18 +125,18 @@ class FileCopier
     /** @var string PHP version derived from composer.json */
     protected readonly string $phpVersion;
 
-    /** @var boolean Whether to use WooCommerce stubs */
+    /** @var bool Whether to use WooCommerce stubs */
     protected readonly bool $useWooCommerce;
 
-    /** @var boolean Whether to use WordPress stubs */
+    /** @var bool Whether to use WordPress stubs */
     protected readonly bool $useWordPress;
 
     /**
      * Do all required setup.
      *
      * @param string $repoDir Repository directory
-     * @param integer $flags Bitwise flags to enable or disable features
-     * @param integer $wrap Line wrap length
+     * @param int $flags Bitwise flags to enable or disable features
+     * @param int $wrap Line wrap length
      */
     public function __construct(
         protected readonly string $repoDir,
@@ -200,7 +193,7 @@ class FileCopier
     /**
      * Copy the config files to the target location.
      *
-     * @throws Exception for various file issues
+     * @throws \Exception for various file issues
      */
     public function copyFiles(): void
     {
@@ -208,7 +201,7 @@ class FileCopier
         if (file_exists($this->excludeFile)) {
             $excludeLines = file($this->excludeFile, FILE_IGNORE_NEW_LINES);
             if ($excludeLines === false) {
-                throw new Exception('Unable to load file');
+                throw new \Exception('Unable to load file');
             }
         }
 
@@ -245,10 +238,7 @@ class FileCopier
 
             $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
             $target = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
-            if ($fileToCopy === 'ecs.php') {
-                // Put temporary copy with correct "line_length" value in var dir.
-                $this->makeEcs($plainFile, $target);
-            } elseif ($fileToCopy === '.eslintrc.json') {
+            if ($fileToCopy === '.eslintrc.json') {
                 // Put temporary copy with correct "extends" value in var dir.
                 $this->makeEslintrc($plainFile, $target);
             } elseif ($fileToCopy === 'phpstan.neon') {
@@ -279,7 +269,7 @@ class FileCopier
                 // Check if link is pointing to the right target.
                 $actualTarget = readlink($symlink);
                 if ($actualTarget === false) {
-                    throw new Exception('Unable to get target of symbolic link: ' . $symlink);
+                    throw new \Exception('Unable to get target of symbolic link: ' . $symlink);
                 }
 
                 if ($actualTarget === $target) {
@@ -287,19 +277,23 @@ class FileCopier
                 }
 
                 if (unlink($symlink) === false) {
-                    throw new Exception('Unable to delete symlink');
+                    throw new \Exception('Unable to delete symlink');
                 }
             }
 
             // Check if the destination exists and is a file, then delete it
             if (is_file($symlink) && unlink($symlink) === false) {
-                throw new Exception('Unable to delete file');
+                throw new \Exception('Unable to delete file');
             }
 
             // Create a soft link instead of copying the file
             if (symlink($target, $symlink) === false) {
-                throw new Exception(
-                    sprintf('Unable to make symlink %s to file %s', $symlink, $target),
+                throw new \Exception(
+                    sprintf(
+                        'Unable to make symlink %s to file %s',
+                        $symlink,
+                        $target,
+                    ),
                 );
             }
 
@@ -317,7 +311,7 @@ class FileCopier
         $output = implode(PHP_EOL, $excludeLines) . PHP_EOL;
         if (is_dir(dirname($this->excludeFile))) {
             if (file_put_contents($this->excludeFile, $output) === false) {
-                throw new Exception('Unable to save file');
+                throw new \Exception('Unable to save file');
             }
 
             printf(
@@ -353,14 +347,14 @@ class FileCopier
     /**
      * Determine if a code coverage driver is available.
      *
-     * @throws Exception if unable to determine if code coverage driver is available.
+     * @throws \Exception if unable to determine if code coverage driver is available
      */
     protected static function hasCodeCoverageDriver(): bool
     {
         $command = "php -m | grep -E 'xdebug|pcov'";
         exec($command, $output, $returnCode);
         if ($returnCode !== 0 && $returnCode !== 1) {
-            throw new Exception('Unable to determine if code coverage driver is available');
+            throw new \Exception('Unable to determine if code coverage driver is available');
         }
 
         return $output !== [];
@@ -369,14 +363,15 @@ class FileCopier
     /**
      * Load and decode the composer.json file.
      *
-     * @throws Exception if unable to load file
+     * @throws \Exception if unable to load file
+     *
      * @return array<string, mixed>
      */
     protected static function loadComposerJson(): array
     {
         $composerJsonString = file_get_contents('composer.json');
         if ($composerJsonString === false) {
-            throw new Exception('Unable to load file');
+            throw new \Exception('Unable to load file');
         }
 
         return json_decode($composerJsonString, true, 16, JSON_THROW_ON_ERROR);
@@ -385,14 +380,15 @@ class FileCopier
     /**
      * Get the list of files committed to the Git repository.
      *
-     * @throws Exception if unable to get list of Git files
+     * @throws \Exception if unable to get list of Git files
+     *
      * @return list<string>
      */
     protected static function loadGitFiles(): array
     {
         exec('git ls-files', $output, $returnCode);
         if ($returnCode !== 0) {
-            throw new Exception('Unable to get list of Git files');
+            throw new \Exception('Unable to get list of Git files');
         }
 
         return $output;
@@ -401,7 +397,8 @@ class FileCopier
     /**
      * Load and decode the package.json file.
      *
-     * @throws Exception if unable to load file
+     * @throws \Exception if unable to load file
+     *
      * @return ?array<string, mixed>
      */
     protected static function loadPackageJson(): ?array
@@ -414,7 +411,7 @@ class FileCopier
 
         $packageJsonString = file_get_contents('package.json');
         if ($packageJsonString === false) {
-            throw new Exception('Unable to load file');
+            throw new \Exception('Unable to load file');
         }
 
         return json_decode($packageJsonString, true, 16, JSON_THROW_ON_ERROR);
@@ -425,7 +422,7 @@ class FileCopier
      *
      * @param string $dir Directory to make
      *
-     * @throws Exception if unable to make directory
+     * @throws \Exception if unable to make directory
      */
     protected static function makeDir(string $dir): void
     {
@@ -434,7 +431,7 @@ class FileCopier
         }
 
         if (mkdir($dir, 0o777, true) === false) {
-            throw new Exception('Unable to make directory');
+            throw new \Exception('Unable to make directory');
         }
     }
 
@@ -488,7 +485,8 @@ class FileCopier
      *
      * @param string $path Path of file to check
      *
-     * @throws Exception if unable to open file
+     * @throws \Exception if unable to open file
+     *
      * @todo Use the return type of "file" command if available.
      * Example: file -b bin/task.php
      * a /usr/bin/env php script, ASCII text executable
@@ -499,7 +497,7 @@ class FileCopier
             // @todo Use file here instead of this.
             $fileHandle = fopen($path, 'r');
             if ($fileHandle === false) {
-                throw new Exception('Unable to open file');
+                throw new \Exception('Unable to open file');
             }
 
             $line = fgets($fileHandle);
@@ -569,20 +567,20 @@ class FileCopier
     /**
      * Get the required PHP version from the composer.json file.
      *
-     * @throws Exception if unable to find or extract PHP version
+     * @throws \Exception if unable to find or extract PHP version
      */
     protected function getPhpVersion(): string
     {
         // Find the PHP version in the require section
         if (!isset($this->composerJson['require']['php'])) {
-            throw new Exception('PHP version not specified in composer.json');
+            throw new \Exception('PHP version not specified in composer.json');
         }
 
         $phpVersionConstraint = $this->composerJson['require']['php'];
 
         // Extract the PHP version number
         if (preg_match('/\d+\.\d+/', (string) $phpVersionConstraint, $match) === 0) {
-            throw new Exception('Unable to extract PHP version from composer.json');
+            throw new \Exception('Unable to extract PHP version from composer.json');
         }
 
         return $match[0] ?? '';
@@ -636,42 +634,12 @@ class FileCopier
     }
 
     /**
-     * Copy the ECS file from the source to the destination.
-     *
-     * @param string $source Source file
-     * @param string $destination Destination file
-     *
-     * @throws Exception if unable to load or save file.
-     */
-    protected function makeEcs(string $source, string $destination): void
-    {
-        $lines = file($source);
-        if ($lines === false) {
-            throw new Exception('Unable to load file');
-        }
-
-        $newLines = [];
-        foreach ($lines as $line) {
-            if (str_contains($line, 'line_length')) {
-                $line = (string) preg_replace('/\b100\b/', (string) $this->wrap, $line);
-            }
-
-            $newLines[] = $line;
-        }
-
-        $newString = implode('', $newLines);
-        if (file_put_contents($destination, $newString) === false) {
-            throw new Exception('Unable to save file');
-        }
-    }
-
-    /**
      * Copy the ESLint config file from the source to the destination.
      *
      * @param string $source Source file
      * @param string $destination Destination file
      *
-     * @throws Exception if unable to load or save file.
+     * @throws \Exception if unable to load or save file
      */
     protected function makeEslintrc(string $source, string $destination): void
     {
@@ -682,7 +650,7 @@ class FileCopier
         // Decode the JSON string into a PHP array
         $eslintJsonString = file_get_contents($source);
         if ($eslintJsonString === false) {
-            throw new Exception('Unable to load file');
+            throw new \Exception('Unable to load file');
         }
 
         $eslintJson = json_decode($eslintJsonString, true, 16, JSON_THROW_ON_ERROR);
@@ -707,7 +675,7 @@ class FileCopier
         );
 
         if (file_put_contents($destination, $eslintJsonString) === false) {
-            throw new Exception('Unable to save file');
+            throw new \Exception('Unable to save file');
         }
     }
 
@@ -766,7 +734,7 @@ class FileCopier
      *
      * @param string $destination Destination file
      *
-     * @throws Exception if unable to make PHPUnit XML
+     * @throws \Exception if unable to make PHPUnit XML
      */
     protected function makePhpUnit(string $destination): void
     {
@@ -798,7 +766,7 @@ class FileCopier
             XML;
 
         // Load the XML string into SimpleXMLElement.
-        $xml = new SimpleXMLElement($xmlString);
+        $xml = new \SimpleXMLElement($xmlString);
 
         // Add source files.
         $source = $xml->addChild('source');
@@ -841,13 +809,13 @@ class FileCopier
         }
 
         // Save the modified XML to the new file with pretty print.
-        $domDocument = new DOMDocument('1.0');
+        $domDocument = new \DOMDocument('1.0');
         $domDocument->preserveWhiteSpace = false;
         $domDocument->formatOutput = true;
 
         $xmlOutput = $xml->asXML();
         if ($xmlOutput === false) {
-            throw new Exception('Unable to make PHPUnit XML');
+            throw new \Exception('Unable to make PHPUnit XML');
         }
 
         $domDocument->loadXML($xmlOutput);
@@ -860,7 +828,7 @@ class FileCopier
      * @param string $source Source file
      * @param string $destination Destination file
      *
-     * @throws Exception if unable to load or save file
+     * @throws \Exception if unable to load or save file
      */
     protected function makePrettierrc(string $source, string $destination): void
     {
@@ -871,7 +839,7 @@ class FileCopier
         // Load .prettierrc.json
         $prettierJsonString = file_get_contents($source);
         if ($prettierJsonString === false) {
-            throw new Exception('Unable to load file');
+            throw new \Exception('Unable to load file');
         }
 
         $prettierJson = json_decode($prettierJsonString, true, 16, JSON_THROW_ON_ERROR);
@@ -881,7 +849,7 @@ class FileCopier
 
         // Find the plugins.
         if (!isset($prettierJson['plugins'])) {
-            throw new Exception('Plugins not specified in .prettierrc.json');
+            throw new \Exception('Plugins not specified in .prettierrc.json');
         }
 
         $plugins = [];
@@ -902,14 +870,14 @@ class FileCopier
         }
 
         if (file_put_contents($destination, $prettierJsonString) === false) {
-            throw new Exception('Unable to save file');
+            throw new \Exception('Unable to save file');
         }
     }
 
     /**
      * Update the list of PHP paths in the collision-detector.json file.
      *
-     * @throws Exception if unable to save the file.
+     * @throws \Exception if unable to save the file
      */
     protected function updateCollisionDetector(): bool
     {
@@ -931,7 +899,7 @@ class FileCopier
         );
 
         if (file_put_contents($pathFile, $json) === false) {
-            throw new Exception('Unable to save file');
+            throw new \Exception('Unable to save file');
         }
 
         echo 'Created collision-detector.json file.' . PHP_EOL;
@@ -942,21 +910,21 @@ class FileCopier
     /**
      * Update the PHP paths in the php_paths file used by several programs.
      *
-     * @throws Exception if unable to load or save file.
+     * @throws \Exception if unable to load or save file
      */
     protected function updatePhpPaths(): bool
     {
         $pathFile = $this->repoDir . '/php_paths';
         $oldPaths = file_exists($pathFile) ? file($pathFile, FILE_IGNORE_NEW_LINES) : [];
         if ($oldPaths === false) {
-            throw new Exception('Unable to load file');
+            throw new \Exception('Unable to load file');
         }
 
         // Write the list of directories to php_paths file
         if ($oldPaths !== $this->phpPaths) {
             $result = file_put_contents($pathFile, implode(PHP_EOL, $this->phpPaths) . PHP_EOL);
             if ($result === false) {
-                throw new Exception('Unable to save file');
+                throw new \Exception('Unable to save file');
             }
 
             echo 'Created php_paths file.' . PHP_EOL;
