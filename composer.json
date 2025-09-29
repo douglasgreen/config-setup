@@ -56,7 +56,7 @@
         "lint": [
             "detect-collisions",
             "ecs",
-            "php-cs-fixer check",
+            "php-cs-fixer check --verbose --diff",
             "phpcs -s",
             "phpstan analyse",
             "rector --dry-run"
@@ -64,7 +64,7 @@
         "lint:fix": [
             "ecs --fix",
             "phpcbf",
-            "php-cs-fixer fix",
+            "php-cs-fixer fix --verbose --diff",
             "rector",
             "sort_composer_json.php"
         ]
