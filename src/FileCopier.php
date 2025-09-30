@@ -78,8 +78,6 @@ class FileCopier
      * There is no cache for rector because it was having too many errors.
      *
      * @var array<string, ?string> Names of directories to make if the project is installed
-     *
-     * @todo Configure phpcs.xml to set a relative path that works when deployed
      */
     protected const MAKE_DIRS = [
         '.husky' => 'husky',
@@ -373,6 +371,9 @@ class FileCopier
             } elseif ($fileToCopy === 'phpstan.neon') {
                 // Put PHPStan temporary copy with PHP version in var dir.
                 $this->makePhpStan($plainFile, $target);
+            } elseif ($fileToCopy === 'phpcs.xml') {
+                // Put PHPCS temporary copy with absolute cache path in var dir.
+                $this->makePhpcsXml($plainFile, $target);
             } elseif ($fileToCopy === 'phpunit.xml') {
                 // Put PHPUnit temporary copy with directory list and coverage options in var dir.
                 $this->makePhpUnit($target);
@@ -739,6 +740,76 @@ class FileCopier
         );
 
         if (file_put_contents($destination, $eslintJsonString) === false) {
+            throw new \Exception('Unable to save file');
+        }
+    }
+
+    /**
+     * Copy the PHPCS config, updating the cache path to an absolute path.
+     *
+     * @param string $source Source file (the template phpcs.xml to read)
+     * @param string $destination Destination file (where to write the modified file)
+     *
+     * @throws \Exception if unable to load or save file
+     */
+    protected function makePhpcsXml(string $source, string $destination): void
+    {
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        // Keep comments; avoid collapsing everything into one line.
+        $dom->preserveWhiteSpace = true;
+        $dom->formatOutput = true;
+
+        $prev = libxml_use_internal_errors(true);
+        $loaded = $dom->load($source);
+        libxml_get_errors();
+        libxml_clear_errors();
+        libxml_use_internal_errors($prev);
+
+        if ($loaded === false) {
+            throw new \Exception('Unable to load file');
+        }
+
+        $xpath = new \DOMXPath($dom);
+        $newValue = $this->repoDir . '/var/cache/phpcs/phpcs.cache';
+
+        // Update existing <arg name="cache" .../> nodes, if present.
+        $nodes = $xpath->query('/ruleset/arg[@name="cache"]');
+        if ($nodes !== false && $nodes->length > 0) {
+            foreach ($nodes as $node) {
+                if ($node instanceof \DOMElement) {
+                    $node->setAttribute('value', $newValue);
+                }
+            }
+        } else {
+            // If missing, create it under <ruleset>, after any existing <arg> nodes.
+            $ruleset = null;
+            $rulesetNode = $xpath->query('/ruleset');
+            if ($rulesetNode !== false) {
+                $ruleset = $rulesetNode->item(0);
+            }
+
+            if (!$ruleset instanceof \DOMElement) {
+                throw new \Exception('Invalid phpcs.xml: missing <ruleset> root');
+            }
+
+            $arg = $dom->createElement('arg');
+            $arg->setAttribute('name', 'cache');
+            $arg->setAttribute('value', $newValue);
+
+            $lastArg = null;
+            $lastArgNode = $xpath->query('/ruleset/arg[last()]');
+            if ($lastArgNode !== false) {
+                $lastArg = $lastArgNode->item(0);
+            }
+
+            if ($lastArg instanceof \DOMNode && $lastArg->parentNode instanceof \DOMNode) {
+                $lastArg->parentNode->insertBefore($arg, $lastArg->nextSibling);
+            } else {
+                $ruleset->appendChild($arg);
+            }
+        }
+
+        if ($dom->save($destination) === false) {
             throw new \Exception('Unable to save file');
         }
     }
