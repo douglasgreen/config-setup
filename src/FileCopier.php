@@ -818,7 +818,7 @@ class FileCopier
 
         $firstArg = $firstArgNode->item(0);
         foreach ($this->phpPaths as $path) {
-            $fileNode = $dom->createElement('file', $path);
+            $fileNode = $dom->createElement('file', $this->repoDir . '/' . $path);
             if ($firstArg instanceof \DOMNode) {
                 $ruleset->insertBefore($fileNode, $firstArg);
             } else {
