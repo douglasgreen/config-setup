@@ -750,7 +750,7 @@ class FileCopier
      * @param string $source Source file (the template phpcs.xml to read)
      * @param string $destination Destination file (where to write the modified file)
      *
-     * @throws \Exception if unable to load or save file
+     * @throws \Exception if source file badly formatted or unable to load or save destionation file
      */
     protected function makePhpcsXml(string $source, string $destination): void
     {
@@ -761,7 +761,6 @@ class FileCopier
 
         $prev = libxml_use_internal_errors(true);
         $loaded = $dom->load($source);
-        libxml_get_errors();
         libxml_clear_errors();
         libxml_use_internal_errors($prev);
 
@@ -770,42 +769,60 @@ class FileCopier
         }
 
         $xpath = new \DOMXPath($dom);
-        $newValue = $this->repoDir . '/var/cache/phpcs/phpcs.cache';
 
-        // Update existing <arg name="cache" .../> nodes, if present.
-        $nodes = $xpath->query('/ruleset/arg[@name="cache"]');
-        if ($nodes !== false && $nodes->length > 0) {
-            foreach ($nodes as $node) {
-                if ($node instanceof \DOMElement) {
-                    $node->setAttribute('value', $newValue);
-                }
+        $ruleset = $dom->documentElement;
+        if (!$ruleset instanceof \DOMElement || $ruleset->tagName !== 'ruleset') {
+            throw new \Exception('Invalid PHPCS ruleset XML');
+        }
+
+        // 1) Update existing <arg name="cache" .../> node to an absolute cache path.
+        $newCacheValue = $this->repoDir . '/var/cache/phpcs/phpcs.cache';
+        $cacheArgNode = $xpath->query('/ruleset/arg[@name="cache"]');
+        if ($cacheArgNode === false || $cacheArgNode->length === 0) {
+            throw new \Exception('Cache argument not found');
+        }
+
+        $cacheArg = $cacheArgNode->item(0);
+        if ($cacheArg instanceof \DOMElement) {
+            $cacheArg->setAttribute('value', $newCacheValue);
+        }
+
+        // 2) Update <config name="testVersion" value="..."/> to "{$this->phpVersion}-"
+        $testVersionNode = $xpath->query('/ruleset/config[@name="testVersion"]');
+        if ($testVersionNode !== false && $testVersionNode->length > 0) {
+            $config = $testVersionNode->item(0);
+            if ($config instanceof \DOMElement) {
+                $config->setAttribute('value', $this->phpVersion . '-');
             }
-        } else {
-            // If missing, create it under <ruleset>, after any existing <arg> nodes.
-            $ruleset = null;
-            $rulesetNode = $xpath->query('/ruleset');
-            if ($rulesetNode !== false) {
-                $ruleset = $rulesetNode->item(0);
+        }
+
+        // 3) Replace all <file> entries with $this->phpPaths
+        $fileNodes = $xpath->query('/ruleset/file');
+        if ($fileNodes === false) {
+            throw new \Exception('Unable to parse ruleset file list');
+        }
+
+        // Remove existing file nodes
+        for ($i = $fileNodes->length - 1; $i >= 0; --$i) {
+            $node = $fileNodes->item($i);
+            if ($node instanceof \DOMNode) {
+                $ruleset->removeChild($node);
             }
+        }
 
-            if (!$ruleset instanceof \DOMElement) {
-                throw new \Exception('Invalid phpcs.xml: missing <ruleset> root');
-            }
+        // Insert new file nodes before the first <arg> to keep them near the top, similar to the template
+        $firstArgNode = $xpath->query('/ruleset/arg');
+        if ($firstArgNode === false) {
+            throw new \Exception('Unable to parse arg list');
+        }
 
-            $arg = $dom->createElement('arg');
-            $arg->setAttribute('name', 'cache');
-            $arg->setAttribute('value', $newValue);
-
-            $lastArg = null;
-            $lastArgNode = $xpath->query('/ruleset/arg[last()]');
-            if ($lastArgNode !== false) {
-                $lastArg = $lastArgNode->item(0);
-            }
-
-            if ($lastArg instanceof \DOMNode && $lastArg->parentNode instanceof \DOMNode) {
-                $lastArg->parentNode->insertBefore($arg, $lastArg->nextSibling);
+        $firstArg = $firstArgNode->item(0);
+        foreach ($this->phpPaths as $path) {
+            $fileNode = $dom->createElement('file', $path);
+            if ($firstArg instanceof \DOMNode) {
+                $ruleset->insertBefore($fileNode, $firstArg);
             } else {
-                $ruleset->appendChild($arg);
+                $ruleset->appendChild($fileNode);
             }
         }
 
