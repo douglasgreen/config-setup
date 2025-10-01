@@ -86,6 +86,7 @@
         <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing"/>
         <exclude name="Squiz.Commenting.VariableComment.IncorrectVarType"/>
         <exclude name="Squiz.ControlStructures.ElseIfDeclaration.NotAllowed"/>
+        <exclude name="Squiz.ControlStructures.InlineIfDeclaration.NoBrackets"/>
         <exclude name="Squiz.Files.FileExtension.ClassFound"/>
         <exclude name="Squiz.Formatting.OperatorBracket.MissingBrackets"/>
         <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue"/>
