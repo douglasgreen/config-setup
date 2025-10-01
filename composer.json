@@ -56,14 +56,14 @@
         "lint": [
             "detect-collisions",
             "ecs",
-            "phpcs -s",
+            "phpcs -p -s",
             "php-cs-fixer check --verbose --diff",
             "phpstan analyse",
             "rector --dry-run"
         ],
         "lint:fix": [
             "ecs --fix",
-            "phpcbf",
+            "phpcbf -p",
             "php-cs-fixer fix --verbose --diff",
             "rector",
             "sort_composer_json.php"
