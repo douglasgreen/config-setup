@@ -21,6 +21,7 @@
  * The Symplify statements must precede the PhpCsFixer statements or PHPStan reports namespace
  * errors.
  */
+use Symplify\CodingStandard\Fixer\ArrayNotation\ArrayOpenerAndCloserNewlineFixer;
 use Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
@@ -52,6 +53,9 @@ return function (ECSConfig $ecsConfig): void {
 
     // --- SKIP RULES ---
     $ecsConfig->skip([
+        // Allow one-line arrays.
+        ArrayOpenerAndCloserNewlineFixer::class,
+
         // Don't fix braces because it's handled by PHP CS Fixer.
         BracesPositionFixer::class,
 
