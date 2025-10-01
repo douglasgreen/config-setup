@@ -26,7 +26,14 @@
     <!-- Print warnings but don't halt linting because of them. -->
     <config name="ignore_warnings_on_exit" value="1"/>
 
-    <!-- List of all applicable, non-deprecated standards -->
+    <!-- Customized rules -->
+    <rule ref="Squiz.WhiteSpace.MemberVarSpacing">
+        <properties>
+            <property name="spacingBeforeFirst" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- List of all applicable, non-deprecated standards excluding any unwanted rules -->
     <rule ref="PEAR">
         <exclude name="PEAR.Commenting.ClassComment.MissingAuthorTag"/>
         <exclude name="PEAR.Commenting.ClassComment.MissingCategoryTag"/>
