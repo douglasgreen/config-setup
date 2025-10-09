@@ -49,10 +49,6 @@ return function (ECSConfig $ecsConfig): void {
     $ecsConfig->sets([SetList::COMMON, SetList::PSR_12, SetList::STRICT, SetList::SYMPLIFY]);
 
     // --- CONFIGURE INDIVIDUAL RULES ---
-    $ecsConfig->ruleWithConfiguration(ClassDefinitionFixer::class, [
-        'single_line' => true,
-    ]);
-
     $ecsConfig->ruleWithConfiguration(FunctionDeclarationFixer::class, [
         'closure_fn_spacing' => 'none',
     ]);
@@ -68,6 +64,9 @@ return function (ECSConfig $ecsConfig): void {
 
         // Don't fix braces because it's handled by PHP CS Fixer.
         BracesPositionFixer::class,
+
+        // I couldn't configure this to put {} on the same line as class.
+        ClassDefinitionFixer::class,
 
         // Do not enforce the declaration of strict types (`declare(strict_types=1);`).
         DeclareStrictTypesFixer::class,
