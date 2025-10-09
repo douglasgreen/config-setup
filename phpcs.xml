@@ -53,6 +53,7 @@
         <exclude name="PEAR.ControlStructures.MultiLineCondition.SpacingAfterOpenBrace"/>
         <exclude name="PEAR.ControlStructures.MultiLineCondition.StartWithBoolean"/>
         <exclude name="PEAR.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
+        <exclude name="PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
         <exclude name="PEAR.WhiteSpace.ScopeClosingBrace.Line"/>
     </rule>
     <rule ref="PHPCompatibility"/>
