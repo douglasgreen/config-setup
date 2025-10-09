@@ -120,6 +120,9 @@ $rules = [
         'keep_blank_lines' => true,
     ],
     'multiline_whitespace_before_semicolons' => false,
+    'function_declaration' => [
+        'closure_fn_spacing' => 'none',
+    ],
 
     // imports
     'no_unused_imports' => true,
