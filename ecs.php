@@ -27,6 +27,7 @@ use Symplify\EasyCodingStandard\Config\ECSConfig;
 use Symplify\EasyCodingStandard\ValueObject\Set\SetList;
 use PhpCsFixer\Fixer\Basic\BracesPositionFixer;
 use PhpCsFixer\Fixer\ClassNotation\OrderedClassElementsFixer;
+use PhpCsFixer\Fixer\FunctionNotation\FunctionDeclarationFixer;
 use PhpCsFixer\Fixer\Import\GlobalNamespaceImportFixer;
 use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 use PhpCsFixer\Fixer\Operator\NotOperatorWithSuccessorSpaceFixer;
@@ -47,6 +48,10 @@ return function (ECSConfig $ecsConfig): void {
     $ecsConfig->sets([SetList::COMMON, SetList::PSR_12, SetList::STRICT, SetList::SYMPLIFY]);
 
     // --- CONFIGURE INDIVIDUAL RULES ---
+    $ecsConfig->ruleWithConfiguration(FunctionDeclarationFixer::class, [
+        'closure_fn_spacing' => 'none',
+    ]);
+
     $ecsConfig->ruleWithConfiguration(LineLengthFixer::class, [
         'line_length' => 100,
     ]);
