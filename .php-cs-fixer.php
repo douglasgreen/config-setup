@@ -204,6 +204,7 @@ $rules = [
     ],
 
     // PHPDoc
+    'phpdoc_annotation_without_dot' => false,
     'phpdoc_param_order' => true,
     'phpdoc_summary' => true,
     'phpdoc_line_span' => [
