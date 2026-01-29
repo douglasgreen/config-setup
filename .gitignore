@@ -2,9 +2,6 @@
 
 # Project-specific settings (put your files here)
 
-# Bower
-bower_components/
-
 # Build directories
 build/
 .cache/
