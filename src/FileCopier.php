@@ -24,10 +24,7 @@ class FileCopier
         'dead-code-detector' => 'shipmonk/dead-code-detector',
         'detect-collisions' => 'shipmonk/name-collision-detector',
         'pdepend' => 'pdepend/pdepend',
-        'phpcs' => 'squizlabs/php_codesniffer',
         'php-cs-fixer' => 'friendsofphp/php-cs-fixer',
-        'phpcs-compatibility-sniffs' => 'phpcompatibility/php-compatibility',
-        'phpcs-composer-installer' => 'dealerdirect/phpcodesniffer-composer-installer',
         'phpstan' => 'phpstan/phpstan',
         'phpunit' => 'phpunit/phpunit',
         'rector' => 'rector/rector',
@@ -45,7 +42,6 @@ class FileCopier
         '.stylelintignore' => 'stylelint',
         '.stylelintrc.json' => 'stylelint',
         'commitlint.config.js' => 'commitlint',
-        'phpcs.xml' => 'phpcs',
         'phpstan.neon' => 'phpstan',
         'phpunit.xml' => 'phpunit',
         'rector.php' => 'rector',
@@ -84,7 +80,6 @@ class FileCopier
         'var/cache/eslint' => 'eslint',
         'var/cache/pdepend' => 'pdepend',
         'var/cache/php-cs-fixer' => 'php-cs-fixer',
-        'var/cache/phpcs' => 'phpcs',
         'var/cache/phpstan' => 'phpstan',
         'var/cache/phpunit' => 'phpunit',
         'var/cache/rector' => 'rector',
@@ -365,9 +360,6 @@ class FileCopier
             } elseif ($fileToCopy === 'phpstan.neon') {
                 // Put PHPStan temporary copy with PHP version in var dir.
                 $this->makePhpStan($plainFile, $target);
-            } elseif ($fileToCopy === 'phpcs.xml') {
-                // Put PHPCS temporary copy with absolute cache path in var dir.
-                $this->makePhpcsXml($plainFile, $target);
             } elseif ($fileToCopy === 'phpunit.xml') {
                 // Put PHPUnit temporary copy with directory list and coverage options in var dir.
                 $this->makePhpUnit($target);
@@ -704,93 +696,6 @@ class FileCopier
         );
 
         if (file_put_contents($destination, $eslintJsonString) === false) {
-            throw new \Exception('Unable to save file');
-        }
-    }
-
-    /**
-     * Copy the PHPCS config, updating the cache path to an absolute path.
-     *
-     * @param string $source Source file (the template phpcs.xml to read)
-     * @param string $destination Destination file (where to write the modified file)
-     *
-     * @throws \Exception if source file badly formatted or unable to load or save destionation file
-     */
-    protected function makePhpcsXml(string $source, string $destination): void
-    {
-        $dom = new \DOMDocument('1.0', 'UTF-8');
-        // Keep comments; avoid collapsing everything into one line.
-        $dom->preserveWhiteSpace = true;
-        $dom->formatOutput = true;
-
-        $prev = libxml_use_internal_errors(true);
-        $loaded = $dom->load($source);
-        libxml_clear_errors();
-        libxml_use_internal_errors($prev);
-
-        if ($loaded === false) {
-            throw new \Exception('Unable to load file');
-        }
-
-        $xpath = new \DOMXPath($dom);
-
-        $ruleset = $dom->documentElement;
-        if (!$ruleset instanceof \DOMElement || $ruleset->tagName !== 'ruleset') {
-            throw new \Exception('Invalid PHPCS ruleset XML');
-        }
-
-        // 1) Update existing <arg name="cache" .../> node to an absolute cache path.
-        $newCacheValue = $this->repoDir . '/var/cache/phpcs/phpcs.cache';
-        $cacheArgNode = $xpath->query('/ruleset/arg[@name="cache"]');
-        if ($cacheArgNode === false || $cacheArgNode->length === 0) {
-            throw new \Exception('Cache argument not found');
-        }
-
-        $cacheArg = $cacheArgNode->item(0);
-        if ($cacheArg instanceof \DOMElement) {
-            $cacheArg->setAttribute('value', $newCacheValue);
-        }
-
-        // 2) Update <config name="testVersion" value="..."/> to "{$this->phpVersion}-"
-        $testVersionNode = $xpath->query('/ruleset/config[@name="testVersion"]');
-        if ($testVersionNode !== false && $testVersionNode->length > 0) {
-            $config = $testVersionNode->item(0);
-            if ($config instanceof \DOMElement) {
-                $config->setAttribute('value', $this->phpVersion . '-');
-            }
-        }
-
-        // 3) Replace all <file> entries with $this->phpPaths
-        $fileNodes = $xpath->query('/ruleset/file');
-        if ($fileNodes === false) {
-            throw new \Exception('Unable to parse ruleset file list');
-        }
-
-        // Remove existing file nodes
-        for ($i = $fileNodes->length - 1; $i >= 0; --$i) {
-            $node = $fileNodes->item($i);
-            if ($node instanceof \DOMNode) {
-                $ruleset->removeChild($node);
-            }
-        }
-
-        // Insert new file nodes before the first <arg> to keep them near the top, similar to the template
-        $firstArgNode = $xpath->query('/ruleset/arg');
-        if ($firstArgNode === false) {
-            throw new \Exception('Unable to parse arg list');
-        }
-
-        $firstArg = $firstArgNode->item(0);
-        foreach ($this->phpPaths as $path) {
-            $fileNode = $dom->createElement('file', $this->repoDir . '/' . $path);
-            if ($firstArg instanceof \DOMNode) {
-                $ruleset->insertBefore($fileNode, $firstArg);
-            } else {
-                $ruleset->appendChild($fileNode);
-            }
-        }
-
-        if ($dom->save($destination) === false) {
             throw new \Exception('Unable to save file');
         }
     }

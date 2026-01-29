@@ -29,7 +29,6 @@
         "nette/neon": "^3.4.7"
     },
     "require-dev": {
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
         "friendsofphp/php-cs-fixer": "^3.93.1",
         "phpcompatibility/php-compatibility": "*",
         "phpstan/phpstan": "^2.1.37",
@@ -54,7 +53,6 @@
     "scripts": {
         "lint": [
             "detect-collisions",
-            "phpcs -p -s",
             "php-cs-fixer check --verbose --diff",
             "phpstan analyse",
             "rector --dry-run"
