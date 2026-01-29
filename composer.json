@@ -26,18 +26,17 @@
     ],
     "require": {
         "php": ">=8.2",
-        "nette/neon": "^3.4"
+        "nette/neon": "^3.4.7"
     },
     "require-dev": {
-        "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
-        "friendsofphp/php-cs-fixer": "^3.86",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
+        "friendsofphp/php-cs-fixer": "^3.93.1",
         "phpcompatibility/php-compatibility": "*",
-        "phpstan/phpstan": "^2.1",
-        "rector/rector": "^2.1",
-        "shipmonk/dead-code-detector": "^0.13",
-        "shipmonk/name-collision-detector": "^2.1",
-        "squizlabs/php_codesniffer": "^4.0",
-        "symplify/easy-coding-standard": "^12.6"
+        "phpstan/phpstan": "^2.1.37",
+        "rector/rector": "^2.3.5",
+        "shipmonk/dead-code-detector": "^0.13.5",
+        "shipmonk/name-collision-detector": "^2.1.1",
+        "squizlabs/php_codesniffer": "^4.0.1"
     },
     "autoload": {
         "psr-4": {
@@ -55,14 +54,12 @@
     "scripts": {
         "lint": [
             "detect-collisions",
-            "ecs",
             "phpcs -p -s",
             "php-cs-fixer check --verbose --diff",
             "phpstan analyse",
             "rector --dry-run"
         ],
         "lint:fix": [
-            "ecs --fix",
             "phpcbf -p",
             "php-cs-fixer fix --verbose --diff",
             "rector",

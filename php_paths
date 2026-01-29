@@ -1,5 +1,4 @@
 bin
-ecs.php
 .php-cs-fixer.php
 rector.php
 src

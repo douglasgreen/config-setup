@@ -22,18 +22,10 @@
  */
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
-use Rector\CodeQuality\Rector\ClassMethod\LocallyCalledStaticMethodToNonStaticRector;
-use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
-use Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
-use Rector\Naming\Rector\Assign\RenameVariableToMatchMethodCallReturnTypeRector;
-use Rector\Naming\Rector\ClassMethod\RenameVariableToMatchNewTypeRector;
-use Rector\Naming\Rector\Foreach_\RenameForeachValueVariableToMatchExprVariableRector;
-use Rector\Php81\Rector\MethodCall\RemoveReflectionSetAccessibleCallsRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\LevelSetList;
-use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
 use Rector\Symfony\Set\SymfonySetList;
 
 $hasPhpUnit = false;
@@ -127,36 +119,5 @@ return RectorConfig::configure()
     )
     ->withPreparedSets(
         deadCode: true,
-        codeQuality: true,
-        codingStyle: true,
         typeDeclarations: true,
-        privatization: true,
-        naming: true,
-        instanceOf: true,
-        earlyReturn: true
-    )
-    ->withSkip([
-        // Replaces `empty()` with strict checks like `=== []`, which can be overly verbose.
-        DisallowedEmptyRuleFixerRector::class,
-
-        // Converts interpolated strings like "Hello {$name}" to `sprintf("Hello %s", $name)`, which is a stylistic choice.
-        EncapsedStringsToSprintfRector::class,
-
-        // Changes implicit boolean checks in `if` statements (e.g., `if (count($items))`) to explicit comparisons (e.g., `if (count($items) > 0)`).
-        ExplicitBoolCompareRector::class,
-
-        // Converts locally called static methods (`self::method()`) to non-static calls (`$this->method()`).
-        LocallyCalledStaticMethodToNonStaticRector::class,
-
-        // Renames a foreach value variable to match the plural variable being iterated (e.g., `$items as $item`).
-        RenameForeachValueVariableToMatchExprVariableRector::class,
-
-        // Renames a variable to match the return type of a method call (e.g., `$user = $this->getUser()`).
-        RenameVariableToMatchMethodCallReturnTypeRector::class,
-
-        // Renames a variable to match the class name when a new object is created (e.g., `$user = new User()`).
-        RenameVariableToMatchNewTypeRector::class,
-
-        // This rule removes `Reflection::setAccessible(true)` calls, except in a test environment.
-        RemoveReflectionSetAccessibleCallsRector::class => [__DIR__ . '/tests'],
-    ]);
+    );

@@ -72,7 +72,6 @@ risky tests.
 
 Several scripts are customized during the linking process.
 
--   `ecs.php` sets the value of `line_length` to the value specified in the `--wrap` parameter.
 -   `.eslintrc.json` adds an "extends" field if the Standard (eslint-config-standard) or Airbnb
     (eslint-config-airbnb-base) NPM packages are installed.
 -   `phpstan.neon` updates the phpVersion field to the "require" php version in `composer.json`.
@@ -129,8 +128,6 @@ Projects include:
 -   [PHPUnit](https://phpunit.de/index.html) for unit tests
 -   [Rector](https://github.com/rectorphp/rector) for linting and fixing (reformatting and
     refactoring)
--   [Easy Coding Standard](https://github.com/easy-coding-standard/easy-coding-standard) (ECS) for
-    linting and fixing
 -   [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage), which
     isn't well-supported by ECS. For example, its PHPCompatbility rules aren't supported, so it's
     installed separately.

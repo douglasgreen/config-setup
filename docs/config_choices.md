@@ -14,8 +14,6 @@ Here is a summary of the configuration options in the `rector.php` file:
 
 -   **PHP Version Detection**: Set PHP version for upgrades based on the version specified in
     `composer.json`.
--   **Package Detection**: Enables or disables relevant ECS rule sets based on the presence of
-    PHPUnit, Symfony, or Doctrine in `composer.json`.
 -   **Import Names**: Configure import names with options to not import short classes and to remove
     unused imports.
 -   **PHP Sets**: Configure Rector with default PHP sets.

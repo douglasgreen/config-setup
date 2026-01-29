@@ -23,7 +23,6 @@ class FileCopier
     protected const COMPOSER_PACKAGES = [
         'dead-code-detector' => 'shipmonk/dead-code-detector',
         'detect-collisions' => 'shipmonk/name-collision-detector',
-        'ecs' => 'symplify/easy-coding-standard',
         'pdepend' => 'pdepend/pdepend',
         'phpcs' => 'squizlabs/php_codesniffer',
         'php-cs-fixer' => 'friendsofphp/php-cs-fixer',
@@ -46,7 +45,6 @@ class FileCopier
         '.stylelintignore' => 'stylelint',
         '.stylelintrc.json' => 'stylelint',
         'commitlint.config.js' => 'commitlint',
-        'ecs.php' => 'ecs',
         'phpcs.xml' => 'phpcs',
         'phpstan.neon' => 'phpstan',
         'phpunit.xml' => 'phpunit',
@@ -83,7 +81,6 @@ class FileCopier
         '.husky' => 'husky',
         'script' => null,
         'stubs' => null,
-        'var/cache/ecs' => 'ecs',
         'var/cache/eslint' => 'eslint',
         'var/cache/pdepend' => 'pdepend',
         'var/cache/php-cs-fixer' => 'php-cs-fixer',
@@ -362,10 +359,7 @@ class FileCopier
 
             $plainFile = $this->repoDir . '/vendor/douglasgreen/config-setup/' . $fileToCopy;
             $target = $this->repoDir . '/vendor/douglasgreen/config-setup/var/' . $fileToCopy;
-            if ($fileToCopy === 'ecs.php') {
-                // Put temporary copy with correct "line_length" value in var dir.
-                $this->makeEcs($plainFile, $target);
-            } elseif ($fileToCopy === '.eslintrc.json') {
+            if ($fileToCopy === '.eslintrc.json') {
                 // Put temporary copy with correct "extends" value in var dir.
                 $this->makeEslintrc($plainFile, $target);
             } elseif ($fileToCopy === 'phpstan.neon') {
@@ -666,36 +660,6 @@ class FileCopier
         }
 
         return $this->hasNodePackage($package);
-    }
-
-    /**
-     * Copy the ECS file from the source to the destination.
-     *
-     * @param string $source Source file
-     * @param string $destination Destination file
-     *
-     * @throws \Exception if unable to load or save file
-     */
-    protected function makeEcs(string $source, string $destination): void
-    {
-        $lines = file($source);
-        if ($lines === false) {
-            throw new \Exception('Unable to load file');
-        }
-
-        $newLines = [];
-        foreach ($lines as $line) {
-            if (str_contains($line, 'line_length')) {
-                $line = (string) preg_replace('/\b100\b/', (string) $this->wrap, $line);
-            }
-
-            $newLines[] = $line;
-        }
-
-        $newString = implode('', $newLines);
-        if (file_put_contents($destination, $newString) === false) {
-            throw new \Exception('Unable to save file');
-        }
     }
 
     /**

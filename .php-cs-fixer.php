@@ -173,7 +173,7 @@ $rules = [
 
     // element order
     'ordered_class_elements' => [
-        'sort_algorithm' => 'alpha',
+        'sort_algorithm' => 'none',
         'order' => [
             'use_trait',
             'case',
