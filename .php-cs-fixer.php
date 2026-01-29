@@ -13,7 +13,7 @@ if ($paths === false) {
 }
 
 // Only dirs are supported
-$directories = array_filter($paths, 'is_dir');
+$directories = array_filter($paths, is_dir(...));
 
 // Detect composer package installations to determine what rulesets to use.
 $hasPhpUnit = false;
