@@ -34,8 +34,7 @@
         "phpstan/phpstan": "^2.1.37",
         "rector/rector": "^2.3.5",
         "shipmonk/dead-code-detector": "^0.13.5",
-        "shipmonk/name-collision-detector": "^2.1.1",
-        "squizlabs/php_codesniffer": "^4.0.1"
+        "shipmonk/name-collision-detector": "^2.1.1"
     },
     "autoload": {
         "psr-4": {
